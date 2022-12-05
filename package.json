@@ -1,0 +1,21 @@
+{
+  "devDependencies": {
+    "typescript": "^4.9.3"
+  },
+  "name": "@fibre44/dsn-parser",
+  "version": "0.0.1",
+  "description": "Un parser pour la DSN",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "lib/**/*"
+  ],
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
