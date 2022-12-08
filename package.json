@@ -1,9 +1,10 @@
 {
   "devDependencies": {
+    "@types/node": "^18.11.11",
     "typescript": "^4.9.3"
   },
   "name": "@fibre44/dsn-parser",
-  "version": "0.0.1",
+  "version": "0.2.1",
   "description": "Un parser pour la DSN",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",

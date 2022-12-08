@@ -1,3 +1,3 @@
-import hello from "./test"
+import { DsnParser } from "./dsn";
 
-export { hello }
+export { DsnParser }
