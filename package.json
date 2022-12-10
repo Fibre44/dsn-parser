@@ -3,9 +3,13 @@
     "@types/node": "^18.11.11",
     "typescript": "^4.9.3"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fibre44/dsn-parser.git"
+  },
   "name": "@fibre44/dsn-parser",
   "version": "0.2.1",
-  "description": "Un parser pour la DSN",
+  "description": "Un parser pour la Déclaration Sociale Nominative",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "files": [
@@ -17,6 +21,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "DENIS Nicolas",
+  "license": "MIT",
+  "Keywords": "Déclaration Sociale Nominative"
 }
