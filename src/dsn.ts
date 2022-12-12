@@ -1,10 +1,11 @@
 import { throws } from 'node:assert';
-import fs from 'node:fs';
+import fs, { cp } from 'node:fs';
 import readline from 'node:readline';
 
 type societyList = society[]
 type establishmentList = establishment[]
 type dsnList = dsn[]
+type classificationList = classification[]
 
 type dsnObject = {
     softwareName: string | undefined,
@@ -21,7 +22,7 @@ type dsn = {
     value: string
 }
 
-type societyObjet = {
+type societyObject = {
     siren: string | undefined,
     nic: string | undefined,
     apen: string | undefined,
@@ -39,7 +40,7 @@ type society = {
     value: string
 }
 
-type establishmentObjet = {
+type establishmentObject = {
     siren: string | undefined,
     nic: string | undefined,
     apet: string | undefined,
@@ -62,6 +63,24 @@ type establishment = {
     siren: string,
     idEstablishment: number
 }
+
+type classification = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    idcc: string,
+}
+
+type assignementObject = {
+    value: string,
+}
+
+type classificationObject = {
+    nature: string,
+    value: string,
+    idcc: string,
+}
 type extractions = extraction[]
 
 type extraction = {
@@ -76,6 +95,7 @@ export class DsnParser {
     private societyList: societyList = []
     private establishmentList: establishmentList = []
     private dsnList: dsnList = []
+    private classificationList: classificationList = []
     private extractions: extractions = [
         {
             collection: 'Dsn',
@@ -202,6 +222,21 @@ export class DsnParser {
             field: 'opco',
             dsnStructure: 'S21.G00.11.023',
         },
+        {
+            collection: 'Classification',
+            field: 'AssignmentLabel',
+            dsnStructure: 'S21.G00.40.006'
+        },
+        {
+            collection: 'Classification',
+            field: 'Echelon',
+            dsnStructure: 'S21.G00.40.070'
+        },
+        {
+            collection: 'Classification',
+            field: 'Coefficient',
+            dsnStructure: 'S21.G00.40.071'
+        }
     ]
     async init(dir: string) {
         const fileStream = fs.createReadStream(dir);
@@ -215,6 +250,7 @@ export class DsnParser {
             let dsnStructure = lineSplit[0]
             let findStructure = this.extractions.find(d => d.dsnStructure === dsnStructure)
             let idEstablishment = 0
+            let idcc = null
             if (findStructure) {
                 let value = lineSplit[1].replace('\'', '')
                 switch (findStructure.collection) {
@@ -239,7 +275,7 @@ export class DsnParser {
                         this.addSociety(addRowSociety)
                         break
                     case 'Establishment':
-                        if (line[0] === 'S.21.GOO.11.0001') {
+                        if (line[0] === 'S21.GOO.11.0001') {
                             idEstablishment += 1
                         }
                         let addRowEstablishment: establishment = {
@@ -250,32 +286,46 @@ export class DsnParser {
                         }
                         this.addEstablishment(addRowEstablishment)
                         break
+                    case 'Classification':
+                        if (line[0] === 'S21.G00.40.017') {
+                            idcc = line[1]
+                        }
+                        let addClassification: classification = {
+                            ...findStructure,
+                            value: value,
+                            idcc: idcc ? idcc : ''
+                        }
+                        this.addClassification(addClassification)
 
                 }
-
-                console.log(`Line from file: ${line}`);
-
+                //console.log(`Line from file: ${line}`);
             }
         }
     }
-    addSociety(row: society): void {
+    private addSociety(row: society): void {
         const findRow = this.societyList.find(r => r?.collection === row.collection && r.field === row.field && r.dsnStructure === row.dsnStructure)
         if (!findRow) {
             this.societyList.push(row)
         }
         return
     }
-    addEstablishment(row: establishment): void {
+    private addEstablishment(row: establishment): void {
         const findRow = this.establishmentList.find(r => r?.collection === row.collection && r.field === row.field && r.dsnStructure === row.dsnStructure)
         if (!findRow) {
             this.establishmentList.push(row)
         }
         return
     }
-    addDsn(row: dsn): void {
+    private addDsn(row: dsn): void {
         const findRow = this.dsnList.find(r => r?.collection === row.collection && r.field === row.field)
         if (!findRow) {
             this.dsnList.push(row)
+        }
+    }
+    addClassification(row: classification): void {
+        const findRow = this.classificationList.find(r => r.collection === row.collection && r.field === row.field && r.value === r.value && r.idcc === r.idcc)
+        if (!findRow) {
+            this.classificationList.push(row)
         }
     }
 
@@ -290,8 +340,8 @@ export class DsnParser {
         return dsnObject
     }
 
-    get society(): societyObjet {
-        const societyObjet: societyObjet = {
+    get society(): societyObject {
+        const societyObjet: societyObject = {
             siren: this.societyList.find(s => s.dsnStructure === 'S21.G00.06.001')?.value,
             nic: this.societyList.find(s => s.dsnStructure === 'S21.G00.06.002')?.value,
             apen: this.societyList.find(s => s.dsnStructure === 'S21.G00.06.003')?.value,
@@ -304,9 +354,9 @@ export class DsnParser {
         return societyObjet
     }
 
-    get establishment(): establishmentObjet {
+    get establishment(): establishmentObject {
         //Attention dans une DSN on peut avoir X établissements
-        const establishmentObjet: establishmentObjet = {
+        const establishmentObjet: establishmentObject = {
             siren: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.001')?.siren,
             nic: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.001')?.value,
             apet: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.002')?.value,
@@ -324,5 +374,40 @@ export class DsnParser {
         return establishmentObjet
     }
 
+    get assignement(): assignementObject[] {
+        const classificationsFilter = this.classificationList.filter(c => c.field === 'AssignmentLabel')
+        const assignementList: assignementObject[] = []
+        classificationsFilter.forEach(c => assignementList.push({
+            value: c.value
+        }))
+        return assignementList
+    }
+
+    get classifications(): classificationObject[] {
+        const coeffFilter = this.classificationList.filter(c => c.dsnStructure === 'S21.G00.40.071')
+        const echelonFilter = this.classificationList.filter(c => c.dsnStructure === 'S21.G00.40.070')
+        const allClassList = coeffFilter.concat(echelonFilter)
+        const classList: classificationObject[] = []
+        for (let classRow of allClassList) {
+            let nature
+            switch (classRow.dsnStructure) {
+                case 'S21.G00.40.071':
+                    nature = 'Coefficient'
+                    break
+                case 'S21.G00.40.070':
+                    nature = 'Echelon'
+                    break
+            }
+            classList.push({
+                nature: nature ? nature : '',
+                value: classRow.value,
+                idcc: classRow.idcc,
+            })
+        }
+        return classList
+    }
+
+
 }
+
 

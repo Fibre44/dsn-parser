@@ -5,13 +5,7 @@ type dsnObject = {
     dsnVersion: string | undefined;
     type: string | undefined;
 };
-type dsn = {
-    collection: string;
-    field: string;
-    dsnStructure: string;
-    value: string;
-};
-type societyObjet = {
+type societyObject = {
     siren: string | undefined;
     nic: string | undefined;
     apen: string | undefined;
@@ -21,13 +15,7 @@ type societyObjet = {
     zipCode: string | undefined;
     city: string | undefined;
 };
-type society = {
-    collection: string;
-    field: string;
-    dsnStructure: string;
-    value: string;
-};
-type establishmentObjet = {
+type establishmentObject = {
     siren: string | undefined;
     nic: string | undefined;
     apet: string | undefined;
@@ -42,25 +30,36 @@ type establishmentObjet = {
     city: string | undefined;
     idEstablishment: number | undefined;
 };
-type establishment = {
+type classification = {
     collection: string;
     field: string;
     dsnStructure: string;
     value: string;
-    siren: string;
-    idEstablishment: number;
+    idcc: string;
+};
+type assignementObject = {
+    value: string;
+};
+type classificationObject = {
+    nature: string;
+    value: string;
+    idcc: string;
 };
 export declare class DsnParser {
     private societyList;
     private establishmentList;
     private dsnList;
+    private classificationList;
     private extractions;
     init(dir: string): Promise<void>;
-    addSociety(row: society): void;
-    addEstablishment(row: establishment): void;
-    addDsn(row: dsn): void;
+    private addSociety;
+    private addEstablishment;
+    private addDsn;
+    addClassification(row: classification): void;
     get dsn(): dsnObject;
-    get society(): societyObjet;
-    get establishment(): establishmentObjet;
+    get society(): societyObject;
+    get establishment(): establishmentObject;
+    get assignement(): assignementObject[];
+    get classifications(): classificationObject[];
 }
 export {};
