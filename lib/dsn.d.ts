@@ -4,6 +4,7 @@ type dsnObject = {
     softwareVersion: string | undefined;
     dsnVersion: string | undefined;
     type: string | undefined;
+    totalRows: string | undefined;
 };
 type societyObject = {
     siren: string | undefined;
@@ -30,12 +31,15 @@ type establishmentObject = {
     city: string | undefined;
     idEstablishment: number | undefined;
 };
-type classification = {
-    collection: string;
-    field: string;
-    dsnStructure: string;
-    value: string;
-    idcc: string;
+type contributionFund = {
+    codeDsn: string;
+    name: string;
+    adress1: string;
+    adress2?: string;
+    adress3?: string;
+    codeZip: string;
+    city: string;
+    idEstablishment?: number;
 };
 type assignementObject = {
     value: string;
@@ -50,16 +54,20 @@ export declare class DsnParser {
     private establishmentList;
     private dsnList;
     private classificationList;
+    private contributionFundList;
+    private contributionFundListDefinition;
     private extractions;
     init(dir: string): Promise<void>;
     private addSociety;
     private addEstablishment;
     private addDsn;
-    addClassification(row: classification): void;
+    private addClassification;
+    private addContributionFund;
     get dsn(): dsnObject;
     get society(): societyObject;
     get establishment(): establishmentObject;
     get assignement(): assignementObject[];
     get classifications(): classificationObject[];
+    get contributionFund(): contributionFund[];
 }
 export {};

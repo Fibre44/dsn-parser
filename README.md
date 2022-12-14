@@ -5,20 +5,12 @@ Cette librairie permet d'extraire les données d'un fichier au format de la Déc
 
 ## Installation ##
 
-### Cloner le dépot ###
-
 ```bash
-    git clone https://github.com/Fibre44/dsn-parser.git
-```
-
-### Installer les dépéndances ###
-```bash
-    npm install
+    npm i @fibre44/dsn-parser
 ```
 
 ## Exemples ##
 
-Avec javascript
 ```javascript
 import { DsnParser } from "@fibre44/dsn-parser";
 import { fileURLToPath } from 'node:url';
@@ -35,67 +27,111 @@ try {
 
 La class DsnParser propose différentes méthodes pour obtenir les informations du fichier DSN.
 
-### dsn ###
+### Méthode dsn ###
 
 Cette méthode retourne objet Javascript avec cette structure :
 
-``` typescript
-
-type dsnObject = {
-    softwareName: string | undefined,
-    provider: string | undefined,
-    softwareVersion: string | undefined,
-    dsnVersion: string | undefined,
-    type: string | undefined,
-
+``` javascript
+{
+  softwareName: 'Le nom du logiciel de paie',
+  provider: 'Le fournisseur',
+  softwareVersion: 'La version du logiciel de paie',
+  dsnVersion: 'P22V01',
+  type: '01',
+  totalRows: '9253'
 }
+
 ```
-### society ###
+### Méthode society ###
 Cette méthode retourne objet Javascript avec cette structure :
 
-```
-type societyObject = {
-    siren: string | undefined,
-    nic: string | undefined,
-    apen: string | undefined,
-    adress1: string | undefined,
-    adress2: string | undefined,
-    adress3: string | undefined,
-    zipCode: string | undefined,
-    city: string | undefined
+```javascript
+{
+  siren: '999999999',
+  nic: '99999',
+  apen: '9999',
+  adress1: 'rue de la DSN',
+  zipCode: '17000',
+  city: 'La Rochelle',
 }
 ```
-### establishment ###
+### Méthode stablishment ###
 Dans la DSN une même DSN on peut avoir X établissements. Si la DSN contient un seul établissement la méthode retourne un objet Javascript. Sinon la méthode retoure un tableau d'objets
+```javascript
+[
+    {
+        siren: '999999999',
+        nic: '99999',
+        apet: '9999',
+        adress1: 'rue de la DSN',
+        zipCode: '17000',
+        city: 'La Rochelle',
+        legalStatus: 'SARL',
+        idcc: '1597',
+        opco: 'code OPCO',
+        idEstablishment: 0 //Id interne à la class 
+    },
+    {
+        siren: '999999999',
+        nic: '99998',
+        apet: '9999',
+        adress1: 'rue de la déclaration',
+        zipCode: '17000',
+        city: 'La Rochelle',
+        legalStatus: 'SARL',
+        idcc: '1597',
+        opco: 'code OPCO',
+        idEstablishment: 0 //Id interne à la class 
+    }
+]
 ```
-type establishmentObject = {
-    siren: string | undefined,
-    nic: string | undefined,
-    apet: string | undefined,
-    adress1: string | undefined,
-    adress2: string | undefined,
-    adress3: string | undefined,
-    zipCode: string | undefined,
-    country: string | undefined,
-    idcc: string | undefined,
-    legalStatus: string | undefined,
-    opco: string | undefined,
-    city: string | undefined,
-    idEstablishment: number | undefined
-}
+### Méthode assignement ###
+```javascript
+[ 
+    { value: 'Developpeur Javascript' },
+    { value: 'Developpeur PHP' },
+]
+
 ```
-### assignement ###
+### Méthode contributionFund ###
+La méthode retourne un tableau d'objets avec les informations des différents organismes sociaux.
+
+La clée idEstablishment permet de retrouver l'établissement d'affectation. 
+```javascript
+[
+  {
+    codeDsn: '53510475600015',
+    name: 'Urssaf Pays de la Loire',
+    adress1: 'string',
+    codeZip: 'string',
+    city: 'string',
+    idEstablishment: 0
+  },
+  {
+    codeDsn: 'P0942',
+    name: 'AG2R',
+    adress1: 'string',
+    codeZip: 'string',
+    city: 'string',
+    idEstablishment: 0
+  }
+]
 ```
-type assignementObject = {
-    value: string,
-}
-```
-### Classifications ###
-```
-type classificationObject = {
-    nature: string,
-    value: string,
-    idcc: string,
-}
+
+### Méthode Classifications ###
+La méthode retourne un tableau d'objets avec l'ensemble des classifications des salariés par IDCC.
+```javascript
+[
+    {
+        nature: 'coeff',
+        value: '100',
+        idcc: '9999',
+    },
+    {
+        nature: 'coeff',
+        value: '120',
+        idcc: '9999',
+    },
+]
 ```
 

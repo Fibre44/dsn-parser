@@ -13,6 +13,7 @@ type dsnObject = {
     softwareVersion: string | undefined,
     dsnVersion: string | undefined,
     type: string | undefined,
+    totalRows: string | undefined
 
 }
 type dsn = {
@@ -69,7 +70,18 @@ type classification = {
     field: string,
     dsnStructure: string,
     value: string,
-    idcc: string,
+    idcc: string
+}
+
+type contributionFund = {
+    codeDsn: string
+    name: string,
+    adress1: string,
+    adress2?: string,
+    adress3?: string,
+    codeZip: string,
+    city: string,
+    idEstablishment?: number
 }
 
 type assignementObject = {
@@ -96,21 +108,31 @@ export class DsnParser {
     private establishmentList: establishmentList = []
     private dsnList: dsnList = []
     private classificationList: classificationList = []
+    private contributionFundList: contributionFund[] = []
+    private contributionFundListDefinition: contributionFund[] = [
+        {
+            codeDsn: '53510475600015',
+            name: 'Urssaf Pays de la Loire',
+            adress1: 'string',
+            codeZip: 'string',
+            city: 'string'
+        }
+    ]
     private extractions: extractions = [
         {
             collection: 'Dsn',
             field: 'softwareName',
-            dsnStructure: 'S20.G00.05.001',
+            dsnStructure: 'S10.G00.00.001',
         },
         {
             collection: 'Dsn',
             field: 'provider',
-            dsnStructure: 'S20.G00.05.002',
+            dsnStructure: 'S10.G00.00.002',
         },
         {
             collection: 'Dsn',
             field: 'softwareVersion',
-            dsnStructure: 'S20.G00.05.003',
+            dsnStructure: 'S10.G00.00.003',
         },
         {
             collection: 'Dsn',
@@ -120,7 +142,12 @@ export class DsnParser {
         {
             collection: 'Dsn',
             field: 'type',
-            dsnStructure: 'S20.G00.05.001',
+            dsnStructure: 'S10.G00.00.008',
+        },
+        {
+            collection: 'Dsn',
+            field: 'totalRows',
+            dsnStructure: 'S90.G00.90.001',
         },
         {
             collection: 'Society',
@@ -236,6 +263,11 @@ export class DsnParser {
             collection: 'Classification',
             field: 'Coefficient',
             dsnStructure: 'S21.G00.40.071'
+        },
+        {
+            collection: 'ContributionFund',
+            field: 'contributionFund',
+            dsnStructure: 'S21.G00.22.001'
         }
     ]
     async init(dir: string) {
@@ -244,20 +276,17 @@ export class DsnParser {
             input: fileStream,
             crlfDelay: Infinity,
         });
+        let idEstablishment = 0
+        let idcc: string | null = null
+        let siren: string | null = null
         for await (const line of rl) {
-            let siren: string | null = null
             let lineSplit = line.split(',\'');
             let dsnStructure = lineSplit[0]
             let findStructure = this.extractions.find(d => d.dsnStructure === dsnStructure)
-            let idEstablishment = 0
-            let idcc = null
             if (findStructure) {
                 let value = lineSplit[1].replace('\'', '')
                 switch (findStructure.collection) {
                     case 'Dsn':
-                        if (lineSplit[0] === 'S21.G00.06.001') {
-                            siren = value
-                        }
                         let addDsn: dsn = {
                             ...findStructure,
                             value: value
@@ -296,9 +325,18 @@ export class DsnParser {
                             idcc: idcc ? idcc : ''
                         }
                         this.addClassification(addClassification)
-
+                        break
+                    case 'ContributionFund':
+                        let codeDsn = value
+                        let findContribubtionFund = this.contributionFundListDefinition.find(c => c.codeDsn === codeDsn)
+                        if (findContribubtionFund) {
+                            let addContribitionFund = {
+                                ...findContribubtionFund,
+                                idEstablishment
+                            }
+                            this.addContributionFund(addContribitionFund)
+                        }
                 }
-                //console.log(`Line from file: ${line}`);
             }
         }
     }
@@ -322,20 +360,27 @@ export class DsnParser {
             this.dsnList.push(row)
         }
     }
-    addClassification(row: classification): void {
+    private addClassification(row: classification): void {
         const findRow = this.classificationList.find(r => r.collection === row.collection && r.field === row.field && r.value === r.value && r.idcc === r.idcc)
         if (!findRow) {
             this.classificationList.push(row)
         }
     }
+    private addContributionFund(row: contributionFund): void {
+        const findRow = this.contributionFundList.find(r => r.codeDsn === row.codeDsn)
+        if (!findRow) {
+            this.contributionFundList.push(row)
+        }
+    }
 
     get dsn(): dsnObject {
         const dsnObject: dsnObject = {
-            softwareName: this.dsnList.find(d => d.dsnStructure === 'S20.G00.05.001')?.value,
-            provider: this.dsnList.find(d => d.dsnStructure === 'S20.G00.05.002')?.value,
-            softwareVersion: this.dsnList.find(d => d.dsnStructure === 'S20.G00.05.003')?.value,
-            dsnVersion: this.dsnList.find(d => d.dsnStructure === 'S20.G00.05.006')?.value,
-            type: this.dsnList.find(d => d.dsnStructure === 'S20.G00.05.008')?.value,
+            softwareName: this.dsnList.find(d => d.dsnStructure === 'S10.G00.00.001')?.value,
+            provider: this.dsnList.find(d => d.dsnStructure === 'S10.G00.00.002')?.value,
+            softwareVersion: this.dsnList.find(d => d.dsnStructure === 'S10.G00.00.003')?.value,
+            dsnVersion: this.dsnList.find(d => d.dsnStructure === 'S10.G00.00.006')?.value,
+            type: this.dsnList.find(d => d.dsnStructure === 'S10.G00.00.008')?.value,
+            totalRows: this.dsnList.find(d => d.dsnStructure === 'S90.G00.90.001')?.value,
         }
         return dsnObject
     }
@@ -405,6 +450,10 @@ export class DsnParser {
             })
         }
         return classList
+    }
+
+    get contributionFund(): contributionFund[] {
+        return this.contributionFundList
     }
 
 
