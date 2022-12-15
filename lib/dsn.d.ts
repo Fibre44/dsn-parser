@@ -50,6 +50,7 @@ type classificationObject = {
     idcc: string;
 };
 export declare class DsnParser {
+    private dsnVersion;
     private societyList;
     private establishmentList;
     private dsnList;
@@ -57,7 +58,10 @@ export declare class DsnParser {
     private contributionFundList;
     private contributionFundListDefinition;
     private extractions;
-    init(dir: string): Promise<void>;
+    init(dir: string, options?: {
+        controleDsnVersion: boolean;
+        deleteFile: boolean;
+    }): Promise<void>;
     private addSociety;
     private addEstablishment;
     private addDsn;

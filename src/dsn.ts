@@ -1,7 +1,5 @@
-import { throws } from 'node:assert';
-import fs, { cp } from 'node:fs';
+import fs from 'node:fs';
 import readline from 'node:readline';
-
 type societyList = society[]
 type establishmentList = establishment[]
 type dsnList = dsn[]
@@ -104,6 +102,7 @@ type extraction = {
 //NodeJs readline =https://nodejs.org/api/readline.html
 
 export class DsnParser {
+    private dsnVersion = ['P22V01']
     private societyList: societyList = []
     private establishmentList: establishmentList = []
     private dsnList: dsnList = []
@@ -270,7 +269,10 @@ export class DsnParser {
             dsnStructure: 'S21.G00.22.001'
         }
     ]
-    async init(dir: string) {
+    async init(dir: string, options = {
+        controleDsnVersion: true,
+        deleteFile: false
+    }) {
         const fileStream = fs.createReadStream(dir);
         const rl = readline.createInterface({
             input: fileStream,
@@ -287,6 +289,12 @@ export class DsnParser {
                 let value = lineSplit[1].replace('\'', '')
                 switch (findStructure.collection) {
                     case 'Dsn':
+                        if (lineSplit[0] === 'S10.G00.00.006' && options.controleDsnVersion) {
+                            const testVersion = this.dsnVersion.find(d => d === value)
+                            if (!testVersion) {
+                                throw new Error(`La version du fichier DSN n'est pas supportée`)
+                            }
+                        }
                         let addDsn: dsn = {
                             ...findStructure,
                             value: value
@@ -338,6 +346,10 @@ export class DsnParser {
                         }
                 }
             }
+        }
+        //Delete File 
+        if (options.deleteFile) {
+            fs.unlinkSync(dir)
         }
     }
     private addSociety(row: society): void {
