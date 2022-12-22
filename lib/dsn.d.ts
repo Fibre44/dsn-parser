@@ -1,3 +1,7 @@
+type workContractDefinition = {
+    typeOfContract: string;
+    NameOfCOntract: string;
+};
 type dsnObject = {
     softwareName: string | undefined;
     provider: string | undefined;
@@ -49,14 +53,23 @@ type classificationObject = {
     value: string;
     idcc: string;
 };
+type atObject = {
+    code: string;
+    rate: string;
+    idEstablishment: number;
+};
 export declare class DsnParser {
+    private workContractSet;
+    private contributionFundSet;
+    private atSet;
     private dsnVersion;
     private societyList;
     private establishmentList;
     private dsnList;
     private classificationList;
     private contributionFundList;
-    private contributionFundListDefinition;
+    private workContractList;
+    private atList;
     private extractions;
     init(dir: string, options?: {
         controleDsnVersion: boolean;
@@ -66,12 +79,16 @@ export declare class DsnParser {
     private addEstablishment;
     private addDsn;
     private addClassification;
+    private addAt;
     private addContributionFund;
+    private addWorkContract;
     get dsn(): dsnObject;
     get society(): societyObject;
     get establishment(): establishmentObject;
+    get at(): atObject[];
     get assignement(): assignementObject[];
     get classifications(): classificationObject[];
     get contributionFund(): contributionFund[];
+    get workContract(): workContractDefinition[];
 }
 export {};

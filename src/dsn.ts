@@ -1,9 +1,16 @@
 import fs from 'node:fs';
 import readline from 'node:readline';
+import { ops } from './files/ops';
+import { workContract } from './files/workContract';
 type societyList = society[]
 type establishmentList = establishment[]
 type dsnList = dsn[]
 type classificationList = classification[]
+
+type workContractDefinition = {
+    typeOfContract: string,
+    NameOfCOntract: string
+}
 
 type dsnObject = {
     softwareName: string | undefined,
@@ -62,7 +69,13 @@ type establishment = {
     siren: string,
     idEstablishment: number
 }
-
+type at = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    idEstablishment: number
+}
 type classification = {
     collection: string,
     field: string,
@@ -98,25 +111,27 @@ type extraction = {
     field: string,
     dsnStructure: string
 }
+type atObject = {
+    code: string,
+    rate: string,
+    idEstablishment: number
+}
 //Norme DSN 2022 = https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf
 //NodeJs readline =https://nodejs.org/api/readline.html
 
 export class DsnParser {
+    private workContractSet = new Set<string>()
+    private contributionFundSet = new Set<{ value: string, idEstablishment: number }>()
+    private atSet = new Set<string>()
     private dsnVersion = ['P22V01']
     private societyList: societyList = []
     private establishmentList: establishmentList = []
     private dsnList: dsnList = []
     private classificationList: classificationList = []
     private contributionFundList: contributionFund[] = []
-    private contributionFundListDefinition: contributionFund[] = [
-        {
-            codeDsn: '53510475600015',
-            name: 'Urssaf Pays de la Loire',
-            adress1: 'string',
-            codeZip: 'string',
-            city: 'string'
-        }
-    ]
+    private workContractList: workContractDefinition[] = []
+    private atList: at[] = []
+
     private extractions: extractions = [
         {
             collection: 'Dsn',
@@ -267,7 +282,22 @@ export class DsnParser {
             collection: 'ContributionFund',
             field: 'contributionFund',
             dsnStructure: 'S21.G00.22.001'
-        }
+        },
+        {
+            collection: 'WorkContract',
+            field: 'typeOfContract',
+            dsnStructure: 'S21.G00.40.007'
+        },
+        {
+            collection: 'AT',
+            field: 'codeAT',
+            dsnStructure: 'S21.G00.40.040'
+        },
+        {
+            collection: 'AT',
+            field: 'rateAT',
+            dsnStructure: 'S21.G00.40.043'
+        },
     ]
     async init(dir: string, options = {
         controleDsnVersion: true,
@@ -278,7 +308,7 @@ export class DsnParser {
             input: fileStream,
             crlfDelay: Infinity,
         });
-        let idEstablishment = 0
+        let idEstablishment = 1
         let idcc: string | null = null
         let siren: string | null = null
         for await (const line of rl) {
@@ -335,15 +365,24 @@ export class DsnParser {
                         this.addClassification(addClassification)
                         break
                     case 'ContributionFund':
-                        let codeDsn = value
-                        let findContribubtionFund = this.contributionFundListDefinition.find(c => c.codeDsn === codeDsn)
-                        if (findContribubtionFund) {
-                            let addContribitionFund = {
-                                ...findContribubtionFund,
-                                idEstablishment
-                            }
-                            this.addContributionFund(addContribitionFund)
+                        let addContribitionFund = {
+                            value,
+                            idEstablishment
                         }
+                        this.addContributionFund(addContribitionFund)
+
+                        break
+                    case 'WorkContract':
+                        this.addWorkContract(value)
+                        break
+                    case 'AT':
+                        let addAt: at = {
+                            ...findStructure,
+                            value,
+                            idEstablishment
+                        }
+                        this.addAt(addAt)
+                        break
                 }
             }
         }
@@ -378,13 +417,30 @@ export class DsnParser {
             this.classificationList.push(row)
         }
     }
-    private addContributionFund(row: contributionFund): void {
-        const findRow = this.contributionFundList.find(r => r.codeDsn === row.codeDsn)
-        if (!findRow) {
-            this.contributionFundList.push(row)
+    private addAt(row: at): void {
+        let uuidAt = row.dsnStructure + row.value + row.idEstablishment
+        if (!this.atSet.has(uuidAt)) {
+            this.atSet.add(uuidAt)
+            this.atList.push(row)
         }
     }
+    private addContributionFund(row: { value: string, idEstablishment: number }): void {
+        const contributionFundListDefinition: contributionFund[] = ops
+        let findContribubtionFund = contributionFundListDefinition.find(c => c.codeDsn === row.value)
+        if (findContribubtionFund && !this.contributionFundSet.has(row)) {
+            this.contributionFundSet.add(row)
+            this.contributionFundList.push(findContribubtionFund)
+        }
+    }
+    private addWorkContract(row: string): void {
+        const workContractDefinition: workContractDefinition[] = workContract
+        const type: workContractDefinition | undefined = workContractDefinition.find(c => c.typeOfContract === row)
+        if (type && !this.workContractSet.has(row)) {
+            this.workContractSet.add(row)
+            this.workContractList.push(type)
+        }
 
+    }
     get dsn(): dsnObject {
         const dsnObject: dsnObject = {
             softwareName: this.dsnList.find(d => d.dsnStructure === 'S10.G00.00.001')?.value,
@@ -430,7 +486,26 @@ export class DsnParser {
         }
         return establishmentObjet
     }
+    get at(): atObject[] {
+        const codeAtFilter = this.atList.filter(a => a.field === 'codeAT')
+        const rateAtFilter = this.atList.filter(a => a.field === 'rateAT')
+        const atObjectList: atObject[] = []
+        for (let i = 0; i < codeAtFilter.length; i++) {
+            let code = codeAtFilter[i]?.value
+            let rate = rateAtFilter[i]?.value
+            let idEstablishment = rateAtFilter[i]?.idEstablishment
+            if (code && rate && idEstablishment) {
+                let atObject: atObject = {
+                    code,
+                    rate,
+                    idEstablishment
+                }
+                atObjectList.push(atObject)
+            }
 
+        }
+        return atObjectList
+    }
     get assignement(): assignementObject[] {
         const classificationsFilter = this.classificationList.filter(c => c.field === 'AssignmentLabel')
         const assignementList: assignementObject[] = []
@@ -468,6 +543,9 @@ export class DsnParser {
         return this.contributionFundList
     }
 
+    get workContract(): workContractDefinition[] {
+        return this.workContractList
+    }
 
 }
 

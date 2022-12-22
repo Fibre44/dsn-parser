@@ -1,7 +1,17 @@
 # DSN Parser #
 ## Description ##
 
-Cette librairie permet d'extraire les données d'un fichier au format de la Déclaration Sociale Nominative (DSN). La librairie se base sur le [cahier technique 2022 ](https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf "norme DSN 2022")
+Cette librairie permet d'extraire les données d'un fichier au format de la Déclaration Sociale Nominative (DSN). 
+
+La librairie se base sur le [cahier technique 2022 ](https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf "norme DSN 2022"). La librairie ne prendra en charge que la derière norme en application du cahier technique.
+
+La librairie permet de d'obtenir :
+* Les informations du fichier DSN (éditeur, logicel de paie)
+* Les informations de la société
+* Les informations des établissements
+* Les taux AT
+* Les organismes de cotisations
+* La liste des libellés emplois
 
 ## Installation ##
 
@@ -15,15 +25,28 @@ Cette librairie permet d'extraire les données d'un fichier au format de la Déc
 import { DsnParser } from "@fibre44/dsn-parser";
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+
 const dir = join(dirname(fileURLToPath(import.meta.url)), './demo.dsn')
 const dsn = new DsnParser()
-try {
-    await dsn.init(dir)
 
+const options = {
+        controleDsnVersion: true,
+        deleteFile: false
+    }
+try {
+  await dsn.init(path, options)
 } catch (e) {
     console.error(e)
 }
 ```
+## Les options ##
+Fichier d'option par default.
+ ```javascript
+  options = {
+        controleDsnVersion: true,//Controle que le fichier utilise bien la dernière norme de la DSN
+        deleteFile: false //Autorise la suppression du fichier après le traitemebt
+    }
+ ```
 
 La class DsnParser propose différentes méthodes pour obtenir les informations du fichier DSN.
 
@@ -55,7 +78,7 @@ Cette méthode retourne objet Javascript avec cette structure :
   city: 'La Rochelle',
 }
 ```
-### Méthode stablishment ###
+### Méthode Establishment ###
 Dans la DSN une même DSN on peut avoir X établissements. Si la DSN contient un seul établissement la méthode retourne un objet Javascript. Sinon la méthode retoure un tableau d'objets
 ```javascript
 [
