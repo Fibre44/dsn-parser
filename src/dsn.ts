@@ -1,15 +1,21 @@
 import fs from 'node:fs';
 import readline from 'node:readline';
-import { ops } from './files/ops';
-import { workContract } from './files/workContract';
+import { ops } from './utils/ops';
+import { workContract } from './utils/workContract';
+import { extractionsList } from './utils/extraction';
+import { throws } from 'node:assert';
 type societyList = society[]
 type establishmentList = establishment[]
 type dsnList = dsn[]
-type classificationList = classification[]
-
+type mutualList = mutual[]
+type mutualEmployeeList = mutualEmployee[]
+type contributionFundList = contributionFund[]
 type workContractDefinition = {
-    typeOfContract: string,
-    NameOfCOntract: string
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    name: string,
+    value: string
 }
 
 type dsnObject = {
@@ -43,48 +49,67 @@ type society = {
     collection: string,
     field: string,
     dsnStructure: string,
-    value: string
+    name: string,
+    value: string,
+    date: string
 }
 
 type establishmentObject = {
-    siren: string | undefined,
-    nic: string | undefined,
-    apet: string | undefined,
-    adress1: string | undefined,
-    adress2: string | undefined,
-    adress3: string | undefined,
-    zipCode: string | undefined,
-    country: string | undefined,
-    idcc: string | undefined,
-    legalStatus: string | undefined,
-    opco: string | undefined,
-    city: string | undefined,
-    idEstablishment: number | undefined
+    siren: string,
+    nic: string,
+    apet: string,
+    adress1: string,
+    adress2: string,
+    adress3: string,
+    zipCode: string,
+    country: string,
+    idcc: string,
+    legalStatus: string,
+    opco: string,
+    city: string,
+    date: string
 }
 type establishment = {
     collection: string,
     field: string,
     dsnStructure: string,
+    name: string,
     value: string,
-    siren: string,
+    siret: string,
     idEstablishment: number
-}
-type at = {
-    collection: string,
-    field: string,
-    dsnStructure: string,
-    value: string,
-    idEstablishment: number
-}
-type classification = {
-    collection: string,
-    field: string,
-    dsnStructure: string,
-    value: string,
-    idcc: string
+    date: string
 }
 
+
 type contributionFund = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    name: string,
+    value: string,
+    idEstablishment: number,
+    siret: string,
+    date: string
+}
+
+type mutual = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    date: string,
+}
+
+type mutualEmployee = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    numSS: string,
+    date: string
+}
+
+type contributionFundObject = {
     codeDsn: string
     name: string,
     adress1: string,
@@ -92,11 +117,8 @@ type contributionFund = {
     adress3?: string,
     codeZip: string,
     city: string,
-    idEstablishment?: number
-}
-
-type assignementObject = {
-    value: string,
+    siret: string,
+    date: string
 }
 
 type classificationObject = {
@@ -104,201 +126,63 @@ type classificationObject = {
     value: string,
     idcc: string,
 }
-type extractions = extraction[]
 
-type extraction = {
-    collection: string,
-    field: string,
-    dsnStructure: string
+type mutualObject = {
+    contractId?: string,
+    organisme?: string,
+    delegate?: string,
+    covererd?: string,
+    techId?: string,
+    date: string
 }
+
+type mutualEmployeeObject = {
+    option: string,
+    pop: string,
+    children: string,
+    assign: string,
+    numberAssign: string,
+    otherAssign: string,
+    idTechAffiliation: string,
+    idTech: string,
+    date: string
+}
+
 type atObject = {
     code: string,
     rate: string,
     idEstablishment: number
 }
+
+type employee = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    siren: string,
+    numSS: string,
+    date: string
+}
+
 //Norme DSN 2022 = https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf
 //NodeJs readline =https://nodejs.org/api/readline.html
 
 export class DsnParser {
-    private workContractSet = new Set<string>()
-    private contributionFundSet = new Set<{ value: string, idEstablishment: number }>()
-    private atSet = new Set<string>()
     private dsnVersion = ['P22V01']
     private societyList: societyList = []
     private establishmentList: establishmentList = []
     private dsnList: dsnList = []
-    private classificationList: classificationList = []
-    private contributionFundList: contributionFund[] = []
+    private contributionFundList: contributionFundList = []
     private workContractList: workContractDefinition[] = []
-    private atList: at[] = []
-
-    private extractions: extractions = [
-        {
-            collection: 'Dsn',
-            field: 'softwareName',
-            dsnStructure: 'S10.G00.00.001',
-        },
-        {
-            collection: 'Dsn',
-            field: 'provider',
-            dsnStructure: 'S10.G00.00.002',
-        },
-        {
-            collection: 'Dsn',
-            field: 'softwareVersion',
-            dsnStructure: 'S10.G00.00.003',
-        },
-        {
-            collection: 'Dsn',
-            field: 'dsnVersion',
-            dsnStructure: 'S10.G00.00.006',
-        },
-        {
-            collection: 'Dsn',
-            field: 'type',
-            dsnStructure: 'S10.G00.00.008',
-        },
-        {
-            collection: 'Dsn',
-            field: 'totalRows',
-            dsnStructure: 'S90.G00.90.001',
-        },
-        {
-            collection: 'Society',
-            field: 'siren',
-            dsnStructure: 'S21.G00.06.001',
-        },
-        {
-            collection: 'Society',
-            field: 'nic',
-            dsnStructure: 'S21.G00.06.002',
-        },
-        {
-            collection: 'Society',
-            field: 'apen',
-            dsnStructure: 'S21.G00.06.003',
-        },
-        {
-            collection: 'Society',
-            field: 'adress1',
-            dsnStructure: 'S21.G00.06.004',
-        },
-        {
-            collection: 'Society',
-            field: 'adress2',
-            dsnStructure: 'S21.G00.06.007',
-        },
-        {
-            collection: 'Society',
-            field: 'adress3',
-            dsnStructure: 'S21.G00.06.008',
-        },
-        {
-            collection: 'Society',
-            field: 'zipCode',
-            dsnStructure: 'S21.G00.06.005',
-        },
-        {
-            collection: 'Society',
-            field: 'city',
-            dsnStructure: 'S21.G00.06.006',
-        },
-        {
-            collection: 'Society',
-            field: 'idcc',
-            dsnStructure: 'S21.G00.06.015',
-        },
-        {
-            collection: 'Establishment',
-            field: 'nic',
-            dsnStructure: 'S21.G00.11.001',
-        },
-        {
-            collection: 'Establishment',
-            field: 'apet',
-            dsnStructure: 'S21.G00.11.002',
-        },
-        {
-            collection: 'Establishment',
-            field: 'adress1',
-            dsnStructure: 'S21.G00.11.003',
-        },
-        {
-            collection: 'Establishment',
-            field: 'codeZip',
-            dsnStructure: 'S21.G00.11.004',
-        },
-        {
-            collection: 'Establishment',
-            field: 'city',
-            dsnStructure: 'S21.G00.11.005',
-        },
-        {
-            collection: 'Establishment',
-            field: 'adress2',
-            dsnStructure: 'S21.G00.11.006',
-        },
-        {
-            collection: 'Establishment',
-            field: 'adress3',
-            dsnStructure: 'S21.G00.11.007',
-        },
-        {
-            collection: 'Establishment',
-            field: 'country',
-            dsnStructure: 'S21.G00.11.015',
-        },
-        {
-            collection: 'Establishment',
-            field: 'legalStatus',
-            dsnStructure: 'S21.G00.11.017',
-        },
-        {
-            collection: 'Establishment',
-            field: 'idcc',
-            dsnStructure: 'S21.G00.11.022',
-        },
-        {
-            collection: 'Establishment',
-            field: 'opco',
-            dsnStructure: 'S21.G00.11.023',
-        },
-        {
-            collection: 'Classification',
-            field: 'AssignmentLabel',
-            dsnStructure: 'S21.G00.40.006'
-        },
-        {
-            collection: 'Classification',
-            field: 'Echelon',
-            dsnStructure: 'S21.G00.40.070'
-        },
-        {
-            collection: 'Classification',
-            field: 'Coefficient',
-            dsnStructure: 'S21.G00.40.071'
-        },
-        {
-            collection: 'ContributionFund',
-            field: 'contributionFund',
-            dsnStructure: 'S21.G00.22.001'
-        },
-        {
-            collection: 'WorkContract',
-            field: 'typeOfContract',
-            dsnStructure: 'S21.G00.40.007'
-        },
-        {
-            collection: 'AT',
-            field: 'codeAT',
-            dsnStructure: 'S21.G00.40.040'
-        },
-        {
-            collection: 'AT',
-            field: 'rateAT',
-            dsnStructure: 'S21.G00.40.043'
-        },
-    ]
+    private mutualList: mutualList = []
+    private mutualEmployeeList: mutualEmployeeList = []
+    private employeeList: employee[] = []
+    private numSSList: string[] = []
+    private sirenList: string[] = []
+    private idEstablishmentList: number[] = []
+    private extractions = extractionsList
+    private siren: string = ''
+    private date = ''
     async init(dir: string, options = {
         controleDsnVersion: true,
         deleteFile: false
@@ -309,8 +193,8 @@ export class DsnParser {
             crlfDelay: Infinity,
         });
         let idEstablishment = 1
-        let idcc: string | null = null
-        let siren: string | null = null
+        let numSS: string = ''
+        let siret = ''
         for await (const line of rl) {
             let lineSplit = line.split(',\'');
             let dsnStructure = lineSplit[0]
@@ -325,64 +209,98 @@ export class DsnParser {
                                 throw new Error(`La version du fichier DSN n'est pas supportée`)
                             }
                         }
+                        if (lineSplit[0] === 'S20.G00.05.005') {
+                            this.date = value
+                        }
                         let addDsn: dsn = {
                             ...findStructure,
                             value: value
                         }
-                        this.addDsn(addDsn)
+                        this.dsnList.push(addDsn)
                         break
                     case 'Society':
                         if (lineSplit[0] === 'S21.G00.06.001') {
-                            siren = value
+                            this.siren = value
                         }
                         let addRowSociety: society = {
                             ...findStructure,
-                            value: value
+                            value: value,
+                            date: this.date
                         }
-                        this.addSociety(addRowSociety)
+                        this.societyList.push(addRowSociety)
                         break
                     case 'Establishment':
-                        if (line[0] === 'S21.GOO.11.0001') {
+                        if (lineSplit[0] === 'S21.G00.11.001') {
                             idEstablishment += 1
+                            this.idEstablishmentList.push(idEstablishment)
+                            siret = this.siren + value
                         }
                         let addRowEstablishment: establishment = {
                             ...findStructure,
                             value: value,
-                            siren: siren ? siren : '',
-                            idEstablishment
+                            siret,
+                            idEstablishment,
+                            date: this.date
+
                         }
-                        this.addEstablishment(addRowEstablishment)
-                        break
-                    case 'Classification':
-                        if (line[0] === 'S21.G00.40.017') {
-                            idcc = line[1]
-                        }
-                        let addClassification: classification = {
-                            ...findStructure,
-                            value: value,
-                            idcc: idcc ? idcc : ''
-                        }
-                        this.addClassification(addClassification)
+                        this.establishmentList.push(addRowEstablishment)
                         break
                     case 'ContributionFund':
-                        let addContribitionFund = {
+                        let addContributionFund = {
+                            ...findStructure,
                             value,
-                            idEstablishment
+                            idEstablishment,
+                            siret,
+                            date: this.date
                         }
-                        this.addContributionFund(addContribitionFund)
+                        this.contributionFundList.push(addContributionFund)
 
                         break
                     case 'WorkContract':
-                        this.addWorkContract(value)
-                        break
-                    case 'AT':
-                        let addAt: at = {
+                        let addRoWWorkContract = {
                             ...findStructure,
                             value,
-                            idEstablishment
+                            siren: this.siren,
+                            date: this.date
                         }
-                        this.addAt(addAt)
+                        this.workContractList.push(addRoWWorkContract)
                         break
+
+                    case 'Mutual':
+                        let addMutual = {
+                            ...findStructure,
+                            value,
+                            siren: this.siren,
+                            date: this.date
+
+                        }
+                        this.mutualList.push(addMutual)
+                        break
+                    case 'MutualEmployee':
+                        let addMutualEmployee = {
+                            ...findStructure,
+                            numSS,
+                            value,
+                            siren: this.siren,
+                            date: this.date
+
+                        }
+                        this.mutualEmployeeList.push(addMutualEmployee)
+                        break
+                    case 'Employee':
+                        if (lineSplit[0] === 'S21.G00.30.001') {
+                            numSS = value
+                            this.numSSList.push(numSS)
+                        }
+                        let addEmployee = {
+                            ...findStructure,
+                            value,
+                            numSS,
+                            siren: this.siren,
+                            date: this.date
+
+                        }
+                        this.employeeList.push(addEmployee)
                 }
             }
         }
@@ -391,56 +309,7 @@ export class DsnParser {
             fs.unlinkSync(dir)
         }
     }
-    private addSociety(row: society): void {
-        const findRow = this.societyList.find(r => r?.collection === row.collection && r.field === row.field && r.dsnStructure === row.dsnStructure)
-        if (!findRow) {
-            this.societyList.push(row)
-        }
-        return
-    }
-    private addEstablishment(row: establishment): void {
-        const findRow = this.establishmentList.find(r => r?.collection === row.collection && r.field === row.field && r.dsnStructure === row.dsnStructure)
-        if (!findRow) {
-            this.establishmentList.push(row)
-        }
-        return
-    }
-    private addDsn(row: dsn): void {
-        const findRow = this.dsnList.find(r => r?.collection === row.collection && r.field === row.field)
-        if (!findRow) {
-            this.dsnList.push(row)
-        }
-    }
-    private addClassification(row: classification): void {
-        const findRow = this.classificationList.find(r => r.collection === row.collection && r.field === row.field && r.value === r.value && r.idcc === r.idcc)
-        if (!findRow) {
-            this.classificationList.push(row)
-        }
-    }
-    private addAt(row: at): void {
-        let uuidAt = row.dsnStructure + row.value + row.idEstablishment
-        if (!this.atSet.has(uuidAt)) {
-            this.atSet.add(uuidAt)
-            this.atList.push(row)
-        }
-    }
-    private addContributionFund(row: { value: string, idEstablishment: number }): void {
-        const contributionFundListDefinition: contributionFund[] = ops
-        let findContribubtionFund = contributionFundListDefinition.find(c => c.codeDsn === row.value)
-        if (findContribubtionFund && !this.contributionFundSet.has(row)) {
-            this.contributionFundSet.add(row)
-            this.contributionFundList.push(findContribubtionFund)
-        }
-    }
-    private addWorkContract(row: string): void {
-        const workContractDefinition: workContractDefinition[] = workContract
-        const type: workContractDefinition | undefined = workContractDefinition.find(c => c.typeOfContract === row)
-        if (type && !this.workContractSet.has(row)) {
-            this.workContractSet.add(row)
-            this.workContractList.push(type)
-        }
 
-    }
     get dsn(): dsnObject {
         const dsnObject: dsnObject = {
             softwareName: this.dsnList.find(d => d.dsnStructure === 'S10.G00.00.001')?.value,
@@ -467,85 +336,75 @@ export class DsnParser {
         return societyObjet
     }
 
-    get establishment(): establishmentObject {
-        //Attention dans une DSN on peut avoir X établissements
-        const establishmentObjet: establishmentObject = {
-            siren: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.001')?.siren,
-            nic: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.001')?.value,
-            apet: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.002')?.value,
-            adress1: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.003')?.value,
-            zipCode: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.004')?.value,
-            city: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.005')?.value,
-            adress2: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.006')?.value,
-            adress3: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.007')?.value,
-            country: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.015')?.value,
-            legalStatus: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.015')?.value,
-            idcc: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.022')?.value,
-            opco: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.023')?.value,
-            idEstablishment: this.establishmentList.find(e => e.dsnStructure === 'S21.G00.11.001')?.idEstablishment
+    get establishment(): establishmentObject[] {
+        //idEstablishmentList contient l'ensemble des id établissements qu'on a pu traiter.
+        const establishments = []
+        for (let idEstablishment of this.idEstablishmentList) {
+            let establishmentFilter = this.establishmentList.filter(e => e.idEstablishment === idEstablishment)
+            let siren = this.siren
+            let nic = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.001')?.value
+            let apet = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.002')?.value
+            let adress1 = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.003')?.value
+            let zipCode = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.004')?.value
+            let city = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.005')?.value
+            let adress2 = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.006')?.value
+            let adress3 = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.007')?.value
+            let country = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.015')?.value
+            let legalStatus = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.015')?.value
+            let idcc = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.022')?.value
+            let opco = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.023')?.value
+            let establishmentObjet: establishmentObject = {
+                siren: siren,
+                nic: nic ? nic : '',
+                apet: apet ? apet : '',
+                adress1: adress1 ? adress1 : '',
+                zipCode: zipCode ? zipCode : '',
+                city: city ? city : '',
+                adress2: adress2 ? adress2 : '',
+                adress3: adress3 ? adress3 : '',
+                country: country ? country : '',
+                legalStatus: legalStatus ? legalStatus : '',
+                idcc: idcc ? idcc : '',
+                opco: opco ? opco : '',
+                date: this.date
+            }
+            establishments.push(establishmentObjet)
+
         }
-        return establishmentObjet
+        return establishments
     }
-    get at(): atObject[] {
-        const codeAtFilter = this.atList.filter(a => a.field === 'codeAT')
-        const rateAtFilter = this.atList.filter(a => a.field === 'rateAT')
-        const atObjectList: atObject[] = []
-        for (let i = 0; i < codeAtFilter.length; i++) {
-            let code = codeAtFilter[i]?.value
-            let rate = rateAtFilter[i]?.value
-            let idEstablishment = rateAtFilter[i]?.idEstablishment
-            if (code && rate && idEstablishment) {
-                let atObject: atObject = {
-                    code,
-                    rate,
-                    idEstablishment
+
+
+    get contributionFund(): contributionFundObject[] {
+        const contributionFundList = []
+        for (let idEstablishment of this.idEstablishmentList) {
+            let siret = this.establishmentList.find(e => e.idEstablishment === idEstablishment)?.siret
+            if (siret) {
+                let contributionFundFilter = this.contributionFundList.filter(c => c.idEstablishment === idEstablishment)
+                let idDsn = contributionFundFilter.find(c => c.dsnStructure === 'S21.G00.20.001')?.value
+                if (idDsn) {
+                    const contributionDsn = ops.find(o => o.codeDsn === idDsn)
+                    if (contributionDsn) {
+                        let contributionFundObject: contributionFundObject = {
+                            ...contributionDsn,
+                            siret,
+                            date: this.date
+
+                        }
+                        contributionFundList.push(contributionFundObject)
+                    }
+
                 }
-                atObjectList.push(atObject)
             }
 
         }
-        return atObjectList
-    }
-    get assignement(): assignementObject[] {
-        const classificationsFilter = this.classificationList.filter(c => c.field === 'AssignmentLabel')
-        const assignementList: assignementObject[] = []
-        classificationsFilter.forEach(c => assignementList.push({
-            value: c.value
-        }))
-        return assignementList
-    }
-
-    get classifications(): classificationObject[] {
-        const coeffFilter = this.classificationList.filter(c => c.dsnStructure === 'S21.G00.40.071')
-        const echelonFilter = this.classificationList.filter(c => c.dsnStructure === 'S21.G00.40.070')
-        const allClassList = coeffFilter.concat(echelonFilter)
-        const classList: classificationObject[] = []
-        for (let classRow of allClassList) {
-            let nature
-            switch (classRow.dsnStructure) {
-                case 'S21.G00.40.071':
-                    nature = 'Coefficient'
-                    break
-                case 'S21.G00.40.070':
-                    nature = 'Echelon'
-                    break
-            }
-            classList.push({
-                nature: nature ? nature : '',
-                value: classRow.value,
-                idcc: classRow.idcc,
-            })
-        }
-        return classList
-    }
-
-    get contributionFund(): contributionFund[] {
-        return this.contributionFundList
+        return contributionFundList
     }
 
     get workContract(): workContractDefinition[] {
         return this.workContractList
     }
+
 
 }
 

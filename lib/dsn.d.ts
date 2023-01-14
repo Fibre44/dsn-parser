@@ -1,6 +1,9 @@
 type workContractDefinition = {
-    typeOfContract: string;
-    NameOfCOntract: string;
+    collection: string;
+    field: string;
+    dsnStructure: string;
+    name: string;
+    value: string;
 };
 type dsnObject = {
     softwareName: string | undefined;
@@ -21,21 +24,21 @@ type societyObject = {
     city: string | undefined;
 };
 type establishmentObject = {
-    siren: string | undefined;
-    nic: string | undefined;
-    apet: string | undefined;
-    adress1: string | undefined;
-    adress2: string | undefined;
-    adress3: string | undefined;
-    zipCode: string | undefined;
-    country: string | undefined;
-    idcc: string | undefined;
-    legalStatus: string | undefined;
-    opco: string | undefined;
-    city: string | undefined;
-    idEstablishment: number | undefined;
+    siren: string;
+    nic: string;
+    apet: string;
+    adress1: string;
+    adress2: string;
+    adress3: string;
+    zipCode: string;
+    country: string;
+    idcc: string;
+    legalStatus: string;
+    opco: string;
+    city: string;
+    date: string;
 };
-type contributionFund = {
+type contributionFundObject = {
     codeDsn: string;
     name: string;
     adress1: string;
@@ -43,52 +46,33 @@ type contributionFund = {
     adress3?: string;
     codeZip: string;
     city: string;
-    idEstablishment?: number;
-};
-type assignementObject = {
-    value: string;
-};
-type classificationObject = {
-    nature: string;
-    value: string;
-    idcc: string;
-};
-type atObject = {
-    code: string;
-    rate: string;
-    idEstablishment: number;
+    siret: string;
+    date: string;
 };
 export declare class DsnParser {
-    private workContractSet;
-    private contributionFundSet;
-    private atSet;
     private dsnVersion;
     private societyList;
     private establishmentList;
     private dsnList;
-    private classificationList;
     private contributionFundList;
     private workContractList;
-    private atList;
+    private mutualList;
+    private mutualEmployeeList;
+    private employeeList;
+    private numSSList;
+    private sirenList;
+    private idEstablishmentList;
     private extractions;
+    private siren;
+    private date;
     init(dir: string, options?: {
         controleDsnVersion: boolean;
         deleteFile: boolean;
     }): Promise<void>;
-    private addSociety;
-    private addEstablishment;
-    private addDsn;
-    private addClassification;
-    private addAt;
-    private addContributionFund;
-    private addWorkContract;
     get dsn(): dsnObject;
     get society(): societyObject;
-    get establishment(): establishmentObject;
-    get at(): atObject[];
-    get assignement(): assignementObject[];
-    get classifications(): classificationObject[];
-    get contributionFund(): contributionFund[];
+    get establishment(): establishmentObject[];
+    get contributionFund(): contributionFundObject[];
     get workContract(): workContractDefinition[];
 }
 export {};

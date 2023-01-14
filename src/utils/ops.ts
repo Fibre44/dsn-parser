@@ -1,4 +1,15 @@
-export const ops = [
+type OpsList = Ops[]
+type Ops = {
+    codeDsn: string,
+    name: string,
+    adress1: string,
+    adress2?: string,
+    adress3?: string
+    codeZip: string,
+    city: string
+}
+
+export const ops: OpsList = [
     {
         codeDsn: '79448723100019',
         name: 'URSSAF Provence-Alpes-Côte d\'Azur',
