@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import readline from 'node:readline';
 import { ops } from './utils/ops';
 import { workContract } from './utils/workContract';
-import { extractionsList } from './utils/extraction';
+import { extractionsList, field } from './utils/extraction';
 import { throws } from 'node:assert';
 type societyList = society[]
 type establishmentList = establishment[]
@@ -15,16 +15,27 @@ type workContractDefinition = {
     field: string,
     dsnStructure: string,
     name: string,
+    value: string,
+    numSS: string,
+    siren: string,
+    date: string
+}
+type extractionValue = {
+    collection: string,
+    field: field,
+    name: string,
+    dsnStructure: string,
     value: string
 }
 
-type dsnObject = {
+export type dsnObject = {
     softwareName: string | undefined,
     provider: string | undefined,
     softwareVersion: string | undefined,
     dsnVersion: string | undefined,
     type: string | undefined,
-    totalRows: string | undefined
+    totalRows: string | undefined,
+    month: string | undefined
 
 }
 type dsn = {
@@ -34,7 +45,11 @@ type dsn = {
     value: string
 }
 
-type societyObject = {
+export type ContributionFund = {
+    id: string
+}
+
+export type societyObject = {
     siren: string | undefined,
     nic: string | undefined,
     apen: string | undefined,
@@ -45,6 +60,109 @@ type societyObject = {
     city: string | undefined
 }
 
+export type EmployeeObject = {
+    numSS: string,
+    lastname: string,
+    surname: string,
+    firstname: string,
+    sex: string,
+    birthday: string,
+    placeOfBith: string,
+    address1: string,
+    codeZip: string,
+    city: string,
+    country: string,
+    codeZipBith: string,
+    countryBirth: string,
+    address2: string,
+    address3: string,
+    email: string,
+    employeeId: string,
+    graduate: string,
+    studies: string
+
+}
+
+export type WorkContractObject = {
+    startDate: string,
+    status: string,
+    retirement: string,
+    pcs: string,
+    pcsBis: string,
+    employmentLabel: string,
+    contract: string,
+    publicDispPolitic: string,
+    contractEndDate: string,
+    DNACodeUnitTime: string,
+    DSNWorkQuotaEstablishment: string,
+    DSNWorkQuotaWorkContract: string,
+    workTime: string,
+    ss: string,
+    idcc: string,
+    mal: string,
+    estabWorkPlace: string,
+    vieillesse: string,
+    pattern: string,
+    vacation: string,
+    rateProfessionalFess: string,
+    foreigner: string,
+    exclusionDsn: string,
+    statusEmployment: string,
+    unemployment: string,
+    idPublicEmployer: string,
+    methodUnemployment: string,
+    joiningDate: string,
+    denunciationDate: string,
+    dateManagementAgreement: string,
+    idAgreement: string,
+    healthRiskDelegate: string,
+    multipleJobCode: string,
+    multipleEmployerCode: string,
+    workAccidentRisk: string,
+    idWorkAccidentRisk: string,
+    positionCollectiveAgreement: string,
+    apecita: string,
+    rateAt: string,
+    contributingFullTime: string,
+    tip: string,
+    useEstablishmentId: string,
+    livePerfomances: string,
+    licences: string,
+    showId: string,
+    showrunner: string,
+    fpPcs: string,
+    typePosition: string,
+    fpQuotite: string,
+    partTimeWork: string,
+    serviceCode: string,
+    fpIndice: string,
+    fpIndiceMaj: string,
+    NBI: string,
+    indiceOriginal: string,
+    article15: string,
+    oldEstablishment: string,
+    oldIndice: string,
+    SPP: string,
+    contractual: string,
+    secondment: string,
+    browsing: string,
+    activityDutyRate: string,
+    payLevel: string,
+    echelon: string,
+    coefficient: string,
+    boeth: string,
+    addPublicPolicy: string,
+    arrangement: string,
+    finaly: string,
+    navy: string,
+    cnieg: string,
+    activityRate: string,
+    grade: string,
+    cti: string,
+    finess: string,
+
+
+}
 type society = {
     collection: string,
     field: string,
@@ -54,7 +172,7 @@ type society = {
     date: string
 }
 
-type establishmentObject = {
+export type establishmentObject = {
     siren: string,
     nic: string,
     apet: string,
@@ -66,6 +184,7 @@ type establishmentObject = {
     idcc: string,
     legalStatus: string,
     opco: string,
+    codeZip: string
     city: string,
     date: string
 }
@@ -81,7 +200,7 @@ type establishment = {
 }
 
 
-type contributionFund = {
+export type contributionFund = {
     collection: string,
     field: string,
     dsnStructure: string,
@@ -98,6 +217,7 @@ type mutual = {
     dsnStructure: string,
     value: string,
     date: string,
+    techId: string
 }
 
 type mutualEmployee = {
@@ -109,7 +229,8 @@ type mutualEmployee = {
     date: string
 }
 
-type contributionFundObject = {
+
+export type contributionFundObject = {
     codeDsn: string
     name: string,
     adress1: string,
@@ -127,7 +248,8 @@ type classificationObject = {
     idcc: string,
 }
 
-type mutualObject = {
+
+export type mutualObject = {
     contractId?: string,
     organisme?: string,
     delegate?: string,
@@ -136,7 +258,7 @@ type mutualObject = {
     date: string
 }
 
-type mutualEmployeeObject = {
+export type mutualEmployeeObject = {
     option: string,
     pop: string,
     children: string,
@@ -174,13 +296,14 @@ export class DsnParser {
     private dsnList: dsnList = []
     private contributionFundList: contributionFundList = []
     private workContractList: workContractDefinition[] = []
-    private mutualList: mutualList = []
+    private mutualList: mutual[] = []
     private mutualEmployeeList: mutualEmployeeList = []
     private employeeList: employee[] = []
     private numSSList: string[] = []
     private sirenList: string[] = []
     private idEstablishmentList: number[] = []
     private extractions = extractionsList
+    private mutualIdList: string[] = []
     private siren: string = ''
     private date = ''
     async init(dir: string, options = {
@@ -192,6 +315,7 @@ export class DsnParser {
             input: fileStream,
             crlfDelay: Infinity,
         });
+        let mutualId = ''
         let idEstablishment = 1
         let numSS: string = ''
         let siret = ''
@@ -257,21 +381,26 @@ export class DsnParser {
 
                         break
                     case 'WorkContract':
-                        let addRoWWorkContract = {
+                        let addRoWWorkContract: workContractDefinition = {
                             ...findStructure,
                             value,
                             siren: this.siren,
-                            date: this.date
+                            date: this.date,
+                            numSS
                         }
                         this.workContractList.push(addRoWWorkContract)
                         break
 
                     case 'Mutual':
-                        let addMutual = {
+                        if (lineSplit[0] === 'S21.G00.15.005') {
+                            mutualId = value
+                            this.mutualIdList.push(mutualId)
+                        }
+                        let addMutual: mutual = {
                             ...findStructure,
                             value,
-                            siren: this.siren,
-                            date: this.date
+                            date: this.date,
+                            techId: mutualId
 
                         }
                         this.mutualList.push(addMutual)
@@ -311,67 +440,35 @@ export class DsnParser {
     }
 
     get dsn(): dsnObject {
-        const dsnObject: dsnObject = {
-            softwareName: this.dsnList.find(d => d.dsnStructure === 'S10.G00.00.001')?.value,
-            provider: this.dsnList.find(d => d.dsnStructure === 'S10.G00.00.002')?.value,
-            softwareVersion: this.dsnList.find(d => d.dsnStructure === 'S10.G00.00.003')?.value,
-            dsnVersion: this.dsnList.find(d => d.dsnStructure === 'S10.G00.00.006')?.value,
-            type: this.dsnList.find(d => d.dsnStructure === 'S10.G00.00.008')?.value,
-            totalRows: this.dsnList.find(d => d.dsnStructure === 'S90.G00.90.001')?.value,
+        let dsnObject: any = {}
+        for (let dsn of this.dsnList) {
+            dsnObject[dsn.field] = dsn.value
         }
         return dsnObject
     }
 
     get society(): societyObject {
-        const societyObjet: societyObject = {
-            siren: this.societyList.find(s => s.dsnStructure === 'S21.G00.06.001')?.value,
-            nic: this.societyList.find(s => s.dsnStructure === 'S21.G00.06.002')?.value,
-            apen: this.societyList.find(s => s.dsnStructure === 'S21.G00.06.003')?.value,
-            adress1: this.societyList.find(s => s.dsnStructure === 'S21.G00.06.004')?.value,
-            zipCode: this.societyList.find(s => s.dsnStructure === 'S21.G00.06.005')?.value,
-            city: this.societyList.find(s => s.dsnStructure === 'S21.G00.06.006')?.value,
-            adress2: this.societyList.find(s => s.dsnStructure === 'S21.G00.06.007')?.value,
-            adress3: this.societyList.find(s => s.dsnStructure === 'S21.G00.06.008')?.value,
+        let societyObjet: any = {}
+        for (let society of this.societyList) {
+            societyObjet[society.field] = society.value
         }
         return societyObjet
     }
+
 
     get establishment(): establishmentObject[] {
         //idEstablishmentList contient l'ensemble des id établissements qu'on a pu traiter.
         const establishments = []
         for (let idEstablishment of this.idEstablishmentList) {
+            let obj: any = new Object()
             let establishmentFilter = this.establishmentList.filter(e => e.idEstablishment === idEstablishment)
-            let siren = this.siren
-            let nic = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.001')?.value
-            let apet = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.002')?.value
-            let adress1 = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.003')?.value
-            let zipCode = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.004')?.value
-            let city = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.005')?.value
-            let adress2 = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.006')?.value
-            let adress3 = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.007')?.value
-            let country = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.015')?.value
-            let legalStatus = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.015')?.value
-            let idcc = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.022')?.value
-            let opco = establishmentFilter.find(e => e.dsnStructure === 'S21.G00.11.023')?.value
-            let establishmentObjet: establishmentObject = {
-                siren: siren,
-                nic: nic ? nic : '',
-                apet: apet ? apet : '',
-                adress1: adress1 ? adress1 : '',
-                zipCode: zipCode ? zipCode : '',
-                city: city ? city : '',
-                adress2: adress2 ? adress2 : '',
-                adress3: adress3 ? adress3 : '',
-                country: country ? country : '',
-                legalStatus: legalStatus ? legalStatus : '',
-                idcc: idcc ? idcc : '',
-                opco: opco ? opco : '',
-                date: this.date
+            for (let establishment of establishmentFilter) {
+                obj[establishment.field] = establishment.value
             }
-            establishments.push(establishmentObjet)
-
+            establishments.push(obj)
         }
         return establishments
+
     }
 
 
@@ -401,11 +498,66 @@ export class DsnParser {
         return contributionFundList
     }
 
-    get workContract(): workContractDefinition[] {
-        return this.workContractList
+    get employee(): EmployeeObject[] {
+        const employeeList = []
+        for (let numSS of this.numSSList) {
+            let employeeFilter = this.employeeList.filter(e => e.numSS === numSS)
+            if (employeeFilter) {
+                let employeeObject: any = {}
+                for (let employee of employeeFilter) {
+                    employeeObject[employee.field] = employee.value
+                }
+                employeeList.push(employeeObject)
+            }
+        }
+        return employeeList
+    }
+    get workContract(): WorkContractObject[] {
+        const workContractList = []
+        for (let numSS of this.numSSList) {
+            let workContractFilter = this.workContractList.filter(w => w.numSS === numSS)
+            if (workContractFilter) {
+                let workContractObject: any = {}
+                for (let workContract of workContractFilter) {
+                    workContractObject[workContract.field] = workContract.value
+                }
+                workContractList.push(workContractObject)
+            }
+        }
+        return workContractList
     }
 
+    get employeeMutual(): mutualEmployee[] {
+        const employeesMutualList: mutualEmployee[] = []
+        for (let numSS of this.numSSList) {
+            let mutualEmployeeFilter = this.mutualEmployeeList.filter(m => m.numSS === numSS)
+            if (mutualEmployeeFilter) {
+                let mutualEmployeeObject: any = {}
+                for (let mutualEmployee of mutualEmployeeFilter) {
+                    mutualEmployeeObject[mutualEmployee.field] = mutualEmployee.value
+                }
+                employeesMutualList.push(mutualEmployeeObject)
+            }
+        }
+        return employeesMutualList
+    }
+    get mutual(): mutualObject[] {
+        const mutualList: mutualObject[] = []
+
+        for (let mutualId of this.mutualIdList) {
+            let mutalFilter = this.mutualList.filter(m => m.techId === mutualId)
+            let mutuelObject: any = {}
+            if (mutalFilter) {
+                for (let mutual of mutalFilter) {
+                    mutuelObject[mutual.field] === mutual.value
+                }
+                mutualList.push(mutuelObject)
+            }
+        }
+        return mutualList
+    }
 
 }
+
 
 

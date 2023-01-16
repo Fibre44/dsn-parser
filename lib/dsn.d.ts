@@ -1,19 +1,16 @@
-type workContractDefinition = {
-    collection: string;
-    field: string;
-    dsnStructure: string;
-    name: string;
-    value: string;
-};
-type dsnObject = {
+export type dsnObject = {
     softwareName: string | undefined;
     provider: string | undefined;
     softwareVersion: string | undefined;
     dsnVersion: string | undefined;
     type: string | undefined;
     totalRows: string | undefined;
+    month: string | undefined;
 };
-type societyObject = {
+export type ContributionFund = {
+    id: string;
+};
+export type societyObject = {
     siren: string | undefined;
     nic: string | undefined;
     apen: string | undefined;
@@ -23,7 +20,106 @@ type societyObject = {
     zipCode: string | undefined;
     city: string | undefined;
 };
-type establishmentObject = {
+export type EmployeeObject = {
+    numSS: string;
+    lastname: string;
+    surname: string;
+    firstname: string;
+    sex: string;
+    birthday: string;
+    placeOfBith: string;
+    address1: string;
+    codeZip: string;
+    city: string;
+    country: string;
+    codeZipBith: string;
+    countryBirth: string;
+    address2: string;
+    address3: string;
+    email: string;
+    employeeId: string;
+    graduate: string;
+    studies: string;
+};
+export type WorkContractObject = {
+    startDate: string;
+    status: string;
+    retirement: string;
+    pcs: string;
+    pcsBis: string;
+    employmentLabel: string;
+    contract: string;
+    publicDispPolitic: string;
+    contractEndDate: string;
+    DNACodeUnitTime: string;
+    DSNWorkQuotaEstablishment: string;
+    DSNWorkQuotaWorkContract: string;
+    workTime: string;
+    ss: string;
+    idcc: string;
+    mal: string;
+    estabWorkPlace: string;
+    vieillesse: string;
+    pattern: string;
+    vacation: string;
+    rateProfessionalFess: string;
+    foreigner: string;
+    exclusionDsn: string;
+    statusEmployment: string;
+    unemployment: string;
+    idPublicEmployer: string;
+    methodUnemployment: string;
+    joiningDate: string;
+    denunciationDate: string;
+    dateManagementAgreement: string;
+    idAgreement: string;
+    healthRiskDelegate: string;
+    multipleJobCode: string;
+    multipleEmployerCode: string;
+    workAccidentRisk: string;
+    idWorkAccidentRisk: string;
+    positionCollectiveAgreement: string;
+    apecita: string;
+    rateAt: string;
+    contributingFullTime: string;
+    tip: string;
+    useEstablishmentId: string;
+    livePerfomances: string;
+    licences: string;
+    showId: string;
+    showrunner: string;
+    fpPcs: string;
+    typePosition: string;
+    fpQuotite: string;
+    partTimeWork: string;
+    serviceCode: string;
+    fpIndice: string;
+    fpIndiceMaj: string;
+    NBI: string;
+    indiceOriginal: string;
+    article15: string;
+    oldEstablishment: string;
+    oldIndice: string;
+    SPP: string;
+    contractual: string;
+    secondment: string;
+    browsing: string;
+    activityDutyRate: string;
+    payLevel: string;
+    echelon: string;
+    coefficient: string;
+    boeth: string;
+    addPublicPolicy: string;
+    arrangement: string;
+    finaly: string;
+    navy: string;
+    cnieg: string;
+    activityRate: string;
+    grade: string;
+    cti: string;
+    finess: string;
+};
+export type establishmentObject = {
     siren: string;
     nic: string;
     apet: string;
@@ -35,10 +131,29 @@ type establishmentObject = {
     idcc: string;
     legalStatus: string;
     opco: string;
+    codeZip: string;
     city: string;
     date: string;
 };
-type contributionFundObject = {
+export type contributionFund = {
+    collection: string;
+    field: string;
+    dsnStructure: string;
+    name: string;
+    value: string;
+    idEstablishment: number;
+    siret: string;
+    date: string;
+};
+type mutualEmployee = {
+    collection: string;
+    field: string;
+    dsnStructure: string;
+    value: string;
+    numSS: string;
+    date: string;
+};
+export type contributionFundObject = {
     codeDsn: string;
     name: string;
     adress1: string;
@@ -47,6 +162,25 @@ type contributionFundObject = {
     codeZip: string;
     city: string;
     siret: string;
+    date: string;
+};
+export type mutualObject = {
+    contractId?: string;
+    organisme?: string;
+    delegate?: string;
+    covererd?: string;
+    techId?: string;
+    date: string;
+};
+export type mutualEmployeeObject = {
+    option: string;
+    pop: string;
+    children: string;
+    assign: string;
+    numberAssign: string;
+    otherAssign: string;
+    idTechAffiliation: string;
+    idTech: string;
     date: string;
 };
 export declare class DsnParser {
@@ -63,6 +197,7 @@ export declare class DsnParser {
     private sirenList;
     private idEstablishmentList;
     private extractions;
+    private mutualIdList;
     private siren;
     private date;
     init(dir: string, options?: {
@@ -73,6 +208,9 @@ export declare class DsnParser {
     get society(): societyObject;
     get establishment(): establishmentObject[];
     get contributionFund(): contributionFundObject[];
-    get workContract(): workContractDefinition[];
+    get employee(): EmployeeObject[];
+    get workContract(): WorkContractObject[];
+    get employeeMutual(): mutualEmployee[];
+    get mutual(): mutualObject[];
 }
 export {};

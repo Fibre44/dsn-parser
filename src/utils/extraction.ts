@@ -1,8 +1,9 @@
+import type { establishmentObject, mutualEmployeeObject, EmployeeObject, WorkContractObject, societyObject, contributionFund, dsnObject, mutualObject } from "../dsn"
 type extractions = extraction[]
-
+export type field = keyof (establishmentObject) | keyof (societyObject) | keyof (contributionFund) | keyof (dsnObject) | keyof (mutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (mutualEmployeeObject) | 'id'
 type extraction = {
     collection: string,
-    field: string,
+    field: field,
     name: string,
     dsnStructure: string
 }
@@ -207,115 +208,115 @@ export const extractionsList: extractions = [
         dsnStructure: 'S21.G00.20.001',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'numSS',
         name: `Numéro d'inscription au répertoire`,
         dsnStructure: 'S21.G00.30.001',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'lastname',
         name: 'Nom de famille',
         dsnStructure: 'S21.G00.30.002',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'surname',
         name: `Nom d'usage`,
         dsnStructure: 'S21.G00.30.003',
     },
     {
-        collection: 'employee',
-        field: 'fistname',
+        collection: 'Employee',
+        field: 'firstname',
         name: 'Prénoms',
         dsnStructure: 'S21.G00.30.004',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'sex',
         name: 'Sexe',
         dsnStructure: 'S21.G00.30.005',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'birthday',
         name: 'Date de naissance',
         dsnStructure: 'S21.G00.30.006',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'placeOfBith',
         name: 'Lieu de naissance',
         dsnStructure: 'S21.G00.30.007',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'address1',
         name: 'Numéro, extension, nature et libellé de la voie',
         dsnStructure: 'S21.G00.30.008',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'codeZip',
         name: 'Code postal',
         dsnStructure: 'S21.G00.30.009',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'city',
         name: 'Localité',
         dsnStructure: 'S21.G00.30.010',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'country',
         name: 'Code pays',
         dsnStructure: 'S21.G00.30.011',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'codeZipBith',
         name: 'Code département de naissance',
         dsnStructure: 'S21.G00.30.014',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'countryBirth',
         name: 'Code pays de naissance',
         dsnStructure: 'S21.G00.30.015',
     },
     {
-        collection: 'employee',
-        field: 'adress2',
+        collection: 'Employee',
+        field: 'address2',
         name: 'Complément de la localisation de la construction',
         dsnStructure: 'S21.G00.30.016',
     },
     {
-        collection: 'employee',
-        field: 'adress3',
+        collection: 'Employee',
+        field: 'address3',
         name: 'Service de distribution, complément de localisation de la voie',
         dsnStructure: 'S21.G00.30.017',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'email',
         name: 'Adresse mél',
         dsnStructure: 'S21.G00.30.018',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'employeeId',
         name: 'matricule',
         dsnStructure: 'S21.G00.30.019',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'graduate',
         name: 'niveau',
         dsnStructure: 'S21.G00.30.024',
     },
     {
-        collection: 'employee',
+        collection: 'Employee',
         field: 'studies',
         name: `Niveau de diplôme préparé par l'individu`,
         dsnStructure: 'S21.G00.30.025',
@@ -352,7 +353,7 @@ export const extractionsList: extractions = [
     },
     {
         collection: 'WorkContract',
-        field: 'EmploymentLabel',
+        field: 'employmentLabel',
         name: `Libellé de l'emploi`,
         dsnStructure: 'S21.G00.40.006'
     },
@@ -364,7 +365,7 @@ export const extractionsList: extractions = [
     },
     {
         collection: 'WorkContract',
-        field: 'PublicDispPolitic',
+        field: 'publicDispPolitic',
         name: 'Dispositif de politique publique et conventionnel',
         dsnStructure: 'S21.G00.40.008'
     },
@@ -424,7 +425,7 @@ export const extractionsList: extractions = [
     },
     {
         collection: 'WorkContract',
-        field: 'EstabWorkPlace',
+        field: 'estabWorkPlace',
         name: 'Identifiant du lieu de travail',
         dsnStructure: 'S21.G00.40.019'
     },
@@ -466,7 +467,7 @@ export const extractionsList: extractions = [
     },
     {
         collection: 'WorkContract',
-        field: 'status',
+        field: 'statusEmployment',
         name: `Statut d'emploi du salarié`,
         dsnStructure: 'S21.G00.40.026'
     },
@@ -718,13 +719,13 @@ export const extractionsList: extractions = [
     },
     {
         collection: 'WorkContract',
-        field: 'Echelon',
+        field: 'echelon',
         name: 'Echelon',
         dsnStructure: 'S21.G00.40.070'
     },
     {
         collection: 'WorkContract',
-        field: 'Coefficient',
+        field: 'coefficient',
         name: 'Coefficient',
         dsnStructure: 'S21.G00.40.071'
     },
