@@ -1,6 +1,6 @@
-import type { establishmentObject, mutualEmployeeObject, EmployeeObject, WorkContractObject, societyObject, contributionFund, dsnObject, mutualObject } from "../dsn";
+import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, ContributionObject, EstablishmentContributionObject } from "../dsn";
 type extractions = extraction[];
-export type field = keyof (establishmentObject) | keyof (societyObject) | keyof (contributionFund) | keyof (dsnObject) | keyof (mutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (mutualEmployeeObject) | 'id';
+export type field = keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | 'id';
 type extraction = {
     collection: string;
     field: field;

@@ -1,6 +1,6 @@
-import type { establishmentObject, mutualEmployeeObject, EmployeeObject, WorkContractObject, societyObject, contributionFund, dsnObject, mutualObject } from "../dsn"
+import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, ContributionObject, EstablishmentContributionObject } from "../dsn"
 type extractions = extraction[]
-export type field = keyof (establishmentObject) | keyof (societyObject) | keyof (contributionFund) | keyof (dsnObject) | keyof (mutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (mutualEmployeeObject) | 'id'
+export type field = keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | 'id'
 type extraction = {
     collection: string,
     field: field,
@@ -790,51 +790,172 @@ export const extractionsList: extractions = [
         dsnStructure: 'S21.G00.40.081'
     },
     {
-        collection: 'mutualEmployee',
+        collection: 'MutualEmployee',
         field: 'option',
         name: 'Code option retenue par le salarié',
         dsnStructure: 'S21.G00.70.004'
     },
     {
-        collection: 'mutualEmployee',
+        collection: 'MutualEmployee',
         field: 'pop',
         name: 'Code population de rattachement',
         dsnStructure: 'S21.G00.70.005'
     },
     {
-        collection: 'mutualEmployee',
+        collection: 'MutualEmployee',
         field: 'children',
         name: 'Nombre d’enfants à charge',
         dsnStructure: 'S21.G00.70.007'
     },
     {
-        collection: 'mutualEmployee',
+        collection: 'MutualEmployee',
         field: 'assign',
         name: `Nombre d'adultes ayants- droit(conjoint, concubin, ...)`,
         dsnStructure: 'S21.G00.70.008'
     },
     {
-        collection: 'mutualEmployee',
+        collection: 'MutualEmployee',
         field: 'numberAssign',
         name: `Nombre d'ayants- droit`,
         dsnStructure: 'S21.G00.70.009'
     },
     {
-        collection: 'mutualEmployee',
+        collection: 'MutualEmployee',
         field: 'otherAssign',
         name: `Nombre d'ayants- droit autres(ascendants, collatéraux...)`,
         dsnStructure: 'S21.G00.70.010'
     },
     {
-        collection: 'mutualEmployee',
+        collection: 'MutualEmployee',
         field: 'idTechAffiliation',
         name: 'Date de début de l’affiliation',
         dsnStructure: 'S21.G00.70.014'
     },
     {
-        collection: 'mutualEmployee',
+        collection: 'MutualEmployee',
         field: 'idTech',
         name: 'Date de fin de l’affiliation',
         dsnStructure: 'S21.G00.70.015'
     },
+    {
+        collection: 'Base',
+        field: 'idBase',
+        name: 'Code de base assujettie',
+        dsnStructure: 'S21.G00.78.001'
+    },
+    {
+        collection: 'Base',
+        field: 'startDate',
+        name: 'Date de début de période de rattachement',
+        dsnStructure: 'S21.G00.78.002'
+    },
+    {
+        collection: 'Base',
+        field: 'endDate',
+        name: 'Date de fin de période de rattachement',
+        dsnStructure: 'S21.G00.78.003'
+    },
+    {
+        collection: 'Base',
+        field: 'amount',
+        name: 'Montant',
+        dsnStructure: 'S21.G00.78.004'
+    },
+    {
+        collection: 'Base',
+        field: 'idTechAff',
+        name: 'Identifiant technique Affiliation',
+        dsnStructure: 'S21.G00.78.005'
+    },
+    {
+        collection: 'Base',
+        field: 'idContract',
+        name: 'Numéro du contrat',
+        dsnStructure: 'S21.G00.78.006'
+    },
+    {
+        collection: 'Base',
+        field: 'crm',
+        name: 'CRM',
+        dsnStructure: 'S21.G00.78.007'
+    },
+    {
+        collection: 'Contribution',
+        field: 'idContribution',
+        name: 'Code de cotisation',
+        dsnStructure: 'S21.G00.81.001'
+    },
+    {
+        collection: 'Contribution',
+        field: 'ops',
+        name: 'Identifiant Organisme de Protection Sociale',
+        dsnStructure: 'S21.G00.81.002'
+    },
+    {
+        collection: 'Contribution',
+        field: 'baseContribution',
+        name: 'Montant d assiette',
+        dsnStructure: 'S21.G00.81.003'
+    },
+    {
+        collection: 'Contribution',
+        field: 'amountContribution',
+        name: 'Montant de cotisation',
+        dsnStructure: 'S21.G00.81.004'
+    },
+    {
+        collection: 'Contribution',
+        field: 'idInsee',
+        name: 'Code INSEE commune',
+        dsnStructure: 'S21.G00.81.005'
+    },
+    {
+        collection: 'Contribution',
+        field: 'crmContribution',
+        name: 'Identifiant du CRM à l origine de la régularisation',
+        dsnStructure: 'S21.G00.81.006'
+    },
+    {
+        collection: 'Contribution',
+        field: 'rateContribution',
+        name: 'Taux de cotisation',
+        dsnStructure: 'S21.G00.81.007'
+    },
+    {
+        collection: 'EstablishmentContribution',
+        field: 'value',
+        name: 'Valeur',
+        dsnStructure: 'S21.G00.82.001'
+    },
+    {
+        collection: 'EstablishmentContribution',
+        field: 'codeContribution',
+        name: 'Code de cotisation',
+        dsnStructure: 'S21.G00.82.002'
+    },
+    {
+        collection: 'EstablishmentContribution',
+        field: 'startDate',
+        name: 'Code de cotisation',
+        dsnStructure: 'S21.G00.82.003'
+    },
+    {
+        collection: 'EstablishmentContribution',
+        field: 'endDate',
+        name: 'Code de cotisation',
+        dsnStructure: 'S21.G00.82.004'
+    },
+    {
+        collection: 'EstablishmentContribution',
+        field: 'ref',
+        name: 'Référence réglementaire ou contractuelle',
+        dsnStructure: 'S21.G00.82.005'
+    },
+    {
+        collection: 'EstablishmentContribution',
+        field: 'crm',
+        name: 'CRM',
+        dsnStructure: 'S21.G00.82.006'
+    },
+
 ]

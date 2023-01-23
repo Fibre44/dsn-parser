@@ -4,12 +4,15 @@ import { ops } from './utils/ops';
 import { workContract } from './utils/workContract';
 import { extractionsList, field } from './utils/extraction';
 import { throws } from 'node:assert';
-type societyList = society[]
-type establishmentList = establishment[]
-type dsnList = dsn[]
-type mutualList = mutual[]
-type mutualEmployeeList = mutualEmployee[]
-type contributionFundList = contributionFund[]
+type societyList = Society[]
+type establishmentList = Establishment[]
+type dsnList = Dsn[]
+type mutualList = Mutual[]
+type mutualEmployeeList = MutualEmployee[]
+type contributionFundList = ContributionFund[]
+type baseList = Base[]
+type contributionList = Contribution[]
+type establishmentContributionList = EstablishmentContribution[]
 type workContractDefinition = {
     collection: string,
     field: string,
@@ -28,7 +31,7 @@ type extractionValue = {
     value: string
 }
 
-export type dsnObject = {
+export type DsnObject = {
     softwareName: string | undefined,
     provider: string | undefined,
     softwareVersion: string | undefined,
@@ -38,26 +41,22 @@ export type dsnObject = {
     month: string | undefined
 
 }
-type dsn = {
+type Dsn = {
     collection: string,
     field: string,
     dsnStructure: string,
     value: string
 }
 
-export type ContributionFund = {
-    id: string
-}
-
-export type societyObject = {
-    siren: string | undefined,
-    nic: string | undefined,
-    apen: string | undefined,
-    adress1: string | undefined,
-    adress2: string | undefined,
-    adress3: string | undefined,
-    zipCode: string | undefined,
-    city: string | undefined
+export type SocietyObject = {
+    siren: string,
+    nic: string,
+    apen: string,
+    adress1: string,
+    adress2?: string,
+    adress3?: string,
+    zipCode: string,
+    city: string
 }
 
 export type EmployeeObject = {
@@ -74,16 +73,17 @@ export type EmployeeObject = {
     country: string,
     codeZipBith: string,
     countryBirth: string,
-    address2: string,
-    address3: string,
-    email: string,
+    address2?: string,
+    address3?: string,
+    email?: string,
     employeeId: string,
-    graduate: string,
-    studies: string
+    graduate?: string,
+    studies?: string
 
 }
 
 export type WorkContractObject = {
+    employeeId: string,
     startDate: string,
     status: string,
     retirement: string,
@@ -130,40 +130,40 @@ export type WorkContractObject = {
     licences: string,
     showId: string,
     showrunner: string,
-    fpPcs: string,
-    typePosition: string,
-    fpQuotite: string,
-    partTimeWork: string,
-    serviceCode: string,
-    fpIndice: string,
-    fpIndiceMaj: string,
-    NBI: string,
-    indiceOriginal: string,
-    article15: string,
-    oldEstablishment: string,
-    oldIndice: string,
-    SPP: string,
-    contractual: string,
-    secondment: string,
-    browsing: string,
-    activityDutyRate: string,
-    payLevel: string,
-    echelon: string,
-    coefficient: string,
+    fpPcs?: string,
+    typePosition?: string,
+    fpQuotite?: string,
+    partTimeWork?: string,
+    serviceCode?: string,
+    fpIndice?: string,
+    fpIndiceMaj?: string,
+    NBI?: string,
+    indiceOriginal?: string,
+    article15?: string,
+    oldEstablishment?: string,
+    oldIndice?: string,
+    SPP?: string,
+    contractual?: string,
+    secondment?: string,
+    browsing?: string,
+    activityDutyRate?: string,
+    payLevel?: string,
+    echelon?: string,
+    coefficient?: string,
     boeth: string,
-    addPublicPolicy: string,
-    arrangement: string,
-    finaly: string,
-    navy: string,
-    cnieg: string,
-    activityRate: string,
-    grade: string,
-    cti: string,
-    finess: string,
+    addPublicPolicy?: string,
+    arrangement?: string,
+    finaly?: string,
+    navy?: string,
+    cnieg?: string,
+    activityRate?: string,
+    grade?: string,
+    cti?: string,
+    finess?: string,
 
 
 }
-type society = {
+type Society = {
     collection: string,
     field: string,
     dsnStructure: string,
@@ -172,13 +172,13 @@ type society = {
     date: string
 }
 
-export type establishmentObject = {
+export type EstablishmentObject = {
     siren: string,
     nic: string,
     apet: string,
     adress1: string,
-    adress2: string,
-    adress3: string,
+    adress2?: string,
+    adress3?: string,
     zipCode: string,
     country: string,
     idcc: string,
@@ -188,7 +188,7 @@ export type establishmentObject = {
     city: string,
     date: string
 }
-type establishment = {
+type Establishment = {
     collection: string,
     field: string,
     dsnStructure: string,
@@ -200,7 +200,7 @@ type establishment = {
 }
 
 
-export type contributionFund = {
+export type ContributionFund = {
     collection: string,
     field: string,
     dsnStructure: string,
@@ -211,7 +211,7 @@ export type contributionFund = {
     date: string
 }
 
-type mutual = {
+type Mutual = {
     collection: string,
     field: string,
     dsnStructure: string,
@@ -220,7 +220,7 @@ type mutual = {
     techId: string
 }
 
-type mutualEmployee = {
+type MutualEmployee = {
     collection: string,
     field: string,
     dsnStructure: string,
@@ -230,7 +230,7 @@ type mutualEmployee = {
 }
 
 
-export type contributionFundObject = {
+export type ContributionFundObject = {
     codeDsn: string
     name: string,
     adress1: string,
@@ -242,14 +242,14 @@ export type contributionFundObject = {
     date: string
 }
 
-type classificationObject = {
+type ClassificationObject = {
     nature: string,
     value: string,
     idcc: string,
 }
 
 
-export type mutualObject = {
+export type MutualObject = {
     contractId?: string,
     organisme?: string,
     delegate?: string,
@@ -258,7 +258,8 @@ export type mutualObject = {
     date: string
 }
 
-export type mutualEmployeeObject = {
+export type MutualEmployeeObject = {
+    employeeId: string,
     option: string,
     pop: string,
     children: string,
@@ -276,7 +277,7 @@ type atObject = {
     idEstablishment: number
 }
 
-type employee = {
+type Employee = {
     collection: string,
     field: string,
     dsnStructure: string,
@@ -284,6 +285,71 @@ type employee = {
     siren: string,
     numSS: string,
     date: string
+}
+
+export type BaseObject = {
+    employeeId: string,
+    idBase: string,
+    startDate: string,
+    endDate: string,
+    amount: string,
+    idTechAff?: string,
+    idContract?: string,
+    crm?: string
+}
+
+type Base = {
+
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    siren: string,
+    numSS: string,
+    date: string
+}
+
+export type ContributionObject = {
+    employeeId: string,
+    idContribution: string,
+    ops: string,
+    baseContribution: string,
+    amountContribution: string,
+    idInsee?: string,
+    crmContribution?: string,
+    rateContribution?: string
+}
+
+type Contribution = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    siren: string,
+    numSS: string,
+    date: string
+}
+
+export type EstablishmentContributionObject = {
+    codeContribution: string,
+    startDat: string,
+    endDate: string,
+    ref?: string,
+    crm?: string
+}
+
+type EstablishmentContribution = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    siren: string,
+    date: string
+}
+
+type NumSSEmployeeId = {
+    numSS: string,
+    employeeId: string
 }
 
 //Norme DSN 2022 = https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf
@@ -296,14 +362,17 @@ export class DsnParser {
     private dsnList: dsnList = []
     private contributionFundList: contributionFundList = []
     private workContractList: workContractDefinition[] = []
-    private mutualList: mutual[] = []
+    private mutualList: Mutual[] = []
     private mutualEmployeeList: mutualEmployeeList = []
-    private employeeList: employee[] = []
+    private employeeList: Employee[] = []
     private numSSList: string[] = []
-    private sirenList: string[] = []
     private idEstablishmentList: number[] = []
     private extractions = extractionsList
     private mutualIdList: string[] = []
+    private baseList: baseList = []
+    private numSSEmployeeIdList: NumSSEmployeeId[] = []
+    private contributionList: contributionList = []
+    private establishmentContributionList: establishmentContributionList = []
     private siren: string = ''
     private date = ''
     async init(dir: string, options = {
@@ -319,6 +388,7 @@ export class DsnParser {
         let idEstablishment = 1
         let numSS: string = ''
         let siret = ''
+        let employeeId = ''
         for await (const line of rl) {
             let lineSplit = line.split(',\'');
             let dsnStructure = lineSplit[0]
@@ -336,7 +406,7 @@ export class DsnParser {
                         if (lineSplit[0] === 'S20.G00.05.005') {
                             this.date = value
                         }
-                        let addDsn: dsn = {
+                        let addDsn: Dsn = {
                             ...findStructure,
                             value: value
                         }
@@ -346,7 +416,7 @@ export class DsnParser {
                         if (lineSplit[0] === 'S21.G00.06.001') {
                             this.siren = value
                         }
-                        let addRowSociety: society = {
+                        let addRowSociety: Society = {
                             ...findStructure,
                             value: value,
                             date: this.date
@@ -359,7 +429,7 @@ export class DsnParser {
                             this.idEstablishmentList.push(idEstablishment)
                             siret = this.siren + value
                         }
-                        let addRowEstablishment: establishment = {
+                        let addRowEstablishment: Establishment = {
                             ...findStructure,
                             value: value,
                             siret,
@@ -396,7 +466,7 @@ export class DsnParser {
                             mutualId = value
                             this.mutualIdList.push(mutualId)
                         }
-                        let addMutual: mutual = {
+                        let addMutual: Mutual = {
                             ...findStructure,
                             value,
                             date: this.date,
@@ -421,7 +491,14 @@ export class DsnParser {
                             numSS = value
                             this.numSSList.push(numSS)
                         }
-                        let addEmployee = {
+                        if (lineSplit[0] === 'S21.G00.30.019') {
+                            employeeId = value
+                            this.numSSEmployeeIdList.push({
+                                numSS,
+                                employeeId
+                            })
+                        }
+                        let addEmployee: Employee = {
                             ...findStructure,
                             value,
                             numSS,
@@ -430,6 +507,39 @@ export class DsnParser {
 
                         }
                         this.employeeList.push(addEmployee)
+                        break
+                    case 'Base':
+                        let addBase: Base = {
+                            ...findStructure,
+                            value,
+                            numSS,
+                            siren: this.siren,
+                            date: this.date
+                        }
+                        this.baseList.push(addBase)
+                        break
+                    case 'Contribution':
+                        let addContribution: Contribution = {
+                            ...findStructure,
+                            value,
+                            numSS,
+                            siren: this.siren,
+                            date: this.date
+                        }
+                        this.contributionList.push(addContribution)
+                        break
+                    case 'EstablishmentContribution':
+                        let addEstablishementContrubution: EstablishmentContribution = {
+                            ...findStructure,
+                            value,
+                            siren: this.siren,
+                            date: this.date
+                        }
+                        this.establishmentContributionList.push(addEstablishementContrubution)
+                        break
+                    default:
+                        throw new Error(`Le code collection n'existe pas`)
+                        break
                 }
             }
         }
@@ -439,7 +549,7 @@ export class DsnParser {
         }
     }
 
-    get dsn(): dsnObject {
+    get dsn(): DsnObject {
         let dsnObject: any = {}
         for (let dsn of this.dsnList) {
             dsnObject[dsn.field] = dsn.value
@@ -447,7 +557,7 @@ export class DsnParser {
         return dsnObject
     }
 
-    get society(): societyObject {
+    get society(): SocietyObject {
         let societyObjet: any = {}
         for (let society of this.societyList) {
             societyObjet[society.field] = society.value
@@ -456,7 +566,7 @@ export class DsnParser {
     }
 
 
-    get establishment(): establishmentObject[] {
+    get establishment(): EstablishmentObject[] {
         //idEstablishmentList contient l'ensemble des id établissements qu'on a pu traiter.
         const establishments = []
         for (let idEstablishment of this.idEstablishmentList) {
@@ -472,7 +582,7 @@ export class DsnParser {
     }
 
 
-    get contributionFund(): contributionFundObject[] {
+    get contributionFund(): ContributionFundObject[] {
         const contributionFundList = []
         for (let idEstablishment of this.idEstablishmentList) {
             let siret = this.establishmentList.find(e => e.idEstablishment === idEstablishment)?.siret
@@ -482,7 +592,7 @@ export class DsnParser {
                 if (idDsn) {
                     const contributionDsn = ops.find(o => o.codeDsn === idDsn)
                     if (contributionDsn) {
-                        let contributionFundObject: contributionFundObject = {
+                        let contributionFundObject: ContributionFundObject = {
                             ...contributionDsn,
                             siret,
                             date: this.date
@@ -516,33 +626,37 @@ export class DsnParser {
         const workContractList = []
         for (let numSS of this.numSSList) {
             let workContractFilter = this.workContractList.filter(w => w.numSS === numSS)
-            if (workContractFilter) {
+            let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
+            if (workContractFilter && employeeId) {
                 let workContractObject: any = {}
                 for (let workContract of workContractFilter) {
                     workContractObject[workContract.field] = workContract.value
                 }
+                workContractObject['employeeId'] = employeeId.employeeId
                 workContractList.push(workContractObject)
             }
         }
         return workContractList
     }
 
-    get employeeMutual(): mutualEmployee[] {
-        const employeesMutualList: mutualEmployee[] = []
+    get employeeMutual(): MutualEmployee[] {
+        const employeesMutualList: MutualEmployee[] = []
         for (let numSS of this.numSSList) {
             let mutualEmployeeFilter = this.mutualEmployeeList.filter(m => m.numSS === numSS)
-            if (mutualEmployeeFilter) {
+            let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
+            if (mutualEmployeeFilter && employeeId) {
                 let mutualEmployeeObject: any = {}
                 for (let mutualEmployee of mutualEmployeeFilter) {
                     mutualEmployeeObject[mutualEmployee.field] = mutualEmployee.value
                 }
+                mutualEmployeeObject['employeeId'] = employeeId.employeeId
                 employeesMutualList.push(mutualEmployeeObject)
             }
         }
         return employeesMutualList
     }
-    get mutual(): mutualObject[] {
-        const mutualList: mutualObject[] = []
+    get mutual(): MutualObject[] {
+        const mutualList: MutualObject[] = []
 
         for (let mutualId of this.mutualIdList) {
             let mutalFilter = this.mutualList.filter(m => m.techId === mutualId)
@@ -555,6 +669,40 @@ export class DsnParser {
             }
         }
         return mutualList
+    }
+
+    get base(): BaseObject[] {
+        const baseList: BaseObject[] = []
+        for (let numSS of this.numSSList) {
+            let baseEmployeeFilter = this.baseList.filter(m => m.numSS === numSS)
+            let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
+            if (baseEmployeeFilter && employeeId) {
+                let baseObject: any = {}
+                for (let base of baseEmployeeFilter) {
+                    baseObject[base.field] = base.value
+                }
+                baseObject['employeeId'] = employeeId.employeeId
+                baseList.push(baseObject)
+            }
+        }
+        return baseList
+    }
+
+    get contribution(): ContributionObject[] {
+        const contributionList: ContributionObject[] = []
+        for (let numSS of this.numSSList) {
+            let contributionEmployeeFilter = this.baseList.filter(m => m.numSS === numSS)
+            let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
+            if (contributionEmployeeFilter && employeeId) {
+                let contributionObject: any = {}
+                for (let contribution of contributionEmployeeFilter) {
+                    contributionObject[contribution.field] = contribution.value
+                }
+                contributionObject['employeeId'] = employeeId.employeeId
+                contributionList.push(contributionObject)
+            }
+        }
+        return contributionList
     }
 
 }
