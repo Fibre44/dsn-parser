@@ -1,4 +1,27 @@
 # DSN Parser #
+
+*******
+Table des matières  
+
+* [Description](#description)
+* [Installation](#instal)
+* [Exemple](#example)
+* [Méthode Dsn](#dsn)
+* [Méthode Society](#society)
+* [Méthode Establishment](#establishment)
+* [Méthode ContributionFund](#ContributionFund)
+* [Méthode Employee](#employee)
+* [Méthode WorkContract](#workContract)
+* [Méthode Mutual](#mutual)
+* [Méthode MutuelEmployee](#mutualEmployee)
+* [Méthode Base](#base)
+* [Méthode Contribution](#contribution)
+
+
+*******
+
+<div id='description'>  
+
 ## Description ##
 
 Cette librairie permet d'extraire les données d'un fichier au format de la Déclaration Sociale Nominative (DSN). 
@@ -12,14 +35,24 @@ La librairie permet de d'obtenir :
 * Les taux AT
 * Les organismes de cotisations
 * La liste des libellés emplois
+* La liste des salariés
+* Les contrats de travail des salariés
+* Les bases assujetis
+* Les affiliations aux organismes de prévoyances des salariés
+* Le détail des cotisations salariés
+
+<div id='instal'>  
+
 
 ## Installation ##
 
 ```bash
     npm i @fibre44/dsn-parser
 ```
+<div id='example'>  
 
-## Exemples ##
+
+## Exemples d'utilisation ##
 
 ```javascript
 import { DsnParser } from "@fibre44/dsn-parser";
@@ -48,79 +81,85 @@ Fichier d'option par default.
     }
  ```
 
-La class DsnParser propose différentes méthodes pour obtenir les informations du fichier DSN.
+La classe DsnParser propose différentes méthodes pour obtenir les informations du fichier DSN.
+
+<div id='Dsn'>  
 
 ### Méthode dsn ###
 
 Cette méthode retourne objet Javascript avec cette structure :
 
-``` javascript
+``` typescript
 {
-  softwareName: 'Le nom du logiciel de paie',
-  provider: 'Le fournisseur',
-  softwareVersion: 'La version du logiciel de paie',
-  dsnVersion: 'P22V01',
-  type: '01',
-  totalRows: '9253'
+    softwareName: string | undefined,
+    provider: string | undefined,
+    softwareVersion: string | undefined,
+    dsnVersion: string | undefined,
+    type: string | undefined,
+    totalRows: string | undefined,
+    month: string | undefined
+
 }
 
 ```
+<div id='society'>  
+
 ### Méthode society ###
 Cette méthode retourne objet Javascript avec cette structure :
 
-```javascript
+```typescript
 {
-  siren: '999999999',
-  nic: '99999',
-  apen: '9999',
-  adress1: 'rue de la DSN',
-  zipCode: '17000',
-  city: 'La Rochelle',
+    siren: string,
+    nic: string,
+    apen: string,
+    adress1: string,
+    adress2?: string,
+    adress3?: string,
+    zipCode: string,
+    city: string
 }
 ```
+<div id='establishment'>  
+
 ### Méthode Establishment ###
-Dans la DSN une même DSN on peut avoir X établissements. Si la DSN contient un seul établissement la méthode retourne un objet Javascript. Sinon la méthode retoure un tableau d'objets
-```javascript
+Dans la DSN une même DSN on peut avoir X établissements, la méthode retourne un tableau d'objets.
+```typescript
 [
     {
-        siren: '999999999',
-        nic: '99999',
-        apet: '9999',
-        adress1: 'rue de la DSN',
-        zipCode: '17000',
-        city: 'La Rochelle',
-        legalStatus: 'SARL',
-        idcc: '1597',
-        opco: 'code OPCO',
-        idEstablishment: 0 //Id interne à la class 
+    siren: string,
+    nic: string,
+    apet: string,
+    adress1: string,
+    adress2?: string,
+    adress3?: string,
+    zipCode: string,
+    country: string,
+    idcc: string,
+    legalStatus: string,
+    opco: string,
+    codeZip: string
+    city: string,
+    date: string
     },
-    {
-        siren: '999999999',
-        nic: '99998',
-        apet: '9999',
-        adress1: 'rue de la déclaration',
-        zipCode: '17000',
-        city: 'La Rochelle',
-        legalStatus: 'SARL',
-        idcc: '1597',
-        opco: 'code OPCO',
-        idEstablishment: 0 //Id interne à la class 
-    }
+  
 ]
 ```
+<div id='assignement'>  
+
 ### Méthode assignement ###
-```javascript
+```typescript
 [ 
     { value: 'Developpeur Javascript' },
     { value: 'Developpeur PHP' },
 ]
 
 ```
+<div id='contributionFund'>  
+
 ### Méthode contributionFund ###
 La méthode retourne un tableau d'objets avec les informations des différents organismes sociaux.
 
-La clée idEstablishment permet de retrouver l'établissement d'affectation. 
-```javascript
+```typescript
 [
   {
     codeDsn: '53510475600015',
@@ -128,7 +167,6 @@ La clée idEstablishment permet de retrouver l'établissement d'affectation.
     adress1: 'string',
     codeZip: 'string',
     city: 'string',
-    idEstablishment: 0
   },
   {
     codeDsn: 'P0942',
@@ -136,10 +174,194 @@ La clée idEstablishment permet de retrouver l'établissement d'affectation.
     adress1: 'string',
     codeZip: 'string',
     city: 'string',
-    idEstablishment: 0
   }
 ]
 ```
+<div id='employee'>  
+
+### Méthode employee ###
+La méthode retourne un tableau d'objets
+ ```typescript
+ [
+  {
+    numSS: string,
+    lastname: string,
+    surname: string,
+    firstname: string,
+    sex: string,
+    birthday: string,
+    placeOfBith: string,
+    address1: string,
+    codeZip: string,
+    city: string,
+    country: string,
+    codeZipBith: string,
+    countryBirth: string,
+    address2?: string,
+    address3?: string,
+    email?: string,
+    employeeId: string,
+    graduate?: string,
+    studies?: string
+  },
+
+ ]
+   
+ ```
+<div id='workContract'>  
+
+### Méthode workContract ###
+
+La méthode retourne un tableau d'objets
+
+```typescript
+[
+  {
+    employeeId: string,
+    startDate: string,
+    status: string,
+    retirement: string,
+    pcs: string,
+    pcsBis: string,
+    employmentLabel: string,
+    contract: string,
+    publicDispPolitic: string,
+    contractEndDate: string,
+    DNACodeUnitTime: string,
+    DSNWorkQuotaEstablishment: string,
+    DSNWorkQuotaWorkContract: string,
+    workTime: string,
+    ss: string,
+    idcc: string,
+    mal: string,
+    estabWorkPlace: string,
+    vieillesse: string,
+    pattern: string,
+    vacation: string,
+    rateProfessionalFess: string,
+    foreigner: string,
+    exclusionDsn: string,
+    statusEmployment: string,
+    unemployment: string,
+    idPublicEmployer: string,
+    methodUnemployment: string,
+    joiningDate: string,
+    denunciationDate: string,
+    dateManagementAgreement: string,
+    idAgreement: string,
+    healthRiskDelegate: string,
+    multipleJobCode: string,
+    multipleEmployerCode: string,
+    workAccidentRisk: string,
+    idWorkAccidentRisk: string,
+    positionCollectiveAgreement: string,
+    apecita: string,
+    rateAt: string,
+    contributingFullTime: string,
+    tip: string,
+    useEstablishmentId: string,
+    livePerfomances: string,
+    licences: string,
+    showId: string,
+    showrunner: string,
+    fpPcs?: string,
+    typePosition?: string,
+    fpQuotite?: string,
+    partTimeWork?: string,
+    serviceCode?: string,
+    fpIndice?: string,
+    fpIndiceMaj?: string,
+    NBI?: string,
+    indiceOriginal?: string,
+    article15?: string,
+    oldEstablishment?: string,
+    oldIndice?: string,
+    SPP?: string,
+    contractual?: string,
+    secondment?: string,
+    browsing?: string,
+    activityDutyRate?: string,
+    payLevel?: string,
+    echelon?: string,
+    coefficient?: string,
+    boeth: string,
+    addPublicPolicy?: string,
+    arrangement?: string,
+    finaly?: string,
+    navy?: string,
+    cnieg?: string,
+    activityRate?: string,
+    grade?: string,
+    cti?: string,
+    finess?: string,
+  }
+
+]
+```
+<div id='mutualEmployee'>  
+
+### Méthode mutualEmployee ###
+
+La méthode retourne un tableau d'objets
+
+```typescript
+  [
+    {
+      employeeId: string,
+      option: string,
+      pop: string,
+      children: string,
+      assign: string,
+      numberAssign: string,
+      otherAssign: string,
+      idTechAffiliation: string,
+      idTech: string,
+      date: string
+    },
+ ]
+
+```
+<div id='base'>  
+
+### Méthode base ###
+
+La méthode retourne un tableau d'objets
+
+```typescript
+  [
+    {
+        employeeId: string,
+        idBase: string,
+        startDate: string,
+        endDate: string,
+        amount: string,
+        idTechAff?: string,
+        idContract?: string,
+        crm?: string
+    }
+  ]
+```
+
+<div id='contribution'>  
+
+### Méthode contribution ###
+
+La méthode retourne un tableau d'objets
+```typescript
+  [
+    {
+      employeeId: string,
+      idContribution: string,
+      ops: string,
+      baseContribution: string,
+      amountContribution: string,
+      idInsee?: string,
+      crmContribution?: string,
+      rateContribution?: string
+    }
+  ]
+```
+<div id='classification'>  
 
 ### Méthode Classifications ###
 La méthode retourne un tableau d'objets avec l'ensemble des classifications des salariés par IDCC.
