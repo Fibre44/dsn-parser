@@ -32,13 +32,13 @@ type extractionValue = {
 }
 
 export type DsnObject = {
-    softwareName: string | undefined,
-    provider: string | undefined,
-    softwareVersion: string | undefined,
-    dsnVersion: string | undefined,
-    type: string | undefined,
-    totalRows: string | undefined,
-    month: string | undefined
+    softwareName: string,
+    provider: string,
+    softwareVersion: string,
+    dsnVersion: string,
+    type: string,
+    totalRows: string,
+    month: string
 
 }
 type Dsn = {
@@ -56,7 +56,8 @@ export type SocietyObject = {
     adress2?: string,
     adress3?: string,
     zipCode: string,
-    city: string
+    city: string,
+    date: string
 }
 
 export type EmployeeObject = {
@@ -78,7 +79,8 @@ export type EmployeeObject = {
     email?: string,
     employeeId: string,
     graduate?: string,
-    studies?: string
+    studies?: string,
+    date: string
 
 }
 
@@ -160,6 +162,7 @@ export type WorkContractObject = {
     grade?: string,
     cti?: string,
     finess?: string,
+    date: string
 
 
 }
@@ -295,7 +298,8 @@ export type BaseObject = {
     amount: string,
     idTechAff?: string,
     idContract?: string,
-    crm?: string
+    crm?: string,
+    date: string
 }
 
 type Base = {
@@ -317,7 +321,8 @@ export type ContributionObject = {
     amountContribution: string,
     idInsee?: string,
     crmContribution?: string,
-    rateContribution?: string
+    rateContribution?: string,
+    date: string
 }
 
 type Contribution = {
@@ -335,7 +340,8 @@ export type EstablishmentContributionObject = {
     startDat: string,
     endDate: string,
     ref?: string,
-    crm?: string
+    crm?: string,
+    date: string
 }
 
 type EstablishmentContribution = {
@@ -350,6 +356,11 @@ type EstablishmentContribution = {
 type NumSSEmployeeId = {
     numSS: string,
     employeeId: string
+}
+
+type AssignementObject = {
+    assignement: string,
+    date: string
 }
 
 //Norme DSN 2022 = https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf
@@ -390,11 +401,15 @@ export class DsnParser {
         let siret = ''
         let employeeId = ''
         for await (const line of rl) {
-            let lineSplit = line.split(',\'');
+            //let lineSplit = line.split(',\'')
+            //Exemple d'une structure S10.G00.00.004,'OK'
+            let lineSplit = line.split(`,'`);
+
             let dsnStructure = lineSplit[0]
             let findStructure = this.extractions.find(d => d.dsnStructure === dsnStructure)
             if (findStructure) {
-                let value = lineSplit[1].replace('\'', '')
+                //Il faut supprimer les ' qu'on trouve sur la valeur afin de pouvoir la liste
+                let value = lineSplit[1].replace(`'`, '')
                 switch (findStructure.collection) {
                     case 'Dsn':
                         if (lineSplit[0] === 'S10.G00.00.006' && options.controleDsnVersion) {
@@ -554,6 +569,7 @@ export class DsnParser {
         for (let dsn of this.dsnList) {
             dsnObject[dsn.field] = dsn.value
         }
+        dsnObject['date'] = this.date
         return dsnObject
     }
 
@@ -562,6 +578,7 @@ export class DsnParser {
         for (let society of this.societyList) {
             societyObjet[society.field] = society.value
         }
+        societyObjet['date'] = this.date
         return societyObjet
     }
 
@@ -570,12 +587,13 @@ export class DsnParser {
         //idEstablishmentList contient l'ensemble des id établissements qu'on a pu traiter.
         const establishments = []
         for (let idEstablishment of this.idEstablishmentList) {
-            let obj: any = new Object()
+            let establishmentObject: any = {}
             let establishmentFilter = this.establishmentList.filter(e => e.idEstablishment === idEstablishment)
             for (let establishment of establishmentFilter) {
-                obj[establishment.field] = establishment.value
+                establishmentObject[establishment.field] = establishment.value
             }
-            establishments.push(obj)
+            establishmentObject['date'] = this.date
+            establishments.push(establishmentObject)
         }
         return establishments
 
@@ -617,6 +635,7 @@ export class DsnParser {
                 for (let employee of employeeFilter) {
                     employeeObject[employee.field] = employee.value
                 }
+                employeeObject['date'] = this.date
                 employeeList.push(employeeObject)
             }
         }
@@ -633,6 +652,7 @@ export class DsnParser {
                     workContractObject[workContract.field] = workContract.value
                 }
                 workContractObject['employeeId'] = employeeId.employeeId
+                workContractObject['date'] = this.date
                 workContractList.push(workContractObject)
             }
         }
@@ -650,6 +670,7 @@ export class DsnParser {
                     mutualEmployeeObject[mutualEmployee.field] = mutualEmployee.value
                 }
                 mutualEmployeeObject['employeeId'] = employeeId.employeeId
+                mutualEmployeeObject['date'] = this.date
                 employeesMutualList.push(mutualEmployeeObject)
             }
         }
@@ -665,6 +686,7 @@ export class DsnParser {
                 for (let mutual of mutalFilter) {
                     mutuelObject[mutual.field] === mutual.value
                 }
+                mutuelObject['date'] = this.date
                 mutualList.push(mutuelObject)
             }
         }
@@ -682,6 +704,7 @@ export class DsnParser {
                     baseObject[base.field] = base.value
                 }
                 baseObject['employeeId'] = employeeId.employeeId
+                baseObject['date'] = this.date
                 baseList.push(baseObject)
             }
         }
@@ -699,10 +722,28 @@ export class DsnParser {
                     contributionObject[contribution.field] = contribution.value
                 }
                 contributionObject['employeeId'] = employeeId.employeeId
+                contributionObject['date'] = this.date
+
                 contributionList.push(contributionObject)
             }
         }
         return contributionList
+    }
+
+    get assignement(): AssignementObject[] {
+        const assignementList: AssignementObject[] = []
+        const assignementFilter = this.workContractList.filter(a => a.field === 'employmentLabel')
+        const assignementSet = new Set()
+        for (let assignement of assignementFilter) {
+            if (!assignementSet.has(assignement.value)) {
+                assignementSet.add(assignement.value)
+                let assignementObject: any = {}
+                assignementObject[assignement.field] = assignement.value
+                assignementObject['date'] = this.date
+                assignementList.push(assignementObject)
+            }
+        }
+        return assignementList
     }
 
 }

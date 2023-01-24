@@ -349,7 +349,7 @@ export const extractionsList: extractions = [
         collection: 'WorkContract',
         field: 'pcsBis',
         name: 'Code complément PCS-ESE (pour la fonction publique : référentiels NEH, NET et grade de la NNE)',
-        dsnStructure: 'S21.G00.40.00('
+        dsnStructure: 'S21.G00.40.005'
     },
     {
         collection: 'WorkContract',

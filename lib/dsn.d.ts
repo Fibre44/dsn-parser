@@ -1,11 +1,11 @@
 export type DsnObject = {
-    softwareName: string | undefined;
-    provider: string | undefined;
-    softwareVersion: string | undefined;
-    dsnVersion: string | undefined;
-    type: string | undefined;
-    totalRows: string | undefined;
-    month: string | undefined;
+    softwareName: string;
+    provider: string;
+    softwareVersion: string;
+    dsnVersion: string;
+    type: string;
+    totalRows: string;
+    month: string;
 };
 export type SocietyObject = {
     siren: string;
@@ -16,6 +16,7 @@ export type SocietyObject = {
     adress3?: string;
     zipCode: string;
     city: string;
+    date: string;
 };
 export type EmployeeObject = {
     numSS: string;
@@ -37,6 +38,7 @@ export type EmployeeObject = {
     employeeId: string;
     graduate?: string;
     studies?: string;
+    date: string;
 };
 export type WorkContractObject = {
     employeeId: string;
@@ -116,6 +118,7 @@ export type WorkContractObject = {
     grade?: string;
     cti?: string;
     finess?: string;
+    date: string;
 };
 export type EstablishmentObject = {
     siren: string;
@@ -191,6 +194,7 @@ export type BaseObject = {
     idTechAff?: string;
     idContract?: string;
     crm?: string;
+    date: string;
 };
 export type ContributionObject = {
     employeeId: string;
@@ -201,6 +205,7 @@ export type ContributionObject = {
     idInsee?: string;
     crmContribution?: string;
     rateContribution?: string;
+    date: string;
 };
 export type EstablishmentContributionObject = {
     codeContribution: string;
@@ -208,6 +213,11 @@ export type EstablishmentContributionObject = {
     endDate: string;
     ref?: string;
     crm?: string;
+    date: string;
+};
+type AssignementObject = {
+    assignement: string;
+    date: string;
 };
 export declare class DsnParser {
     private dsnVersion;
@@ -243,5 +253,6 @@ export declare class DsnParser {
     get mutual(): MutualObject[];
     get base(): BaseObject[];
     get contribution(): ContributionObject[];
+    get assignement(): AssignementObject[];
 }
 export {};

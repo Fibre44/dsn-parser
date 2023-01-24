@@ -91,13 +91,13 @@ Cette méthode retourne objet Javascript avec cette structure :
 
 ``` typescript
 {
-    softwareName: string | undefined,
-    provider: string | undefined,
-    softwareVersion: string | undefined,
-    dsnVersion: string | undefined,
-    type: string | undefined,
-    totalRows: string | undefined,
-    month: string | undefined
+    softwareName: string,
+    provider: string,
+    softwareVersion: string,
+    dsnVersion: string,
+    type: string,
+    totalRows: string,
+    month: string,
 
 }
 
