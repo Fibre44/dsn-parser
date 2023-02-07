@@ -15,8 +15,8 @@ Table des matières
 * [Méthode Mutual](#mutual)
 * [Méthode MutuelEmployee](#mutualEmployee)
 * [Méthode Base](#base)
+* [Méthode Base assujeti](#baseSubject)
 * [Méthode Contribution](#contribution)
-
 
 *******
 
@@ -67,7 +67,7 @@ const options = {
         deleteFile: false
     }
 try {
-  await dsn.init(path, options)
+  await dsn.asyncInit(path, options)
 } catch (e) {
     console.error(e)
 }
@@ -339,6 +339,24 @@ La méthode retourne un tableau d'objets
         idContract?: string,
         crm?: string
     }
+  ]
+```
+
+<div id='baseSubject'>  
+
+
+### Méthode base assujeti ###
+
+La méthode retourne un tableau d'objets
+
+```typescript
+  [
+    {
+      typeBaseSubject: string,
+      amountBaseSubject: string,
+      employeeId: string,
+      date: string
+    },
   ]
 ```
 

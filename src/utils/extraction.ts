@@ -1,6 +1,6 @@
-import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, ContributionObject, EstablishmentContributionObject } from "../dsn"
+import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject } from "../dsn"
 type extractions = extraction[]
-export type field = keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | 'id'
+export type field = keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | 'id'
 type extraction = {
     collection: string,
     field: field,
@@ -880,10 +880,28 @@ export const extractionsList: extractions = [
         dsnStructure: 'S21.G00.78.007'
     },
     {
+        collection: 'BaseSubject',
+        field: 'typeBaseSubject',
+        name: 'Type de composant de base assujettie',
+        dsnStructure: 'S21.G00.79.001'
+    },
+    {
+        collection: 'BaseSubject',
+        field: 'amountBaseSubject',
+        name: 'Montant de composant de base assujettie',
+        dsnStructure: 'S21.G00.79.004'
+    },
+    {
+        collection: 'BaseSubject',
+        field: 'crmBaseSubject',
+        name: `Identifiant du CRM à l'origine de la régularisation`,
+        dsnStructure: 'S21.G00.79.005'
+    },
+    {
         collection: 'Contribution',
-        field: 'idContribution',
+        field: 'type',
         name: 'Code de cotisation',
-        dsnStructure: 'S21.G00.81.001'
+        dsnStructure: 'S21.G00.79.001'
     },
     {
         collection: 'Contribution',

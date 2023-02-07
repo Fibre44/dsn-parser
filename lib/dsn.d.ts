@@ -146,14 +146,6 @@ export type ContributionFund = {
     siret: string;
     date: string;
 };
-type MutualEmployee = {
-    collection: string;
-    field: string;
-    dsnStructure: string;
-    value: string;
-    numSS: string;
-    date: string;
-};
 export type ContributionFundObject = {
     codeDsn: string;
     name: string;
@@ -185,6 +177,11 @@ export type MutualEmployeeObject = {
     idTech: string;
     date: string;
 };
+type atObject = {
+    code: string;
+    rate: string;
+    siret: string;
+};
 export type BaseObject = {
     employeeId: string;
     idBase: string;
@@ -194,6 +191,13 @@ export type BaseObject = {
     idTechAff?: string;
     idContract?: string;
     crm?: string;
+    date: string;
+};
+export type BaseSubjectObject = {
+    employeeId: string;
+    typeBaseSubject: string;
+    amountBaseSubject: string;
+    crmBaseSubject?: string;
     date: string;
 };
 export type ContributionObject = {
@@ -219,6 +223,10 @@ type AssignementObject = {
     assignement: string;
     date: string;
 };
+type MobilityObject = {
+    rate: string;
+    insee: string;
+};
 export declare class DsnParser {
     private dsnVersion;
     private societyList;
@@ -234,12 +242,13 @@ export declare class DsnParser {
     private extractions;
     private mutualIdList;
     private baseList;
+    private baseSubjectList;
     private numSSEmployeeIdList;
     private contributionList;
     private establishmentContributionList;
     private siren;
     private date;
-    init(dir: string, options?: {
+    asyncInit(dir: string, options?: {
         controleDsnVersion: boolean;
         deleteFile: boolean;
     }): Promise<void>;
@@ -249,10 +258,13 @@ export declare class DsnParser {
     get contributionFund(): ContributionFundObject[];
     get employee(): EmployeeObject[];
     get workContract(): WorkContractObject[];
-    get employeeMutual(): MutualEmployee[];
+    get employeeMutual(): MutualEmployeeObject[];
     get mutual(): MutualObject[];
     get base(): BaseObject[];
+    get baseSubject(): BaseSubjectObject[];
     get contribution(): ContributionObject[];
     get assignement(): AssignementObject[];
+    get rateMobility(): MobilityObject[];
+    get rateAt(): atObject[];
 }
 export {};

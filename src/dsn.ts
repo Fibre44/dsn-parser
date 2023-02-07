@@ -3,7 +3,6 @@ import readline from 'node:readline';
 import { ops } from './utils/ops';
 import { workContract } from './utils/workContract';
 import { extractionsList, field } from './utils/extraction';
-import { throws } from 'node:assert';
 type societyList = Society[]
 type establishmentList = Establishment[]
 type dsnList = Dsn[]
@@ -11,6 +10,7 @@ type mutualList = Mutual[]
 type mutualEmployeeList = MutualEmployee[]
 type contributionFundList = ContributionFund[]
 type baseList = Base[]
+type baseSubjectList = BaseSubject[]
 type contributionList = Contribution[]
 type establishmentContributionList = EstablishmentContribution[]
 type workContractDefinition = {
@@ -21,14 +21,8 @@ type workContractDefinition = {
     value: string,
     numSS: string,
     siren: string,
-    date: string
-}
-type extractionValue = {
-    collection: string,
-    field: field,
-    name: string,
-    dsnStructure: string,
-    value: string
+    date: string,
+    siret: string
 }
 
 export type DsnObject = {
@@ -245,12 +239,6 @@ export type ContributionFundObject = {
     date: string
 }
 
-type ClassificationObject = {
-    nature: string,
-    value: string,
-    idcc: string,
-}
-
 
 export type MutualObject = {
     contractId?: string,
@@ -277,7 +265,7 @@ export type MutualEmployeeObject = {
 type atObject = {
     code: string,
     rate: string,
-    idEstablishment: number
+    siret: string
 }
 
 type Employee = {
@@ -302,6 +290,15 @@ export type BaseObject = {
     date: string
 }
 
+export type BaseSubjectObject = {
+    employeeId: string,
+    typeBaseSubject: string,
+    amountBaseSubject: string,
+    crmBaseSubject?: string,
+    date: string
+}
+
+
 type Base = {
 
     collection: string,
@@ -310,7 +307,20 @@ type Base = {
     value: string,
     siren: string,
     numSS: string,
-    date: string
+    date: string,
+    idBase: string
+}
+
+type BaseSubject = {
+
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    siren: string,
+    numSS: string,
+    typeBaseSubject: string
+    date: string,
 }
 
 export type ContributionObject = {
@@ -332,7 +342,9 @@ type Contribution = {
     value: string,
     siren: string,
     numSS: string,
-    date: string
+    date: string,
+    idContribution: string,
+    siret: string
 }
 
 export type EstablishmentContributionObject = {
@@ -363,17 +375,22 @@ type AssignementObject = {
     date: string
 }
 
+type MobilityObject = {
+    rate: string,
+    insee: string
+}
+
 //Norme DSN 2022 = https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf
 //NodeJs readline =https://nodejs.org/api/readline.html
 
 export class DsnParser {
-    private dsnVersion = ['P22V01']
+    private dsnVersion = ['P22V01', 'P23V01']
     private societyList: societyList = []
     private establishmentList: establishmentList = []
     private dsnList: dsnList = []
     private contributionFundList: contributionFundList = []
     private workContractList: workContractDefinition[] = []
-    private mutualList: Mutual[] = []
+    private mutualList: mutualList = []
     private mutualEmployeeList: mutualEmployeeList = []
     private employeeList: Employee[] = []
     private numSSList: string[] = []
@@ -381,12 +398,13 @@ export class DsnParser {
     private extractions = extractionsList
     private mutualIdList: string[] = []
     private baseList: baseList = []
+    private baseSubjectList: baseSubjectList = []
     private numSSEmployeeIdList: NumSSEmployeeId[] = []
     private contributionList: contributionList = []
     private establishmentContributionList: establishmentContributionList = []
     private siren: string = ''
     private date = ''
-    async init(dir: string, options = {
+    async asyncInit(dir: string, options = {
         controleDsnVersion: true,
         deleteFile: false
     }) {
@@ -400,6 +418,9 @@ export class DsnParser {
         let numSS: string = ''
         let siret = ''
         let employeeId = ''
+        let idContribution = ''
+        let idBase = ''
+        let typeBaseSubject = ''
         for await (const line of rl) {
             //let lineSplit = line.split(',\'')
             //Exemple d'une structure S10.G00.00.004,'OK'
@@ -471,7 +492,8 @@ export class DsnParser {
                             value,
                             siren: this.siren,
                             date: this.date,
-                            numSS
+                            numSS,
+                            siret
                         }
                         this.workContractList.push(addRoWWorkContract)
                         break
@@ -524,22 +546,45 @@ export class DsnParser {
                         this.employeeList.push(addEmployee)
                         break
                     case 'Base':
+                        if (lineSplit[0] === 'S21.G00.78.001') {
+                            idBase = value
+                        }
                         let addBase: Base = {
                             ...findStructure,
                             value,
                             numSS,
                             siren: this.siren,
-                            date: this.date
+                            date: this.date,
+                            idBase
                         }
                         this.baseList.push(addBase)
                         break
+                    case 'BaseSubject':
+                        if (lineSplit[0] === 'S21.G00.79.001') {
+                            typeBaseSubject = value
+                        }
+                        let addBaseSubject: BaseSubject = {
+                            ...findStructure,
+                            value,
+                            numSS,
+                            siren: this.siren,
+                            date: this.date,
+                            typeBaseSubject
+                        }
+                        this.baseSubjectList.push(addBaseSubject)
+                        break
                     case 'Contribution':
+                        if (lineSplit[0] === 'S21.G00.81.001') {
+                            idContribution = value
+                        }
                         let addContribution: Contribution = {
                             ...findStructure,
                             value,
                             numSS,
                             siren: this.siren,
-                            date: this.date
+                            date: this.date,
+                            idContribution,
+                            siret
                         }
                         this.contributionList.push(addContribution)
                         break
@@ -618,7 +663,6 @@ export class DsnParser {
                         }
                         contributionFundList.push(contributionFundObject)
                     }
-
                 }
             }
 
@@ -659,8 +703,8 @@ export class DsnParser {
         return workContractList
     }
 
-    get employeeMutual(): MutualEmployee[] {
-        const employeesMutualList: MutualEmployee[] = []
+    get employeeMutual(): MutualEmployeeObject[] {
+        const employeesMutualList: MutualEmployeeObject[] = []
         for (let numSS of this.numSSList) {
             let mutualEmployeeFilter = this.mutualEmployeeList.filter(m => m.numSS === numSS)
             let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
@@ -695,36 +739,82 @@ export class DsnParser {
 
     get base(): BaseObject[] {
         const baseList: BaseObject[] = []
+        const setIdBase = new Set()
+        const filterIdBase = this.baseList.filter(c => c.field === 'idBase')
+        filterIdBase.forEach(c => setIdBase.has(c.value) ? '' : setIdBase.add(c.value))
+        //On tourne par salarié
         for (let numSS of this.numSSList) {
             let baseEmployeeFilter = this.baseList.filter(m => m.numSS === numSS)
             let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
             if (baseEmployeeFilter && employeeId) {
-                let baseObject: any = {}
-                for (let base of baseEmployeeFilter) {
-                    baseObject[base.field] = base.value
+                //On filtre sur une base 
+                for (let idBase of setIdBase) {
+                    let employeeBase = baseEmployeeFilter.filter(e => e.idBase === idBase)
+                    let baseObject: any = {}
+                    for (let base of employeeBase) {
+                        baseObject[base.field] = base.value
+                    }
+                    baseObject['employeeId'] = employeeId.employeeId
+                    baseObject['date'] = this.date
+                    baseList.push(baseObject)
+
                 }
-                baseObject['employeeId'] = employeeId.employeeId
-                baseObject['date'] = this.date
-                baseList.push(baseObject)
             }
         }
         return baseList
     }
 
+    get baseSubject(): BaseSubjectObject[] {
+        const baseSubjectList: BaseSubjectObject[] = []
+        const setTypeBaseSubject = new Set()
+        const filterTypeBaseSubject = this.baseSubjectList.filter(c => c.field === 'typeBaseSubject')
+        filterTypeBaseSubject.forEach(c => setTypeBaseSubject.has(c.value) ? '' : setTypeBaseSubject.add(c.value))
+        //On tourne par salarié
+        for (let numSS of this.numSSList) {
+            let baseEmployeeFilter = this.baseSubjectList.filter(m => m.numSS === numSS)
+            let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
+            if (baseEmployeeFilter && employeeId) {
+                //On filtre sur une base 
+                for (let typeBaseSubject of setTypeBaseSubject) {
+                    let employeeBase = baseEmployeeFilter.filter(e => e.typeBaseSubject === typeBaseSubject)
+                    let baseSubjectObject: any = {}
+                    for (let base of employeeBase) {
+                        baseSubjectObject[base.field] = base.value
+                    }
+                    baseSubjectObject['employeeId'] = employeeId.employeeId
+                    baseSubjectObject['date'] = this.date
+                    baseSubjectList.push(baseSubjectObject)
+
+                }
+            }
+        }
+        return baseSubjectList
+    }
+
     get contribution(): ContributionObject[] {
         const contributionList: ContributionObject[] = []
+        const setIdContribution = new Set()
+        const filterIdContribution = this.contributionList.filter(c => c.field === 'idContribution')
+        filterIdContribution.forEach(c => setIdContribution.has(c.value) ? '' : setIdContribution.add(c.value))
+        //On tourne par salarié
         for (let numSS of this.numSSList) {
-            let contributionEmployeeFilter = this.baseList.filter(m => m.numSS === numSS)
+            let contributionEmployeeFilter = this.contributionList.filter(m => m.numSS === numSS)
             let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
             if (contributionEmployeeFilter && employeeId) {
-                let contributionObject: any = {}
-                for (let contribution of contributionEmployeeFilter) {
-                    contributionObject[contribution.field] = contribution.value
-                }
-                contributionObject['employeeId'] = employeeId.employeeId
-                contributionObject['date'] = this.date
+                //On tourne par code de cotisation
+                for (let contributionId of setIdContribution) {
+                    let employeeContribution = contributionEmployeeFilter.filter(e => e.idContribution === contributionId)
+                    let contributionObject: any = {}
+                    //On alimente la cotisation
+                    for (let contribution of employeeContribution) {
+                        contributionObject[contribution.field] = contribution.value
+                    }
+                    contributionObject['employeeId'] = employeeId.employeeId
+                    contributionObject['date'] = this.date
 
-                contributionList.push(contributionObject)
+                    contributionList.push(contributionObject)
+                }
+
             }
         }
         return contributionList
@@ -744,6 +834,74 @@ export class DsnParser {
             }
         }
         return assignementList
+    }
+
+    get rateMobility(): MobilityObject[] {
+        //Attention la structure idInsee est avant le taux. 
+        const rateMobilityList: MobilityObject[] = []
+        const idInseeList: string[] = []
+        const setInsee = new Set<string>()
+        const setRateMobility = new Set<string>()
+        for (let contribution of this.contributionList) {
+            //IdInsee est avant le taux
+            let idInsee = contribution.field === 'idInsee' ? contribution.value : undefined
+            let rateMobility = contribution.field === 'rateContribution' && contribution.idContribution === '081' ? contribution.value : undefined
+            if (idInsee) {
+                if (!setInsee.has(idInsee)) {
+                    setInsee.add(idInsee)
+                    idInseeList.push(idInsee)
+                }
+            }
+            if (rateMobility) {
+                let lastIdInsee = idInseeList.reverse()
+                let concatIdInseeRate = `${lastIdInsee[0]}-${rateMobility}`
+                if (!setRateMobility.has(concatIdInseeRate)) {
+                    setRateMobility.add(concatIdInseeRate)
+                    rateMobilityList.push({
+                        rate: rateMobility,
+                        insee: lastIdInsee[0]
+                    })
+                }
+            }
+
+        }
+        return rateMobilityList
+    }
+
+    get rateAt(): atObject[] {
+        /**
+         * Les taux AT sont dans les contrats de travail field: 'rateAt',
+         * Les codes risqques sont dans  field: 'idWorkAccidentRisk',
+         */
+        const rateAtList: atObject[] = []
+        const setIdWorkAccidentRisk = new Set<string>()
+        const setRateAt = new Set<string>()
+        const setIdWorkAccidentRiskList: string[] = []
+        for (let at of this.workContractList) {
+            let siret = at.siret
+            let idWorkAccidentRisk = at.field === 'idWorkAccidentRisk' ? at.value : undefined
+            let rateAT = at.field === 'rateAt' ? at.value : undefined
+            if (idWorkAccidentRisk) {
+                if (!setIdWorkAccidentRisk.has(idWorkAccidentRisk)) {
+                    setIdWorkAccidentRisk.add(idWorkAccidentRisk)
+                    setIdWorkAccidentRiskList.push(idWorkAccidentRisk)
+                }
+            }
+            if (rateAT) {
+                let lastIdWorkAccidentRisk = setIdWorkAccidentRiskList.reverse()
+                let concatLastIdWorkAccidentRiskRateAt = `${lastIdWorkAccidentRisk[0]}-${rateAT})`
+                if (!setRateAt.has(concatLastIdWorkAccidentRiskRateAt)) {
+                    setRateAt.add(concatLastIdWorkAccidentRiskRateAt)
+                    rateAtList.push({
+                        code: lastIdWorkAccidentRisk[0],
+                        rate: rateAT,
+                        siret
+                    })
+                }
+            }
+        }
+
+        return rateAtList
     }
 
 }
