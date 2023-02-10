@@ -39,6 +39,7 @@ export type EmployeeObject = {
     graduate?: string;
     studies?: string;
     date: string;
+    ntt?: string;
 };
 export type WorkContractObject = {
     employeeId: string;

@@ -74,7 +74,8 @@ export type EmployeeObject = {
     employeeId: string,
     graduate?: string,
     studies?: string,
-    date: string
+    date: string,
+    ntt?: string
 
 }
 
@@ -415,17 +416,17 @@ export class DsnParser {
         });
         let mutualId = ''
         let idEstablishment = 1
-        let numSS: string = ''
+        let numSS = ''
         let siret = ''
         let employeeId = ''
         let idContribution = ''
         let idBase = ''
         let typeBaseSubject = ''
+        const employeeDatas = []//On va stocker temporairement les valeurs du salarié pour la gestion des NTT
         for await (const line of rl) {
             //let lineSplit = line.split(',\'')
             //Exemple d'une structure S10.G00.00.004,'OK'
             let lineSplit = line.split(`,'`);
-
             let dsnStructure = lineSplit[0]
             let findStructure = this.extractions.find(d => d.dsnStructure === dsnStructure)
             if (findStructure) {
@@ -524,26 +525,62 @@ export class DsnParser {
                         this.mutualEmployeeList.push(addMutualEmployee)
                         break
                     case 'Employee':
+                        //Si le salarié a un NTT on aura pas la structure S21.G00.30.001
+                        //Il faut pouvoir remettre à blanc numSS. Si le numéro SS à déjà un contrat de travail ca signifie qu'on traite un nouveau salarié
+                        //Pour un salarié qui n'a pas de numSS on commence par S21.G00.30.002
+                        const findNumSSWorkContract = this.workContractList.find(contract => contract.numSS === numSS)
+                        if (findNumSSWorkContract) {
+                            numSS = ''
+                            employeeDatas.splice(0, employeeDatas.length);
+
+                        }
                         if (lineSplit[0] === 'S21.G00.30.001') {
                             numSS = value
                             this.numSSList.push(numSS)
                         }
-                        if (lineSplit[0] === 'S21.G00.30.019') {
-                            employeeId = value
-                            this.numSSEmployeeIdList.push({
+                        if (numSS) {
+                            if (lineSplit[0] === 'S21.G00.30.019') {
+                                employeeId = value
+                                this.numSSEmployeeIdList.push({
+                                    numSS,
+                                    employeeId
+                                })
+                            }
+                            let addEmployee: Employee = {
+                                ...findStructure,
+                                value,
                                 numSS,
-                                employeeId
-                            })
-                        }
-                        let addEmployee: Employee = {
-                            ...findStructure,
-                            value,
-                            numSS,
-                            siren: this.siren,
-                            date: this.date
+                                siren: this.siren,
+                                date: this.date
 
+                            }
+                            this.employeeList.push(addEmployee)
+                        } else {
+                            //Gestion avec un NTT on doit attendre la structure S21.G00.30.020
+                            let datas = {
+                                ...findStructure,
+                                value
+                            }
+                            employeeDatas.push(datas)
+                            if (lineSplit[0] === 'S21.G00.30.019') {
+                                employeeId = value;
+                            }
+                            if (lineSplit[0] === 'S21.G00.30.020') {
+                                numSS = value
+                                this.numSSList.push(numSS)
+                                this.numSSEmployeeIdList.push({
+                                    numSS,
+                                    employeeId
+                                })
+                                employeeDatas.forEach(employee => this.employeeList.push({
+                                    ...employee,
+                                    siren: this.siren,
+                                    date: this.date,
+                                    numSS
+                                }))
+                            }
                         }
-                        this.employeeList.push(addEmployee)
+
                         break
                     case 'Base':
                         if (lineSplit[0] === 'S21.G00.78.001') {
