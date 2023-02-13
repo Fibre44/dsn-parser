@@ -1,6 +1,6 @@
-import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject } from "../dsn"
+import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject } from "../dsn"
 type extractions = extraction[]
-export type field = keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | 'id'
+export type field = keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | 'id'
 type extraction = {
     collection: string,
     field: field,
@@ -796,6 +796,78 @@ export const extractionsList: extractions = [
         dsnStructure: 'S21.G00.40.081'
     },
     {
+        collection: 'WorkStopping',
+        field: 'reasonStop',
+        name: `Motif de l'arrêt`,
+        dsnStructure: 'S21.G00.60.001'
+    },
+    {
+        collection: 'WorkStopping',
+        field: 'lastDayWorked',
+        name: `Date du dernier jour travaillé`,
+        dsnStructure: 'S21.G00.60.002'
+    },
+    {
+        collection: 'WorkStopping',
+        field: 'estimatedEndDate',
+        name: `Date de fin prévisionnelle`,
+        dsnStructure: 'S21.G00.60.003'
+    },
+    {
+        collection: 'WorkStopping',
+        field: 'subrogation',
+        name: `Subrogation`,
+        dsnStructure: 'S21.G00.60.004'
+    },
+    {
+        collection: 'WorkStopping',
+        field: 'subrogationStartDate',
+        name: `Date de début de subrogation`,
+        dsnStructure: 'S21.G00.60.005'
+    },
+    {
+        collection: 'WorkStopping',
+        field: 'subrogationEndDate',
+        name: `Date de début de subrogation`,
+        dsnStructure: 'S21.G00.60.006'
+    },
+    {
+        collection: 'WorkStopping',
+        field: 'iban',
+        name: `IBAN`,
+        dsnStructure: 'S21.G00.60.007'
+    },
+    {
+        collection: 'WorkStopping',
+        field: 'bic',
+        name: `BIC`,
+        dsnStructure: 'S21.G00.60.008'
+    },
+    {
+        collection: 'WorkStopping',
+        field: 'recoveryDate',
+        name: `Date de la reprise`,
+        dsnStructure: 'S21.G00.60.010'
+    },
+    {
+        collection: 'WorkStopping',
+        field: 'reasonRecovery',
+        name: `Motif de la reprise`,
+        dsnStructure: 'S21.G00.60.011'
+    },
+    {
+        collection: 'WorkStopping',
+        field: 'dateWorkAccident',
+        name: `Date de l'accident ou de la première constatation`,
+        dsnStructure: 'S21.G00.60.012'
+    },
+    {
+        collection: 'WorkStopping',
+        field: 'SIRETCentralizer',
+        name: `SIRET Centralisateur`,
+        dsnStructure: 'S21.G00.60.600'
+    },
+    {
         collection: 'MutualEmployee',
         field: 'option',
         name: 'Code option retenue par le salarié',
@@ -908,6 +980,12 @@ export const extractionsList: extractions = [
         field: 'type',
         name: 'Code de cotisation',
         dsnStructure: 'S21.G00.79.001'
+    },
+    {
+        collection: 'Contribution',
+        field: 'idContribution',
+        name: 'Code de cotisation',
+        dsnStructure: 'S21.G00.81.001'
     },
     {
         collection: 'Contribution',

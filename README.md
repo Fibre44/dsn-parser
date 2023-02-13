@@ -17,6 +17,8 @@ Table des matières
 * [Méthode Base](#base)
 * [Méthode Base assujeti](#baseSubject)
 * [Méthode Contribution](#contribution)
+* [Méthode Arret de travail](#workStopping)
+
 
 *******
 
@@ -379,22 +381,25 @@ La méthode retourne un tableau d'objets
     }
   ]
 ```
-<div id='classification'>  
+<div id='workStopping'>  
 
-### Méthode Classifications ###
-La méthode retourne un tableau d'objets avec l'ensemble des classifications des salariés par IDCC.
-```javascript
-[
+La méthode retourne un tableau d'objets
+
+```typescript
+ [
     {
-        nature: 'coeff',
-        value: '100',
-        idcc: '9999',
-    },
-    {
-        nature: 'coeff',
-        value: '120',
-        idcc: '9999',
-    },
-]
+      reasonStop: string,
+      lastDayWorked: string,
+      estimatedEndDate: string,
+      subrogation?: string,
+      subrogationStartDate?: string,
+      subrogationEndDate?: string,
+      iban?: string,
+      bic?: string,
+      recoveryDate?: string,
+      reasonRecovery?: string,
+      dateWorkAccident?: string,
+      SIRETCentralizer?: string
+  }
+ ]
 ```
-

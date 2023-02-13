@@ -41,6 +41,20 @@ export type EmployeeObject = {
     date: string;
     ntt?: string;
 };
+export type WorkStoppingObject = {
+    reasonStop: string;
+    lastDayWorked: string;
+    estimatedEndDate: string;
+    subrogation?: string;
+    subrogationStartDate?: string;
+    subrogationEndDate?: string;
+    iban?: string;
+    bic?: string;
+    recoveryDate?: string;
+    reasonRecovery: string;
+    dateWorkAccident: string;
+    SIRETCentralizer: string;
+};
 export type WorkContractObject = {
     employeeId: string;
     startDate: string;
@@ -178,10 +192,11 @@ export type MutualEmployeeObject = {
     idTech: string;
     date: string;
 };
-type atObject = {
+export type atObject = {
     code: string;
     rate: string;
     siret: string;
+    date: string;
 };
 export type BaseObject = {
     employeeId: string;
@@ -224,7 +239,7 @@ type AssignementObject = {
     assignement: string;
     date: string;
 };
-type MobilityObject = {
+export type MobilityObject = {
     rate: string;
     insee: string;
 };
@@ -246,6 +261,7 @@ export declare class DsnParser {
     private baseSubjectList;
     private numSSEmployeeIdList;
     private contributionList;
+    private workStoppingList;
     private establishmentContributionList;
     private siren;
     private date;
@@ -259,6 +275,7 @@ export declare class DsnParser {
     get contributionFund(): ContributionFundObject[];
     get employee(): EmployeeObject[];
     get workContract(): WorkContractObject[];
+    get workStopping(): WorkContractObject[];
     get employeeMutual(): MutualEmployeeObject[];
     get mutual(): MutualObject[];
     get base(): BaseObject[];

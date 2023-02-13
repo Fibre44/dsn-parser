@@ -13,6 +13,7 @@ type baseList = Base[]
 type baseSubjectList = BaseSubject[]
 type contributionList = Contribution[]
 type establishmentContributionList = EstablishmentContribution[]
+type WorkStoppingList = WorkStopping[]
 type workContractDefinition = {
     collection: string,
     field: string,
@@ -77,6 +78,21 @@ export type EmployeeObject = {
     date: string,
     ntt?: string
 
+}
+
+export type WorkStoppingObject = {
+    reasonStop: string,
+    lastDayWorked: string,
+    estimatedEndDate: string,
+    subrogation?: string,
+    subrogationStartDate?: string,
+    subrogationEndDate?: string,
+    iban?: string,
+    bic?: string,
+    recoveryDate?: string,
+    reasonRecovery?: string,
+    dateWorkAccident?: string,
+    SIRETCentralizer?: string
 }
 
 export type WorkContractObject = {
@@ -263,10 +279,11 @@ export type MutualEmployeeObject = {
     date: string
 }
 
-type atObject = {
+export type atObject = {
     code: string,
     rate: string,
-    siret: string
+    siret: string,
+    date: string
 }
 
 type Employee = {
@@ -366,6 +383,16 @@ type EstablishmentContribution = {
     date: string
 }
 
+type WorkStopping = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    siren: string,
+    date: string,
+    numSS: string,
+}
+
 type NumSSEmployeeId = {
     numSS: string,
     employeeId: string
@@ -376,7 +403,7 @@ type AssignementObject = {
     date: string
 }
 
-type MobilityObject = {
+export type MobilityObject = {
     rate: string,
     insee: string
 }
@@ -402,6 +429,7 @@ export class DsnParser {
     private baseSubjectList: baseSubjectList = []
     private numSSEmployeeIdList: NumSSEmployeeId[] = []
     private contributionList: contributionList = []
+    private workStoppingList: WorkStoppingList = []
     private establishmentContributionList: establishmentContributionList = []
     private siren: string = ''
     private date = ''
@@ -523,6 +551,16 @@ export class DsnParser {
 
                         }
                         this.mutualEmployeeList.push(addMutualEmployee)
+                        break
+                    case 'WorkStopping':
+                        let addWorkStopping = {
+                            ...findStructure,
+                            numSS,
+                            value,
+                            siren: this.siren,
+                            date: this.date
+                        }
+                        this.workStoppingList.push(addWorkStopping)
                         break
                     case 'Employee':
                         //Si le salarié a un NTT on aura pas la structure S21.G00.30.001
@@ -740,6 +778,25 @@ export class DsnParser {
         return workContractList
     }
 
+    get workStopping(): WorkContractObject[] {
+        const workStoppingList: WorkContractObject[] = []
+
+        for (let numSS of this.numSSList) {
+            let workStoppingFilter = this.workStoppingList.filter(workStopping => workStopping.numSS === numSS)
+            let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
+            if (workStoppingFilter.length != 0 && employeeId) {
+                let workStoppingObject: any = {}
+                for (let workStopping of workStoppingFilter) {
+                    workStoppingObject[workStopping.field] = workStopping.value
+                }
+                workStoppingObject['employeeId'] = employeeId.employeeId
+                workStoppingObject['date'] = this.date
+                workStoppingList.push(workStoppingObject)
+            }
+        }
+        return workStoppingList
+    }
+
     get employeeMutual(): MutualEmployeeObject[] {
         const employeesMutualList: MutualEmployeeObject[] = []
         for (let numSS of this.numSSList) {
@@ -908,7 +965,7 @@ export class DsnParser {
     get rateAt(): atObject[] {
         /**
          * Les taux AT sont dans les contrats de travail field: 'rateAt',
-         * Les codes risqques sont dans  field: 'idWorkAccidentRisk',
+         * Les codes risques sont dans  field: 'idWorkAccidentRisk',
          */
         const rateAtList: atObject[] = []
         const setIdWorkAccidentRisk = new Set<string>()
@@ -916,6 +973,7 @@ export class DsnParser {
         const setIdWorkAccidentRiskList: string[] = []
         for (let at of this.workContractList) {
             let siret = at.siret
+            let date = at.date
             let idWorkAccidentRisk = at.field === 'idWorkAccidentRisk' ? at.value : undefined
             let rateAT = at.field === 'rateAt' ? at.value : undefined
             if (idWorkAccidentRisk) {
@@ -932,7 +990,8 @@ export class DsnParser {
                     rateAtList.push({
                         code: lastIdWorkAccidentRisk[0],
                         rate: rateAT,
-                        siret
+                        siret,
+                        date
                     })
                 }
             }
