@@ -19,7 +19,7 @@ Table des matières
 * [Méthode Contribution](#contribution)
 * [Méthode Arret de travail](#workStopping)
 * [Méthode rateAT](#rateAt)
-* [Méthode rateMobility](#rateMobilty)
+* [Méthode rateMobility](#rateMobility)
 
 
 *******
@@ -85,7 +85,7 @@ Fichier d'option par default.
  ```javascript
   options = {
         controleDsnVersion: true,//Controle que le fichier utilise bien la dernière norme de la DSN
-        deleteFile: false //Autorise la suppression du fichier après le traitemebt
+        deleteFile: false //Autorise la suppression du fichier après le traitement
     }
  ```
 

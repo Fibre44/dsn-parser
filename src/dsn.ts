@@ -81,6 +81,7 @@ export type EmployeeObject = {
 }
 
 export type WorkStoppingObject = {
+    employeeId: string
     reasonStop: string,
     lastDayWorked: string,
     estimatedEndDate: string,
@@ -92,7 +93,9 @@ export type WorkStoppingObject = {
     recoveryDate?: string,
     reasonRecovery?: string,
     dateWorkAccident?: string,
-    SIRETCentralizer?: string
+    SIRETCentralizer?: string,
+    date: string,
+    siret: string
 }
 
 export type WorkContractObject = {
@@ -174,8 +177,6 @@ export type WorkContractObject = {
     cti?: string,
     finess?: string,
     date: string
-
-
 }
 type Society = {
     collection: string,
@@ -405,7 +406,9 @@ type AssignementObject = {
 
 export type MobilityObject = {
     rate: string,
-    insee: string
+    insee: string,
+    siret: string,
+    date: string
 }
 
 //Norme DSN 2022 = https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf
@@ -778,8 +781,8 @@ export class DsnParser {
         return workContractList
     }
 
-    get workStopping(): WorkContractObject[] {
-        const workStoppingList: WorkContractObject[] = []
+    get workStopping(): WorkStoppingObject[] {
+        const workStoppingList: WorkStoppingObject[] = []
 
         for (let numSS of this.numSSList) {
             let workStoppingFilter = this.workStoppingList.filter(workStopping => workStopping.numSS === numSS)
@@ -947,13 +950,17 @@ export class DsnParser {
                 }
             }
             if (rateMobility) {
+                let siret = contribution.siret
+                let date = contribution.date
                 let lastIdInsee = idInseeList.reverse()
                 let concatIdInseeRate = `${lastIdInsee[0]}-${rateMobility}`
                 if (!setRateMobility.has(concatIdInseeRate)) {
                     setRateMobility.add(concatIdInseeRate)
                     rateMobilityList.push({
                         rate: rateMobility,
-                        insee: lastIdInsee[0]
+                        insee: lastIdInsee[0],
+                        siret,
+                        date
                     })
                 }
             }

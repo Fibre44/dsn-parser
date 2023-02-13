@@ -51,9 +51,9 @@ export type WorkStoppingObject = {
     iban?: string;
     bic?: string;
     recoveryDate?: string;
-    reasonRecovery: string;
-    dateWorkAccident: string;
-    SIRETCentralizer: string;
+    reasonRecovery?: string;
+    dateWorkAccident?: string;
+    SIRETCentralizer?: string;
 };
 export type WorkContractObject = {
     employeeId: string;
@@ -275,7 +275,7 @@ export declare class DsnParser {
     get contributionFund(): ContributionFundObject[];
     get employee(): EmployeeObject[];
     get workContract(): WorkContractObject[];
-    get workStopping(): WorkContractObject[];
+    get workStopping(): WorkStoppingObject[];
     get employeeMutual(): MutualEmployeeObject[];
     get mutual(): MutualObject[];
     get base(): BaseObject[];
