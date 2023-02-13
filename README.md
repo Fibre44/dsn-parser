@@ -18,6 +18,8 @@ Table des matières
 * [Méthode Base assujeti](#baseSubject)
 * [Méthode Contribution](#contribution)
 * [Méthode Arret de travail](#workStopping)
+* [Méthode rateAT](#rateAt)
+* [Méthode rateMobility](#rateMobilty)
 
 
 *******
@@ -28,13 +30,16 @@ Table des matières
 
 Cette librairie permet d'extraire les données d'un fichier au format de la Déclaration Sociale Nominative (DSN). 
 
-La librairie se base sur le [cahier technique 2022 ](https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf "norme DSN 2022"). La librairie ne prendra en charge que la derière norme en application du cahier technique.
+La librairie se base sur le [cahier technique 2023 ](https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2023.1.pdf "norme DSN 2022"). Le parser est capable de gérer les normes :
+* 2022
+* 2023
 
 La librairie permet de d'obtenir :
 * Les informations du fichier DSN (éditeur, logicel de paie)
 * Les informations de la société
 * Les informations des établissements
 * Les taux AT
+* Les taux du versment mobilité
 * Les organismes de cotisations
 * La liste des libellés emplois
 * La liste des salariés
@@ -42,6 +47,7 @@ La librairie permet de d'obtenir :
 * Les bases assujetis
 * Les affiliations aux organismes de prévoyances des salariés
 * Le détail des cotisations salariés
+* Les absences des salariés
 
 <div id='instal'>  
 
@@ -401,5 +407,33 @@ La méthode retourne un tableau d'objets
       dateWorkAccident?: string,
       SIRETCentralizer?: string
   }
+ ]
+```
+<div id='rateAt'>  
+
+La méthode retourne un tableau d'objets
+
+```typescript
+ [
+    
+    {
+      code: string,
+      rate: string,
+      siret: string,
+      date: string
+    }
+ ]
+```
+
+<div id='rateMobility'>  
+
+La méthode retourne un tableau d'objets
+
+```typescript
+ [
+    {
+        rate: string,
+        insee: string
+    }
  ]
 ```
