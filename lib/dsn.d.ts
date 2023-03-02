@@ -1,3 +1,4 @@
+import { field } from './utils/extraction';
 export type DsnObject = {
     softwareName: string;
     provider: string;
@@ -17,6 +18,17 @@ export type SocietyObject = {
     zipCode: string;
     city: string;
     date: string;
+};
+export type BonusObject = {
+    siren: string;
+    date: string;
+    employeeId: string;
+    typeBonus: string;
+    amountBonus: string;
+    dateStartBonus: string;
+    dateEndBonus: string;
+    contractIdBonus: string;
+    datePaymentBonus: string;
 };
 export type EmployeeObject = {
     numSS: string;
@@ -42,6 +54,7 @@ export type EmployeeObject = {
     ntt?: string;
 };
 export type WorkStoppingObject = {
+    employeeId: string;
     reasonStop: string;
     lastDayWorked: string;
     estimatedEndDate: string;
@@ -54,6 +67,8 @@ export type WorkStoppingObject = {
     reasonRecovery?: string;
     dateWorkAccident?: string;
     SIRETCentralizer?: string;
+    date: string;
+    siret: string;
 };
 export type WorkContractObject = {
     employeeId: string;
@@ -242,6 +257,8 @@ type AssignementObject = {
 export type MobilityObject = {
     rate: string;
     insee: string;
+    siret: string;
+    date: string;
 };
 export declare class DsnParser {
     private dsnVersion;
@@ -262,6 +279,7 @@ export declare class DsnParser {
     private numSSEmployeeIdList;
     private contributionList;
     private workStoppingList;
+    private bonusList;
     private establishmentContributionList;
     private siren;
     private date;
@@ -284,5 +302,12 @@ export declare class DsnParser {
     get assignement(): AssignementObject[];
     get rateMobility(): MobilityObject[];
     get rateAt(): atObject[];
+    get extraction(): {
+        collection: string;
+        field: field;
+        name: string;
+        dsnStructure: string;
+    }[];
+    get bonus(): BonusObject[];
 }
 export {};

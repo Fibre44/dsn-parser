@@ -1,6 +1,6 @@
-import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject } from "../dsn"
+import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject } from "../dsn"
 type extractions = extraction[]
-export type field = keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | 'id'
+export type field = keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | 'id'
 type extraction = {
     collection: string,
     field: field,
@@ -794,6 +794,42 @@ export const extractionsList: extractions = [
         field: 'finess',
         name: `FINESS géographique`,
         dsnStructure: 'S21.G00.40.081'
+    },
+    {
+        collection: 'Bonus',
+        field: 'typeBonus',
+        name: `Type`,
+        dsnStructure: 'S21.G00.52.001'
+    },
+    {
+        collection: 'Bonus',
+        field: 'amountBonus',
+        name: `Montant`,
+        dsnStructure: 'S21.G00.52.002'
+    },
+    {
+        collection: 'Bonus',
+        field: 'dateStartBonus',
+        name: `Date de début de la période de rattachement`,
+        dsnStructure: 'S21.G00.52.003'
+    },
+    {
+        collection: 'Bonus',
+        field: 'dateEndBonus',
+        name: `Date de fin de la période de rattachement`,
+        dsnStructure: 'S21.G00.52.004'
+    },
+    {
+        collection: 'Bonus',
+        field: 'contractIdBonus',
+        name: `Numéro du contrat`,
+        dsnStructure: 'S21.G00.52.006'
+    },
+    {
+        collection: 'Bonus',
+        field: 'datePaymentBonus',
+        name: `Date de versement d'origine`,
+        dsnStructure: 'S21.G00.52.007'
     },
     {
         collection: 'WorkStopping',

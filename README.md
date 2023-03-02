@@ -20,6 +20,7 @@ Table des matières
 * [Méthode Arret de travail](#workStopping)
 * [Méthode rateAT](#rateAt)
 * [Méthode rateMobility](#rateMobility)
+* [Méthode bonus](#bonus)
 
 
 *******
@@ -75,7 +76,7 @@ const options = {
         deleteFile: false
     }
 try {
-  await dsn.asyncInit(path, options)
+  await dsn.asyncInit(dir, options)
 } catch (e) {
     console.error(e)
 }
@@ -434,6 +435,26 @@ La méthode retourne un tableau d'objets
     {
         rate: string,
         insee: string
+    }
+ ]
+```
+
+<div id='bonus'>  
+
+La méthode retourne un tableau d'objets
+
+```typescript
+ [
+    {
+      siren: string,
+      date: string
+      employeeId: string,
+      typeBonus: string,
+      amountBonus: string,
+      dateStartBonus: string,
+      dateEndBonus: string,
+      contractIdBonus: string,
+      datePaymentBonus: string
     }
  ]
 ```

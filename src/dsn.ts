@@ -14,6 +14,7 @@ type baseSubjectList = BaseSubject[]
 type contributionList = Contribution[]
 type establishmentContributionList = EstablishmentContribution[]
 type WorkStoppingList = WorkStopping[]
+type BonusList = Bonus[]
 type workContractDefinition = {
     collection: string,
     field: string,
@@ -53,6 +54,18 @@ export type SocietyObject = {
     zipCode: string,
     city: string,
     date: string
+}
+
+export type BonusObject = {
+    siren: string,
+    date: string
+    employeeId: string,
+    typeBonus: string,
+    amountBonus: string,
+    dateStartBonus: string,
+    dateEndBonus: string,
+    contractIdBonus: string,
+    datePaymentBonus: string
 }
 
 export type EmployeeObject = {
@@ -297,6 +310,17 @@ type Employee = {
     date: string
 }
 
+type Bonus = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    siren: string,
+    numSS: string,
+    date: string
+}
+
+
 export type BaseObject = {
     employeeId: string,
     idBase: string,
@@ -433,6 +457,7 @@ export class DsnParser {
     private numSSEmployeeIdList: NumSSEmployeeId[] = []
     private contributionList: contributionList = []
     private workStoppingList: WorkStoppingList = []
+    private bonusList: BonusList = []
     private establishmentContributionList: establishmentContributionList = []
     private siren: string = ''
     private date = ''
@@ -622,6 +647,16 @@ export class DsnParser {
                             }
                         }
 
+                        break
+                    case 'Bonus':
+                        let addBonus: Bonus = {
+                            ...findStructure,
+                            value,
+                            numSS,
+                            siren: this.siren,
+                            date: this.date
+                        }
+                        this.bonusList.push(addBonus)
                         break
                     case 'Base':
                         if (lineSplit[0] === 'S21.G00.78.001') {
@@ -1007,6 +1042,32 @@ export class DsnParser {
         return rateAtList
     }
 
+    get extraction() {
+        return this.extractions
+    }
+
+    get bonus(): BonusObject[] {
+        const bonusList: BonusObject[] = []
+        //On tourne par salarié
+        for (let numSS of this.numSSList) {
+            let bonusEmployeeFilter = this.bonusList.filter(m => m.numSS === numSS)
+            let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
+            if (bonusEmployeeFilter && employeeId) {
+                let bonusObject: any = {}
+                for (let bonus of bonusEmployeeFilter) {
+                    bonusObject[bonus.field] = bonus.value
+                }
+                bonusObject['employeeId'] = employeeId.employeeId
+                bonusObject['date'] = this.date
+                if (bonusObject.amountBonus) {
+                    bonusList.push(bonusObject)
+                }
+
+            }
+        }
+        return bonusList
+
+    }
 }
 
 
