@@ -8,7 +8,7 @@
     "url": "https://github.com/Fibre44/dsn-parser.git"
   },
   "name": "@fibre44/dsn-parser",
-  "version": "0.7.7",
+  "version": "0.8.0",
   "description": "Un parser pour la Déclaration Sociale Nominative",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",

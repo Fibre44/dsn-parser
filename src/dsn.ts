@@ -15,6 +15,11 @@ type contributionList = Contribution[]
 type establishmentContributionList = EstablishmentContribution[]
 type WorkStoppingList = WorkStopping[]
 type BonusList = Bonus[]
+type ChangeWorkContractList = ChangeWorkContractDefinition[]
+type IndividualPaymentList = IndividualPayment[]
+type PayroolList = Payrool[]
+type OtherPaymentList = OtherPayment[]
+
 type workContractDefinition = {
     collection: string,
     field: string,
@@ -120,6 +125,7 @@ export type WorkContractObject = {
     pcsBis: string,
     employmentLabel: string,
     contract: string,
+    contractId: string,
     publicDispPolitic: string,
     contractEndDate: string,
     DNACodeUnitTime: string,
@@ -215,6 +221,85 @@ export type EstablishmentObject = {
     codeZip: string
     city: string,
     date: string
+}
+
+export type ChangeWockContractObject = {
+    employeeId: string,
+    date: string,
+    changeDate: string,
+    oldStatus: string,
+    oldRetirement: string,
+    oldContract: string,
+    oldSystemConvention: string,
+    oldUnitQuota: string,
+    oldQuota: string,
+    oldModeWorkingTime: string,
+    oldSS: string,
+    oldCCN: string,
+    oldEstablishment: string,
+    oldWorkPlace: string,
+    oldContractId: string,
+    oldReason: string,
+    oldProfessionnalFees: string,
+    oldForeigner: string,
+    oldPCS: string,
+    oldPCSFP: string,
+    oldContractStartDate: string,
+    oldQuotite: string,
+    oldPaidHolidays: string,
+    oldAPECITA: string,
+    oldPartTime: string,
+    oldPayroolDepth: string,
+    oldFPPCS: string,
+    oldPost: string,
+    oldFPQuotite: string,
+    oldPartTimePercentage: string,
+    oldService: string,
+    oldFPIndice: string,
+    oldFPIndiceMaj: string,
+    oldFPNBI: string,
+    oldFpIndiceBrutOrigine: string,
+    oldArticle15: string,
+    oldFPEmployer: string,
+    oldEmployeeFPIndiceBrut: string,
+    oldSPP: string,
+    oldTitulaire: string,
+    oldActitRate: string,
+    oldLevelPayroll: string,
+    oldEchelon: string,
+    oldCoeff: string,
+    oldNav: string,
+    oldBOETH: string,
+    oldPublicLaw: string,
+    oldDispo: string,
+    oldClass: string,
+    oldMal: string,
+    oldVieil: string,
+    oldMarine: string,
+    oldCNIEG: string,
+    oldPartAct: string,
+    oldFPDetachment: string,
+    oldPosiCCN: string,
+    oldAT: string,
+    oldStatusEmployee: string,
+    oldMultiple: string,
+    oldRank: string,
+    oldFPCTI: string,
+    oldFINES: string,
+
+}
+
+type ChangeWorkContractDefinition = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    name: string,
+    value: string,
+    numSS: string,
+    siren: string,
+    date: string,
+    siret: string
+    contractId: string
 }
 type Establishment = {
     collection: string,
@@ -319,7 +404,6 @@ type Bonus = {
     numSS: string,
     date: string
 }
-
 
 export type BaseObject = {
     employeeId: string,
@@ -435,6 +519,74 @@ export type MobilityObject = {
     date: string
 }
 
+export type IndividualPaymentObject = {
+    employeeId: string,
+    contractId: string,
+    datePayment: string,
+    netTaxRem: string,
+    paymentNumber: string,
+    netAmount: string,
+    taxRate: string,
+    typeTaxRate: string,
+    idTaxRate: string,
+    amountTax: string,
+    amountExo: string,
+    amountExoBase: string,
+    amoutPas: string,
+}
+
+type IndividualPayment = {
+    collection: string,
+    contractId: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    siren: string,
+    numSS: string,
+    date: string
+}
+export type PayroolObject = {
+    employeeId: string,
+    startDatePayrool: string,
+    endDatePayrool: string,
+    contractId: string,
+    type: string,
+    hours: string,
+    amount: string,
+    fpRate?: string,
+    rateNuclearPlant?: string,
+    datePayTypement: string,
+    contributedrate: string,
+    increaseRate: string
+}
+type Payrool = {
+    collection: string,
+    contractId: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    siren: string,
+    numSS: string,
+    date: string
+}
+export type OtherPaymentObject = {
+    employeeId: string,
+    contractId: string,
+    type: string,
+    amount: string,
+    startDateOtherPayment: string,
+    endDateOtherPayment: string
+}
+type OtherPayment = {
+    collection: string,
+    contractId: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    siren: string,
+    numSS: string,
+    date: string
+}
 //Norme DSN 2022 = https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf
 //NodeJs readline =https://nodejs.org/api/readline.html
 
@@ -459,8 +611,13 @@ export class DsnParser {
     private workStoppingList: WorkStoppingList = []
     private bonusList: BonusList = []
     private establishmentContributionList: establishmentContributionList = []
+    private changeWorkContractList: ChangeWorkContractList = []
+    private payroolList: PayroolList = []
+    private otherPaymentList: OtherPaymentList = []
+    private individualPayementList: IndividualPaymentList = []
     private siren: string = ''
     private date = ''
+
     async asyncInit(dir: string, options = {
         controleDsnVersion: true,
         deleteFile: false
@@ -478,6 +635,7 @@ export class DsnParser {
         let idContribution = ''
         let idBase = ''
         let typeBaseSubject = ''
+        let contractId = ''
         const employeeDatas = []//On va stocker temporairement les valeurs du salarié pour la gestion des NTT
         for await (const line of rl) {
             //let lineSplit = line.split(',\'')
@@ -544,6 +702,9 @@ export class DsnParser {
 
                         break
                     case 'WorkContract':
+                        if (lineSplit[0] === 'S21.G00.40.009') {
+                            contractId = value
+                        }
                         let addRoWWorkContract: workContractDefinition = {
                             ...findStructure,
                             value,
@@ -554,7 +715,17 @@ export class DsnParser {
                         }
                         this.workContractList.push(addRoWWorkContract)
                         break
-
+                    case 'ChangWorkContract':
+                        let addRowChangWorkContract: ChangeWorkContractDefinition = {
+                            ...findStructure,
+                            value,
+                            siren: this.siren,
+                            date: this.date,
+                            siret,
+                            numSS,
+                            contractId
+                        }
+                        break
                     case 'Mutual':
                         if (lineSplit[0] === 'S21.G00.15.005') {
                             mutualId = value
@@ -701,6 +872,40 @@ export class DsnParser {
                         }
                         this.contributionList.push(addContribution)
                         break
+                    case 'IndividualPayment':
+                        let addIndividualPayement: IndividualPayment = {
+                            ...findStructure,
+                            value,
+                            numSS,
+                            siren: this.siren,
+                            date: this.date,
+                            contractId
+                        }
+                        this.individualPayementList.push(addIndividualPayement)
+
+                        break
+                    case 'Payrool':
+                        let addPayrool: Payrool = {
+                            ...findStructure,
+                            value,
+                            numSS,
+                            siren: this.siren,
+                            date: this.date,
+                            contractId
+                        }
+                        this.payroolList.push(addPayrool)
+                        break
+                    case 'OtherPayment':
+                        let otherPayment: OtherPayment = {
+                            ...findStructure,
+                            value,
+                            numSS,
+                            siren: this.siren,
+                            date: this.date,
+                            contractId
+                        }
+                        this.otherPaymentList.push(otherPayment)
+                        break
                     case 'EstablishmentContribution':
                         let addEstablishementContrubution: EstablishmentContribution = {
                             ...findStructure,
@@ -798,6 +1003,7 @@ export class DsnParser {
         }
         return employeeList
     }
+
     get workContract(): WorkContractObject[] {
         const workContractList = []
         for (let numSS of this.numSSList) {
@@ -816,6 +1022,23 @@ export class DsnParser {
         return workContractList
     }
 
+    get changWorkContract(): ChangeWockContractObject[] {
+        const changeWorkContractList: ChangeWockContractObject[] = []
+        for (let numSS of this.numSSList) {
+            let changeWorkContractFilter = this.changeWorkContractList.filter(contract => contract.numSS === numSS)
+            let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
+            if (changeWorkContractFilter && employeeId) {
+                let changeWorContractObject: any = {}
+                for (let change of changeWorkContractFilter) {
+                    changeWorContractObject[change.field] = change.value
+                }
+                changeWorContractObject['employeeId'] = employeeId.employeeId
+                changeWorContractObject['date'] = this.date
+                changeWorkContractList.push(changeWorContractObject)
+            }
+        }
+        return changeWorkContractList
+    }
     get workStopping(): WorkStoppingObject[] {
         const workStoppingList: WorkStoppingObject[] = []
 
@@ -1067,6 +1290,59 @@ export class DsnParser {
         }
         return bonusList
 
+    }
+
+    get individualPayment(): IndividualPaymentObject[] {
+        const individualPaymentList: IndividualPaymentObject[] = []
+        for (let numSS of this.numSSList) {
+            let individualPaymentFilter = this.individualPayementList.filter(payment => payment.numSS === numSS)
+            let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
+            if (individualPaymentFilter && employeeId) {
+                let individualPaymentObject: any = {}
+                for (let invidualPayment of individualPaymentFilter) {
+                    individualPaymentObject[invidualPayment.field] = invidualPayment.value
+                }
+                individualPaymentObject['employeeId'] = employeeId.employeeId
+                individualPaymentObject['date'] = this.date
+                individualPaymentList.push(individualPaymentObject)
+            }
+        }
+        return individualPaymentList
+    }
+
+    get payrool(): PayroolObject[] {
+        const payroolList: PayroolObject[] = []
+        for (let numSS of this.numSSList) {
+            let payroolFilter = this.payroolList.filter(payrool => payrool.numSS === numSS)
+            let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
+            if (payroolFilter && employeeId) {
+                let payroolObject: any = {}
+                for (let payrool of payroolFilter) {
+                    payroolObject[payrool.field] = payrool.value
+                }
+                payroolObject['employeeId'] = employeeId.employeeId
+                payroolObject['date'] = this.date
+                payroolList.push(payroolObject)
+            }
+        }
+        return payroolList
+    }
+    get otherPayment(): OtherPaymentObject[] {
+        const otherPaymentList: OtherPaymentObject[] = []
+        for (let numSS of this.numSSList) {
+            let otherPaymentList = this.otherPaymentList.filter(other => other.numSS === numSS)
+            let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
+            if (otherPaymentList && employeeId) {
+                let otherObject: any = {}
+                for (let other of otherPaymentList) {
+                    otherObject[other.field] = other.value
+                }
+                otherObject['employeeId'] = employeeId.employeeId
+                otherObject['date'] = this.date
+                otherPaymentList.push(otherObject)
+            }
+        }
+        return otherPaymentList
     }
 }
 

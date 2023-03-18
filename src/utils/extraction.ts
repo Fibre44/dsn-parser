@@ -1,6 +1,6 @@
-import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject } from "../dsn"
+import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject } from "../dsn"
 type extractions = extraction[]
-export type field = keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | 'id'
+export type field = keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
 type extraction = {
     collection: string,
     field: field,
@@ -796,6 +796,511 @@ export const extractionsList: extractions = [
         dsnStructure: 'S21.G00.40.081'
     },
     {
+        collection: 'ChangWorkContract',
+        field: 'changeDate',
+        name: `Date de la modification`,
+        dsnStructure: 'S21.G00.41.001'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldStatus',
+        name: `Ancien statut du salarié (conventionnel)`,
+        dsnStructure: 'S21.G00.41.002'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldRetirement',
+        name: `Ancien code statut catégoriel Retraite Complémentaire obligatoire`,
+        dsnStructure: 'S21.G00.41.003'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldContract',
+        name: `Ancienne nature du contrat`,
+        dsnStructure: 'S21.G00.41.004'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldSystemConvention',
+        name: `Ancien dispositif de politique publique et conventionnel`,
+        dsnStructure: 'S21.G00.41.005'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldUnitQuota',
+        name: `Ancienne unité de mesure de la quotité de travail`,
+        dsnStructure: 'S21.G00.41.006'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldQuota',
+        name: `Ancienne quotité de travail du contrat`,
+        dsnStructure: 'S21.G00.41.007'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldModeWorkingTime',
+        name: `Ancienne modalité d'exercice du temps de travail `,
+        dsnStructure: 'S21.G00.41.008'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldSS',
+        name: `Ancien complément de base au régime obligatoire`,
+        dsnStructure: 'S21.G00.41.010'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldCCN',
+        name: `Ancien code convention collective applicable`,
+        dsnStructure: 'S21.G00.41.011'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldEstablishment',
+        name: `SIRET ancien établissement d'affectation`,
+        dsnStructure: 'S21.G00.41.012'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldWorkPlace',
+        name: `Ancien identifiant du lieu de travail`,
+        dsnStructure: 'S21.G00.41.013'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldContractId',
+        name: `Ancien numéro du contrat`,
+        dsnStructure: 'S21.G00.41.014'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldReason',
+        name: `Ancien motif de recours `,
+        dsnStructure: 'S21.G00.41.016'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldProfessionnalFees',
+        name: `Ancien taux de déduction forfaitaire spécifique pour frais professionnels`,
+        dsnStructure: 'S21.G00.41.017'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldForeigner',
+        name: `Ancien travailleur à l'étranger au sens du code de la Sécurité Sociale`,
+        dsnStructure: 'S21.G00.41.018'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldPCS',
+        name: `Ancien code profession et catégorie socioprofessionnelle (PCS-ESE)`,
+        dsnStructure: 'S21.G00.41.019'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldPCSFP',
+        name: `Ancien code complément PCS-ESE (pour la fonction publique : référentiels NEH, NET et grade de la NNE)`,
+        dsnStructure: 'S21.G00.41.020'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldContractStartDate',
+        name: `Ancienne date de début du contrat`,
+        dsnStructure: 'S21.G00.41.021'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldQuotite',
+        name: `Ancienne quotité de travail de référence de l'entreprise pour la catégorie de salarié`,
+        dsnStructure: 'S21.G00.41.022'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldModeWorkingTime',
+        name: `Ancien code caisse professionnelle de congés payés `,
+        dsnStructure: 'S21.G00.41.023'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldPaidHolidays',
+        name: `Ancien code risque accident du travail`,
+        dsnStructure: 'S21.G00.41.024'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldAPECITA',
+        name: `Ancien code statut catégoriel APECITA`,
+        dsnStructure: 'S21.G00.41.025'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldPartTime',
+        name: `Ancien salarié à temps partiel cotisant à temps plein`,
+        dsnStructure: 'S21.G00.41.027'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldPayroolDepth',
+        name: `Profondeur de recalcul de la paie`,
+        dsnStructure: 'S21.G00.41.028'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldFPPCS',
+        name: `[FP] Ancien code complément PCS-ESE pour la fonction publique d'Etat (emploi de la NNE) `,
+        dsnStructure: 'S21.G00.41.029'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldPost',
+        name: `Ancienne nature du poste`,
+        dsnStructure: 'S21.G00.41.030'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldFPQuotite',
+        name: `[FP] Ancienne quotité de travail de référence de l'entreprise pour la catégorie de salarié dans
+l’hypothèse d’un poste à temps complet`,
+        dsnStructure: 'S21.G00.41.031'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldPartTimePercentage',
+        name: `Ancien taux de travail à temps partiel `,
+        dsnStructure: 'S21.G00.41.032'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldService',
+        name: `Ancien code catégorie de service`,
+        dsnStructure: 'S21.G00.41.033'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldFPIndice',
+        name: `[FP] Ancien indice brut`,
+        dsnStructure: 'S21.G00.41.034'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldFPIndiceMaj',
+        name: `[FP] Ancien indice majoré`,
+        dsnStructure: 'S21.G00.41.035'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldFPNBI',
+        name: `[FP] Ancienne nouvelle bonification indiciaire (NBI)`,
+        dsnStructure: 'S21.G00.41.036'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldFpIndiceBrutOrigine',
+        name: `[FP] Ancien indice brut d'origine `,
+        dsnStructure: 'S21.G00.41.037'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldArticle15',
+        name: `[FP] Ancien indice brut de cotisation dans un emploi supérieur (article 15)`,
+        dsnStructure: 'S21.G00.41.038'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldFPEmployer',
+        name: `[FP] Ancien ancien employeur public`,
+        dsnStructure: 'S21.G00.41.039'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldEmployeeFPIndiceBrut',
+        name: `[FP] Ancien indice brut d’origine ancien salarié employeur public`,
+        dsnStructure: 'S21.G00.41.040'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldSPP',
+        name: `[FP] Ancien indice brut d’origine sapeur-pompier professionnel (SPP)`,
+        dsnStructure: 'S21.G00.41.041'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldTitulaire',
+        name: `[FP] Ancien maintien du traitement d'origine d'un contractuel titulaire`,
+        dsnStructure: 'S21.G00.41.042'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldActitRate',
+        name: `Ancien taux de service actif`,
+        dsnStructure: 'S21.G00.41.043'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldLevelPayroll',
+        name: `Ancien niveau de rémunération`,
+        dsnStructure: 'S21.G00.41.044'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldEchelon',
+        name: `Ancien échelon`,
+        dsnStructure: 'S21.G00.41.045'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldCoeff',
+        name: `Ancien coefficient hiérarchique`,
+        dsnStructure: 'S21.G00.41.046'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldNav',
+        name: `Ancien genre de navigation`,
+        dsnStructure: 'S21.G00.41.047'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldBOETH',
+        name: `Ancien statut BOETH`,
+        dsnStructure: 'S21.G00.41.048'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldPublicLaw',
+        name: `Ancien complément de dispositif de politique publique`,
+        dsnStructure: 'S21.G00.41.049'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldDispo',
+        name: `Ancien cas de mise à disposition externe d'un individu de l'établissement`,
+        dsnStructure: 'S21.G00.41.050'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldClass',
+        name: `Ancienne catégorie de classement finale`,
+        dsnStructure: 'S21.G00.41.051'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldMal',
+        name: `Ancien code régime de base risque maladie`,
+        dsnStructure: 'S21.G00.41.052'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldVieil',
+        name: `Ancien code régime de base risque vieillesse`,
+        dsnStructure: 'S21.G00.41.053'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldMarine',
+        name: `Ancien identifiant du contrat d'engagement maritime`,
+        dsnStructure: 'S21.G00.41.054'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldCNIEG',
+        name: `Ancien collège (CNIEG)`,
+        dsnStructure: 'S21.G00.41.055'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldPartAct',
+        name: `Ancienne forme d'aménagement du temps de travail dans le cadre de l'activité partielle)`,
+        dsnStructure: 'S21.G00.41.056'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldFPDetachment',
+        name: `[FP] Ancien type de détachement`,
+        dsnStructure: 'S21.G00.41.057'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldPosiCCN',
+        name: `Ancien positionnement dans la convention collective`,
+        dsnStructure: 'S21.G00.41.058'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldAT',
+        name: `Ancien code régime de base risque accident du travail`,
+        dsnStructure: 'S21.G00.41.059'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldStatusEmployee',
+        name: `Ancien statut d'emploi du salarié`,
+        dsnStructure: 'S21.G00.41.060'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldMultiple',
+        name: `Ancien code emplois multiples`,
+        dsnStructure: 'S21.G00.41.061'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldModeWorkingTime',
+        name: `Ancien code employeurs multiples`,
+        dsnStructure: 'S21.G00.41.062'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldRank',
+        name: `Ancien grade`,
+        dsnStructure: 'S21.G00.41.063'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldFPCTI',
+        name: `[FP] Ancien indice complément de traitement indiciaire (CTI)`,
+        dsnStructure: 'S21.G00.41.064'
+    },
+    {
+        collection: 'ChangWorkContract',
+        field: 'oldFINES',
+        name: `Ancien FINESS géographique`,
+        dsnStructure: 'S21.G00.41.065'
+    },
+    {
+        collection: 'IndividualPayment',
+        field: 'datePayment',
+        name: `Date de versement`,
+        dsnStructure: 'S21.G00.50.001'
+    },
+    {
+        collection: 'IndividualPayment',
+        field: 'netTaxRem',
+        name: `Rémunération nette fiscale`,
+        dsnStructure: 'S21.G00.50.002'
+    },
+    {
+        collection: 'IndividualPayment',
+        field: 'paymentNumber',
+        name: `Numéro de versement`,
+        dsnStructure: 'S21.G00.50.003'
+    },
+    {
+        collection: 'IndividualPayment',
+        field: 'netAmount',
+        name: `Montant net versé`,
+        dsnStructure: 'S21.G00.50.004'
+    },
+    {
+        collection: 'IndividualPayment',
+        field: 'taxRate',
+        name: `Taux de prélèvement à la source`,
+        dsnStructure: 'S21.G00.50.006'
+    },
+    {
+        collection: 'IndividualPayment',
+        field: 'typeTaxRate',
+        name: `Type du taux de prélèvement à la source`,
+        dsnStructure: 'S21.G00.50.007'
+    },
+    {
+        collection: 'IndividualPayment',
+        field: 'idTaxRate',
+        name: `Identifiant du taux de prélèvement à la source`,
+        dsnStructure: 'S21.G00.50.008'
+    },
+    {
+        collection: 'IndividualPayment',
+        field: 'amountTax',
+        name: `Montant de prélèvement à la source `,
+        dsnStructure: 'S21.G00.50.009'
+    },
+    {
+        collection: 'IndividualPayment',
+        field: 'amountExo',
+        name: `Montant de la part non imposable du revenu`,
+        dsnStructure: 'S21.G00.50.011'
+    },
+    {
+        collection: 'IndividualPayment',
+        field: 'amountExoBase',
+        name: `Montant de l’abattement sur la base fiscale (non déduit de la rémunération nette fiscale)`,
+        dsnStructure: 'S21.G00.50.012'
+    },
+    {
+        collection: 'IndividualPayment',
+        field: 'amoutPas',
+        name: `Montant soumis au PAS`,
+        dsnStructure: 'S21.G00.50.013'
+    },
+    {
+        collection: 'Payrool',
+        field: 'startDatePayrool',
+        name: `Date de début de période de paie`,
+        dsnStructure: 'S21.G00.51.001'
+    },
+    {
+        collection: 'Payrool',
+        field: 'endDatePayrool',
+        name: `Date de fin de période de paie`,
+        dsnStructure: 'S21.G00.51.002'
+    },
+    {
+        collection: 'Payrool',
+        field: 'contractId',
+        name: `Numéro du contrat`,
+        dsnStructure: 'S21.G00.51.010'
+    },
+    {
+        collection: 'Payrool',
+        field: 'type',
+        name: `Type`,
+        dsnStructure: 'S21.G00.51.011'
+    },
+    {
+        collection: 'Payrool',
+        field: 'hours',
+        name: `Nombre d'heures`,
+        dsnStructure: 'S21.G00.51.012'
+    },
+    {
+        collection: 'Payrool',
+        field: 'amount',
+        name: `Montant`,
+        dsnStructure: 'S21.G00.51.013'
+    },
+    {
+        collection: 'Payrool',
+        field: 'fpRate',
+        name: `[FP] Taux de rémunération de la situation administrative`,
+        dsnStructure: 'S21.G00.51.014'
+    },
+    {
+        collection: 'Payrool',
+        field: 'rateNuclearPlant',
+        name: `Taux de conduite centrale nucléaire`,
+        dsnStructure: 'S21.G00.51.015'
+    },
+    {
+        collection: 'Payrool',
+        field: 'datePayTypement',
+        name: `Taux de majoration `,
+        dsnStructure: 'S21.G00.51.016'
+    },
+    {
+        collection: 'Payrool',
+        field: 'contributedrate',
+        name: `Taux de rémunération cotisée`,
+        dsnStructure: 'S21.G00.51.019'
+    },
+    {
+        collection: 'Payrool',
+        field: 'increaseRate',
+        name: `Taux de majoration ex-apprenti/ex-élève`,
+        dsnStructure: 'S21.G00.51.020'
+    },
+    {
         collection: 'Bonus',
         field: 'typeBonus',
         name: `Type`,
@@ -830,6 +1335,30 @@ export const extractionsList: extractions = [
         field: 'datePaymentBonus',
         name: `Date de versement d'origine`,
         dsnStructure: 'S21.G00.52.007'
+    },
+    {
+        collection: 'OtherPayment',
+        field: 'type',
+        name: `Type`,
+        dsnStructure: 'S21.G00.54.001'
+    },
+    {
+        collection: 'OtherPayment',
+        field: 'amount',
+        name: `Montant`,
+        dsnStructure: 'S21.G00.54.002'
+    },
+    {
+        collection: 'OtherPayment',
+        field: 'startDateOtherPayment',
+        name: `Date de début de période de rattachement`,
+        dsnStructure: 'S21.G00.54.003'
+    },
+    {
+        collection: 'OtherPayment',
+        field: 'endDateOtherPayment',
+        name: `Date de fin de période de rattachement`,
+        dsnStructure: 'S21.G00.54.004'
     },
     {
         collection: 'WorkStopping',
