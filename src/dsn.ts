@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import readline from 'node:readline';
 import { ops } from './utils/ops';
 import { workContract } from './utils/workContract';
-import { extractionsList, field } from './utils/extraction';
+import { extractionsList } from './utils/extraction';
 type societyList = Society[]
 type establishmentList = Establishment[]
 type dsnList = Dsn[]
@@ -42,6 +42,7 @@ export type DsnObject = {
     month: string
 
 }
+
 type Dsn = {
     collection: string,
     field: string,
@@ -65,6 +66,7 @@ export type BonusObject = {
     siren: string,
     date: string
     employeeId: string,
+    numSS: string,
     typeBonus: string,
     amountBonus: string,
     dateStartBonus: string,
@@ -98,8 +100,10 @@ export type EmployeeObject = {
 
 }
 
+
 export type WorkStoppingObject = {
-    employeeId: string
+    employeeId: string,
+    numSS: string,
     reasonStop: string,
     lastDayWorked: string,
     estimatedEndDate: string,
@@ -118,6 +122,7 @@ export type WorkStoppingObject = {
 
 export type WorkContractObject = {
     employeeId: string,
+    numSS: string,
     startDate: string,
     status: string,
     retirement: string,
@@ -225,6 +230,8 @@ export type EstablishmentObject = {
 
 export type ChangeWockContractObject = {
     employeeId: string,
+    contractId: string,
+    numSS: string,
     date: string,
     changeDate: string,
     oldStatus: string,
@@ -367,6 +374,7 @@ export type MutualObject = {
 
 export type MutualEmployeeObject = {
     employeeId: string,
+    numSS: string,
     option: string,
     pop: string,
     children: string,
@@ -407,6 +415,7 @@ type Bonus = {
 
 export type BaseObject = {
     employeeId: string,
+    numSS: string,
     idBase: string,
     startDate: string,
     endDate: string,
@@ -419,6 +428,7 @@ export type BaseObject = {
 
 export type BaseSubjectObject = {
     employeeId: string,
+    numSS: string,
     typeBaseSubject: string,
     amountBaseSubject: string,
     crmBaseSubject?: string,
@@ -452,6 +462,7 @@ type BaseSubject = {
 
 export type ContributionObject = {
     employeeId: string,
+    numSS: string,
     idContribution: string,
     ops: string,
     baseContribution: string,
@@ -521,6 +532,7 @@ export type MobilityObject = {
 
 export type IndividualPaymentObject = {
     employeeId: string,
+    numSS: string,
     contractId: string,
     datePayment: string,
     netTaxRem: string,
@@ -547,6 +559,7 @@ type IndividualPayment = {
 }
 export type PayroolObject = {
     employeeId: string,
+    numSS: string,
     startDatePayrool: string,
     endDatePayrool: string,
     contractId: string,
@@ -571,6 +584,7 @@ type Payrool = {
 }
 export type OtherPaymentObject = {
     employeeId: string,
+    numSS: string,
     contractId: string,
     type: string,
     amount: string,
@@ -587,6 +601,27 @@ type OtherPayment = {
     numSS: string,
     date: string
 }
+
+interface SmartDsn extends DsnObject {
+    society: SmartSociety,
+    employees: SmartEmployee[]
+}
+
+interface SmartSociety extends SocietyObject {
+    establishments: EstablishmentObject[]
+}
+
+interface SmartEmployee extends EmployeeObject {
+    workContracts: SmartWorkContract[],
+    workStopping: WorkStoppingObject[],
+    bonus: BonusObject[],
+    mutual: MutualEmployeeObject[]
+}
+
+interface SmartWorkContract extends WorkContractObject {
+    change: ChangeWockContractObject[]
+}
+
 //Norme DSN 2022 = https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf
 //NodeJs readline =https://nodejs.org/api/readline.html
 
@@ -725,6 +760,7 @@ export class DsnParser {
                             numSS,
                             contractId
                         }
+                        this.changeWorkContractList.push(addRowChangWorkContract)
                         break
                     case 'Mutual':
                         if (lineSplit[0] === 'S21.G00.15.005') {
@@ -917,7 +953,7 @@ export class DsnParser {
                         break
                     default:
                         throw new Error(`Le code collection n'existe pas`)
-                        break
+
                 }
             }
         }
@@ -1015,6 +1051,7 @@ export class DsnParser {
                     workContractObject[workContract.field] = workContract.value
                 }
                 workContractObject['employeeId'] = employeeId.employeeId
+                workContractObject['numSS'] = employeeId.numSS
                 workContractObject['date'] = this.date
                 workContractList.push(workContractObject)
             }
@@ -1027,13 +1064,14 @@ export class DsnParser {
         for (let numSS of this.numSSList) {
             let changeWorkContractFilter = this.changeWorkContractList.filter(contract => contract.numSS === numSS)
             let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
-            if (changeWorkContractFilter && employeeId) {
+            if (changeWorkContractFilter.length > 0 && employeeId) {
                 let changeWorContractObject: any = {}
                 for (let change of changeWorkContractFilter) {
                     changeWorContractObject[change.field] = change.value
                 }
                 changeWorContractObject['employeeId'] = employeeId.employeeId
                 changeWorContractObject['date'] = this.date
+                changeWorContractObject['numSS'] = employeeId.numSS
                 changeWorkContractList.push(changeWorContractObject)
             }
         }
@@ -1052,6 +1090,7 @@ export class DsnParser {
                 }
                 workStoppingObject['employeeId'] = employeeId.employeeId
                 workStoppingObject['date'] = this.date
+                workStoppingObject['numSS'] = employeeId.numSS
                 workStoppingList.push(workStoppingObject)
             }
         }
@@ -1060,6 +1099,7 @@ export class DsnParser {
 
     get employeeMutual(): MutualEmployeeObject[] {
         const employeesMutualList: MutualEmployeeObject[] = []
+        const mutualList = this.mutual
         for (let numSS of this.numSSList) {
             let mutualEmployeeFilter = this.mutualEmployeeList.filter(m => m.numSS === numSS)
             let employeeId = this.numSSEmployeeIdList.find(e => e.numSS === numSS)
@@ -1070,10 +1110,24 @@ export class DsnParser {
                 }
                 mutualEmployeeObject['employeeId'] = employeeId.employeeId
                 mutualEmployeeObject['date'] = this.date
+                mutualEmployeeObject['numSS'] = employeeId.numSS
                 employeesMutualList.push(mutualEmployeeObject)
+
             }
         }
-        return employeesMutualList
+        //Dans la DSN les éléments sont stockés dans les blocs S15
+        const mutualEmployeList = []
+        for (let employeeMutual of employeesMutualList) {
+            let mutual = mutualList.find(mutual => mutual.techId === employeeMutual.option)
+            if (mutual) {
+                let mutualEmployeeRow = {
+                    ...employeeMutual,
+                    ...mutual
+                }
+                mutualEmployeList.push(mutualEmployeeRow)
+            }
+        }
+        return mutualEmployeList
     }
     get mutual(): MutualObject[] {
         const mutualList: MutualObject[] = []
@@ -1111,8 +1165,8 @@ export class DsnParser {
                     }
                     baseObject['employeeId'] = employeeId.employeeId
                     baseObject['date'] = this.date
+                    baseObject['numSS'] = employeeId.numSS
                     baseList.push(baseObject)
-
                 }
             }
         }
@@ -1138,12 +1192,23 @@ export class DsnParser {
                     }
                     baseSubjectObject['employeeId'] = employeeId.employeeId
                     baseSubjectObject['date'] = this.date
+                    baseSubjectObject['numSS'] = employeeId.numSS
                     baseSubjectList.push(baseSubjectObject)
 
                 }
             }
         }
         return baseSubjectList
+    }
+
+    get establishmentContribution(): EstablishmentContributionObject[] {
+        const establishmentContributionList: EstablishmentContributionObject[] = []
+
+        for (let establishmentContribution of this.establishmentContributionList) {
+
+        }
+
+        return establishmentContributionList
     }
 
     get contribution(): ContributionObject[] {
@@ -1166,7 +1231,7 @@ export class DsnParser {
                     }
                     contributionObject['employeeId'] = employeeId.employeeId
                     contributionObject['date'] = this.date
-
+                    contributionObject['numSS'] = employeeId.numSS
                     contributionList.push(contributionObject)
                 }
 
@@ -1282,6 +1347,8 @@ export class DsnParser {
                 }
                 bonusObject['employeeId'] = employeeId.employeeId
                 bonusObject['date'] = this.date
+                bonusObject['numSS'] = employeeId.numSS
+
                 if (bonusObject.amountBonus) {
                     bonusList.push(bonusObject)
                 }
@@ -1303,8 +1370,10 @@ export class DsnParser {
                     individualPaymentObject[invidualPayment.field] = invidualPayment.value
                 }
                 individualPaymentObject['employeeId'] = employeeId.employeeId
+                individualPaymentObject['numSS'] = employeeId.numSS
                 individualPaymentObject['date'] = this.date
                 individualPaymentList.push(individualPaymentObject)
+
             }
         }
         return individualPaymentList
@@ -1321,6 +1390,7 @@ export class DsnParser {
                     payroolObject[payrool.field] = payrool.value
                 }
                 payroolObject['employeeId'] = employeeId.employeeId
+                payroolObject['numSS'] = employeeId.numSS
                 payroolObject['date'] = this.date
                 payroolList.push(payroolObject)
             }
@@ -1338,12 +1408,66 @@ export class DsnParser {
                     otherObject[other.field] = other.value
                 }
                 otherObject['employeeId'] = employeeId.employeeId
+                otherObject['numSS'] = employeeId.numSS
                 otherObject['date'] = this.date
                 otherPaymentList.push(otherObject)
             }
         }
         return otherPaymentList
     }
+
+    get smartExtraction(): SmartDsn {
+        const employeesList = this.employee
+        const workContractsList = this.workContract
+        const mutualEmployeeList = this.employeeMutual
+        const dsn = this.dsn
+        const society = this.society
+        const establishmentsList = this.establishment
+        const establishmentsContributionList = this.establishmentContribution
+        const workChangeContractsList = this.changWorkContract
+        const workStoppingList = this.workStopping
+        const bonusList = this.bonus
+        const smartEmployeeList: SmartEmployee[] = []
+        //Consolidation des données salariés
+        for (let employee of employeesList) {
+            let workContractFilter = workContractsList.filter(work => work.employeeId === employee.employeeId)
+            let mutualFilter = mutualEmployeeList.filter(mutual => mutual.employeeId === employee.employeeId)
+            let workContractChangeFilter = workChangeContractsList.filter(change => change.employeeId === employee.employeeId)
+            let workStoppingFilter = workStoppingList.filter(stopping => stopping.employeeId === employee.employeeId)
+            let bonusFilter = bonusList.filter(bonus => bonus.employeeId === employee.employeeId)
+            let employeeWorkContract: SmartWorkContract[] = []
+            for (let workContract of workContractFilter) {
+                let changeList = workContractChangeFilter.filter(change => change.contractId === workContract.contractId)
+                let workContractRow: SmartWorkContract = {
+                    ...workContract,
+                    change: [...changeList]
+                }
+                employeeWorkContract.push(workContractRow)
+            }
+            let employeeRow: SmartEmployee = {
+                ...employee,
+                workContracts: [...employeeWorkContract],
+                workStopping: [...workStoppingFilter],
+                mutual: [...mutualFilter],
+                bonus: [...bonusFilter]
+            }
+            smartEmployeeList.push(employeeRow)
+        }
+
+        const smartDsn: SmartDsn = {
+            ...dsn,
+            society: {
+                ...society,
+                establishments: [
+                    ...establishmentsList
+                ]
+            },
+            employees: [...smartEmployeeList]
+
+        }
+        return smartDsn
+    }
+
 }
 
 

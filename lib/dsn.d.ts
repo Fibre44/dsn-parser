@@ -1,4 +1,3 @@
-import { field } from './utils/extraction';
 export type DsnObject = {
     softwareName: string;
     provider: string;
@@ -23,6 +22,7 @@ export type BonusObject = {
     siren: string;
     date: string;
     employeeId: string;
+    numSS: string;
     typeBonus: string;
     amountBonus: string;
     dateStartBonus: string;
@@ -55,6 +55,7 @@ export type EmployeeObject = {
 };
 export type WorkStoppingObject = {
     employeeId: string;
+    numSS: string;
     reasonStop: string;
     lastDayWorked: string;
     estimatedEndDate: string;
@@ -72,6 +73,7 @@ export type WorkStoppingObject = {
 };
 export type WorkContractObject = {
     employeeId: string;
+    numSS: string;
     startDate: string;
     status: string;
     retirement: string;
@@ -169,6 +171,8 @@ export type EstablishmentObject = {
 };
 export type ChangeWockContractObject = {
     employeeId: string;
+    contractId: string;
+    numSS: string;
     date: string;
     changeDate: string;
     oldStatus: string;
@@ -262,6 +266,7 @@ export type MutualObject = {
 };
 export type MutualEmployeeObject = {
     employeeId: string;
+    numSS: string;
     option: string;
     pop: string;
     children: string;
@@ -280,6 +285,7 @@ export type atObject = {
 };
 export type BaseObject = {
     employeeId: string;
+    numSS: string;
     idBase: string;
     startDate: string;
     endDate: string;
@@ -291,6 +297,7 @@ export type BaseObject = {
 };
 export type BaseSubjectObject = {
     employeeId: string;
+    numSS: string;
     typeBaseSubject: string;
     amountBaseSubject: string;
     crmBaseSubject?: string;
@@ -298,6 +305,7 @@ export type BaseSubjectObject = {
 };
 export type ContributionObject = {
     employeeId: string;
+    numSS: string;
     idContribution: string;
     ops: string;
     baseContribution: string;
@@ -327,6 +335,7 @@ export type MobilityObject = {
 };
 export type IndividualPaymentObject = {
     employeeId: string;
+    numSS: string;
     contractId: string;
     datePayment: string;
     netTaxRem: string;
@@ -342,6 +351,7 @@ export type IndividualPaymentObject = {
 };
 export type PayroolObject = {
     employeeId: string;
+    numSS: string;
     startDatePayrool: string;
     endDatePayrool: string;
     contractId: string;
@@ -356,12 +366,29 @@ export type PayroolObject = {
 };
 export type OtherPaymentObject = {
     employeeId: string;
+    numSS: string;
     contractId: string;
     type: string;
     amount: string;
     startDateOtherPayment: string;
     endDateOtherPayment: string;
 };
+interface SmartDsn extends DsnObject {
+    society: SmartSociety;
+    employees: SmartEmployee[];
+}
+interface SmartSociety extends SocietyObject {
+    establishments: EstablishmentObject[];
+}
+interface SmartEmployee extends EmployeeObject {
+    workContracts: SmartWorkContract[];
+    workStopping: WorkStoppingObject[];
+    bonus: BonusObject[];
+    mutual: MutualEmployeeObject[];
+}
+interface SmartWorkContract extends WorkContractObject {
+    change: ChangeWockContractObject[];
+}
 export declare class DsnParser {
     private dsnVersion;
     private societyList;
@@ -405,13 +432,14 @@ export declare class DsnParser {
     get mutual(): MutualObject[];
     get base(): BaseObject[];
     get baseSubject(): BaseSubjectObject[];
+    get establishmentContribution(): EstablishmentContributionObject[];
     get contribution(): ContributionObject[];
     get assignement(): AssignementObject[];
     get rateMobility(): MobilityObject[];
     get rateAt(): atObject[];
     get extraction(): {
         collection: string;
-        field: field;
+        field: import("./utils/extraction").field;
         name: string;
         dsnStructure: string;
     }[];
@@ -419,5 +447,6 @@ export declare class DsnParser {
     get individualPayment(): IndividualPaymentObject[];
     get payrool(): PayroolObject[];
     get otherPayment(): OtherPaymentObject[];
+    get smartExtraction(): SmartDsn;
 }
 export {};
