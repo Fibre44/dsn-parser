@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import readline from 'node:readline';
 import { ops } from './utils/ops';
-import { workContract } from './utils/workContract';
 import { extractionsList } from './utils/extraction';
 type societyList = Society[]
 type establishmentList = Establishment[]
@@ -337,7 +336,7 @@ type Mutual = {
     dsnStructure: string,
     value: string,
     date: string,
-    techId: string
+    techId: number
 }
 
 type MutualEmployee = {
@@ -602,7 +601,9 @@ type OtherPayment = {
     date: string
 }
 
-interface SmartDsn extends DsnObject {
+type MutualEmployeeComplet = MutualObject & MutualEmployeeObject
+
+export interface SmartDsn extends DsnObject {
     society: SmartSociety,
     employees: SmartEmployee[]
 }
@@ -622,10 +623,36 @@ interface SmartWorkContract extends WorkContractObject {
     change: ChangeWockContractObject[]
 }
 
+interface IDsnParser {
+    asyncInit(dir: string, options: {
+        controleDsnVersion: boolean,
+        deleteFile: boolean
+    }): Promise<void>
+    get dsn(): DsnObject
+    get society(): SocietyObject
+    get establishment(): EstablishmentObject[]
+    get contributionFund(): ContributionFundObject[]
+    get employee(): EmployeeObject[]
+    get workContract(): WorkContractObject[]
+    get changWorkContract(): ChangeWockContractObject[]
+    get employeeMutual(): MutualEmployeeComplet[]
+    get mutual(): MutualObject[]
+    get baseSubject(): BaseSubjectObject[]
+    get contribution(): ContributionObject[]
+    get assignement(): AssignementObject[]
+    get rateMobility(): MobilityObject[]
+    get rateAt(): atObject[]
+    get bonus(): BonusObject[]
+    get individualPayment(): IndividualPaymentObject[]
+    get payrool(): PayroolObject[]
+    get otherPayment(): OtherPaymentObject[]
+    get smartExtraction(): SmartDsn
+}
+
 //Norme DSN 2022 = https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf
 //NodeJs readline =https://nodejs.org/api/readline.html
 
-export class DsnParser {
+export class DsnParser implements IDsnParser {
     private dsnVersion = ['P22V01', 'P23V01']
     private societyList: societyList = []
     private establishmentList: establishmentList = []
@@ -638,7 +665,7 @@ export class DsnParser {
     private numSSList: string[] = []
     private idEstablishmentList: number[] = []
     private extractions = extractionsList
-    private mutualIdList: string[] = []
+    private mutualIdList: number[] = []
     private baseList: baseList = []
     private baseSubjectList: baseSubjectList = []
     private numSSEmployeeIdList: NumSSEmployeeId[] = []
@@ -662,7 +689,7 @@ export class DsnParser {
             input: fileStream,
             crlfDelay: Infinity,
         });
-        let mutualId = ''
+        let mutualId = 0
         let idEstablishment = 1
         let numSS = ''
         let siret = ''
@@ -763,8 +790,8 @@ export class DsnParser {
                         this.changeWorkContractList.push(addRowChangWorkContract)
                         break
                     case 'Mutual':
-                        if (lineSplit[0] === 'S21.G00.15.005') {
-                            mutualId = value
+                        if (lineSplit[0] === 'S21.G00.15.001') {
+                            mutualId += 1
                             this.mutualIdList.push(mutualId)
                         }
                         let addMutual: Mutual = {
@@ -1097,8 +1124,9 @@ export class DsnParser {
         return workStoppingList
     }
 
-    get employeeMutual(): MutualEmployeeObject[] {
+    get employeeMutual(): MutualEmployeeComplet[] {
         const employeesMutualList: MutualEmployeeObject[] = []
+        const employeesMutualListComplete: MutualEmployeeComplet[] = []
         const mutualList = this.mutual
         for (let numSS of this.numSSList) {
             let mutualEmployeeFilter = this.mutualEmployeeList.filter(m => m.numSS === numSS)
@@ -1111,24 +1139,28 @@ export class DsnParser {
                 mutualEmployeeObject['employeeId'] = employeeId.employeeId
                 mutualEmployeeObject['date'] = this.date
                 mutualEmployeeObject['numSS'] = employeeId.numSS
+
                 employeesMutualList.push(mutualEmployeeObject)
+
+
 
             }
         }
         //Dans la DSN les éléments sont stockés dans les blocs S15
-        const mutualEmployeList = []
-        for (let employeeMutual of employeesMutualList) {
-            let mutual = mutualList.find(mutual => mutual.techId === employeeMutual.option)
-            if (mutual) {
-                let mutualEmployeeRow = {
-                    ...employeeMutual,
-                    ...mutual
+        for (let mutualEmployeeDetail of employeesMutualList) {
+            let mutualFilter = mutualList.find(mutual => mutual.techId === mutualEmployeeDetail.idTech)
+            if (mutualFilter) {
+                let mutualEmployeeRowComplete = {
+                    ...mutualEmployeeDetail,
+                    ...mutualFilter
                 }
-                mutualEmployeList.push(mutualEmployeeRow)
+                employeesMutualListComplete.push(mutualEmployeeRowComplete)
             }
+
         }
-        return mutualEmployeList
+        return employeesMutualListComplete
     }
+
     get mutual(): MutualObject[] {
         const mutualList: MutualObject[] = []
 
@@ -1200,8 +1232,8 @@ export class DsnParser {
         }
         return baseSubjectList
     }
-
-    get establishmentContribution(): EstablishmentContributionObject[] {
+    /**
+     *    get establishmentContribution(): EstablishmentContributionObject[] {
         const establishmentContributionList: EstablishmentContributionObject[] = []
 
         for (let establishmentContribution of this.establishmentContributionList) {
@@ -1210,6 +1242,8 @@ export class DsnParser {
 
         return establishmentContributionList
     }
+     */
+
 
     get contribution(): ContributionObject[] {
         const contributionList: ContributionObject[] = []
@@ -1423,7 +1457,7 @@ export class DsnParser {
         const dsn = this.dsn
         const society = this.society
         const establishmentsList = this.establishment
-        const establishmentsContributionList = this.establishmentContribution
+        //const establishmentsContributionList = this.establishmentContribution
         const workChangeContractsList = this.changWorkContract
         const workStoppingList = this.workStopping
         const bonusList = this.bonus

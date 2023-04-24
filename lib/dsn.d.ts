@@ -373,7 +373,8 @@ export type OtherPaymentObject = {
     startDateOtherPayment: string;
     endDateOtherPayment: string;
 };
-interface SmartDsn extends DsnObject {
+type MutualEmployeeComplet = MutualObject & MutualEmployeeObject;
+export interface SmartDsn extends DsnObject {
     society: SmartSociety;
     employees: SmartEmployee[];
 }
@@ -389,7 +390,32 @@ interface SmartEmployee extends EmployeeObject {
 interface SmartWorkContract extends WorkContractObject {
     change: ChangeWockContractObject[];
 }
-export declare class DsnParser {
+interface IDsnParser {
+    asyncInit(dir: string, options: {
+        controleDsnVersion: boolean;
+        deleteFile: boolean;
+    }): Promise<void>;
+    get dsn(): DsnObject;
+    get society(): SocietyObject;
+    get establishment(): EstablishmentObject[];
+    get contributionFund(): ContributionFundObject[];
+    get employee(): EmployeeObject[];
+    get workContract(): WorkContractObject[];
+    get changWorkContract(): ChangeWockContractObject[];
+    get employeeMutual(): MutualEmployeeComplet[];
+    get mutual(): MutualObject[];
+    get baseSubject(): BaseSubjectObject[];
+    get contribution(): ContributionObject[];
+    get assignement(): AssignementObject[];
+    get rateMobility(): MobilityObject[];
+    get rateAt(): atObject[];
+    get bonus(): BonusObject[];
+    get individualPayment(): IndividualPaymentObject[];
+    get payrool(): PayroolObject[];
+    get otherPayment(): OtherPaymentObject[];
+    get smartExtraction(): SmartDsn;
+}
+export declare class DsnParser implements IDsnParser {
     private dsnVersion;
     private societyList;
     private establishmentList;
@@ -428,11 +454,21 @@ export declare class DsnParser {
     get workContract(): WorkContractObject[];
     get changWorkContract(): ChangeWockContractObject[];
     get workStopping(): WorkStoppingObject[];
-    get employeeMutual(): MutualEmployeeObject[];
+    get employeeMutual(): MutualEmployeeComplet[];
     get mutual(): MutualObject[];
     get base(): BaseObject[];
     get baseSubject(): BaseSubjectObject[];
-    get establishmentContribution(): EstablishmentContributionObject[];
+    /**
+     *    get establishmentContribution(): EstablishmentContributionObject[] {
+        const establishmentContributionList: EstablishmentContributionObject[] = []
+
+        for (let establishmentContribution of this.establishmentContributionList) {
+
+        }
+
+        return establishmentContributionList
+    }
+     */
     get contribution(): ContributionObject[];
     get assignement(): AssignementObject[];
     get rateMobility(): MobilityObject[];
