@@ -276,6 +276,9 @@ export type MutualEmployeeObject = {
     idTechAffiliation: string;
     idTech: string;
     date: string;
+    idTechAffiliationMutual: string;
+    startDateMutualEmployee: string;
+    endDateMutualEmployee: string;
 };
 export type atObject = {
     code: string;
