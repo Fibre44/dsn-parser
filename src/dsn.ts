@@ -838,7 +838,6 @@ export class DsnParser implements IDsnParser {
                         if (lineSplit[0] === 'S21.G00.70.013') {
                             //Fin d'une affiliation
                             optionIdMutual = value
-                            mutualEmployeeTmp.push(addMutualEmployee)
                             //on va ajouter l'option Id sur les autres enregistrements
                             for (let mutualEmployeeTmpValue of mutualEmployeeTmp) {
                                 mutualEmployeeTmpValue.optionIdMutual = optionIdMutual
@@ -1170,18 +1169,17 @@ export class DsnParser implements IDsnParser {
                 //Un salarié peut avoir X contrats de mutuelles
                 for (let mutualIdEstablishment of this.mutualIdList) {
                     let mutualIdEstablishmentString = String(mutualIdEstablishment)
-                    let mutualIdEmployeeFilter = mutualEmployeeFilter.filter(mutualId => mutualId.optionIdMutual === mutualIdEstablishmentString)
+                    let employeeMutualIdFilter = mutualEmployeeFilter.filter(mutualId => mutualId.optionIdMutual === mutualIdEstablishmentString)
                     //On boucle sur le contrat de mutuelle
-                    if (mutualIdEmployeeFilter.length > 0) {
+                    if (employeeMutualIdFilter.length > 0) {
                         let mutualEmployeeObject: any = {}
-                        for (let mutualEmployee of mutualEmployeeFilter) {
+                        for (let mutualEmployee of employeeMutualIdFilter) {
                             mutualEmployeeObject[mutualEmployee.field] = mutualEmployee.value
                         }
                         mutualEmployeeObject['employeeId'] = employeeId.employeeId
                         mutualEmployeeObject['date'] = this.date
                         mutualEmployeeObject['numSS'] = employeeId.numSS
                         mutualEmployeeObject['idTechAffiliationMutual'] = mutualIdEstablishmentString
-
                         employeesMutualList.push(mutualEmployeeObject)
                     }
                 }
