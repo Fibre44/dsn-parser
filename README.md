@@ -106,8 +106,7 @@ Cette méthode retourne objet Javascript avec cette structure :
     dsnVersion: string,
     type: string,
     totalRows: string,
-    month: string,
-
+    month: string
 }
 
 ```
@@ -146,11 +145,10 @@ Dans la DSN une même DSN on peut avoir X établissements, la méthode retourne 
     idcc: string,
     legalStatus: string,
     opco: string,
-    codeZip: string
+    codeZip: string,
     city: string,
     date: string
-    },
-  
+    }
 ]
 ```
 <div id='assignement'>  
@@ -159,7 +157,7 @@ Dans la DSN une même DSN on peut avoir X établissements, la méthode retourne 
 ```typescript
 [ 
     { value: 'Developpeur Javascript' },
-    { value: 'Developpeur PHP' },
+    { value: 'Developpeur PHP' }
 ]
 
 ```
@@ -175,14 +173,14 @@ La méthode retourne un tableau d'objets avec les informations des différents o
     name: 'Urssaf Pays de la Loire',
     adress1: 'string',
     codeZip: 'string',
-    city: 'string',
+    city: 'string'
   },
   {
     codeDsn: 'P0942',
     name: 'AG2R',
     adress1: 'string',
     codeZip: 'string',
-    city: 'string',
+    city: 'string'
   }
 ]
 ```
@@ -302,9 +300,8 @@ La méthode retourne un tableau d'objets
     activityRate?: string,
     grade?: string,
     cti?: string,
-    finess?: string,
+    finess?: string
   }
-
 ]
 ```
 <div id='mutualEmployee'>  
@@ -326,7 +323,7 @@ La méthode retourne un tableau d'objets
       idTechAffiliation: string,
       idTech: string,
       date: string
-    },
+    }
  ]
 
 ```
@@ -365,7 +362,7 @@ La méthode retourne un tableau d'objets
       amountBaseSubject: string,
       employeeId: string,
       date: string
-    },
+    }
   ]
 ```
 
