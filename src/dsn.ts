@@ -19,6 +19,7 @@ type IndividualPaymentList = IndividualPayment[]
 type PayroolList = Payrool[]
 type OtherPaymentList = OtherPayment[]
 type ContactList = Contact[]
+type AggregateContributionList = AggregateContribution[]
 
 type workContractDefinition = {
     collection: string,
@@ -41,6 +42,17 @@ export type DsnObject = {
     totalRows: string,
     month: string
 
+}
+
+export type AggregateContributionObject = {
+    contributionId: string,
+    contributionQualifier: string,
+    contriburionRate: string,
+    baseAmount: string,
+    contributionAmount: string,
+    contributionInsee: string,
+    contributionCRM: string,
+    siret: string
 }
 
 type Dsn = {
@@ -329,6 +341,17 @@ type Establishment = {
     date: string
 }
 
+type AggregateContribution = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    name: string,
+    value: string,
+    siret: string,
+    idEstablishment: number,
+    aggregateContributionId: string,
+    date: string
+}
 
 export type ContributionFund = {
     collection: string,
@@ -695,6 +718,7 @@ export class DsnParser implements IDsnParser {
     private numSSEmployeeIdList: NumSSEmployeeId[] = []
     private contributionList: contributionList = []
     private workStoppingList: WorkStoppingList = []
+    private aggregateContributionList: AggregateContributionList = []
     private bonusList: BonusList = []
     private establishmentContributionList: establishmentContributionList = []
     private changeWorkContractList: ChangeWorkContractList = []
@@ -705,6 +729,7 @@ export class DsnParser implements IDsnParser {
     private siren: string = ''
     private date = ''
     private contactIdList: number[] = []
+    private aggregateContributionIdList: string[] = []
 
     async asyncInit(dir: string, options = {
         controleDsnVersion: true,
@@ -725,6 +750,7 @@ export class DsnParser implements IDsnParser {
         let typeBaseSubject = ''
         let contractId = ''
         let optionIdMutual = ''
+        let aggregateContributionId = ''
         const employeeDatas = []//On va stocker temporairement les valeurs du salarié pour la gestion des NTT
         const mutualEmployeeTmp = []
         let contactId = 0
@@ -792,6 +818,21 @@ export class DsnParser implements IDsnParser {
 
                         }
                         this.establishmentList.push(addRowEstablishment)
+                        break
+                    case 'AggregateContribution':
+                        if (lineSplit[0] === 'S21.G00.23.001') {
+                            aggregateContributionId = value
+                            this.aggregateContributionIdList.push(aggregateContributionId)
+                        }
+                        let addRowAggregate: AggregateContribution = {
+                            ...findStructure,
+                            value: value,
+                            siret,
+                            idEstablishment,
+                            aggregateContributionId,
+                            date: this.date
+                        }
+                        this.aggregateContributionList.push(addRowAggregate)
                         break
                     case 'ContributionFund':
                         let addContributionFund = {
@@ -1057,7 +1098,9 @@ export class DsnParser implements IDsnParser {
             fs.unlinkSync(dir)
         }
     }
-
+    /**
+     * Retourne les informations de base de la DSN bloc S10.G00.00
+     */
     get dsn(): DsnObject {
         let dsnObject: any = {}
         for (let dsn of this.dsnList) {
@@ -1066,7 +1109,9 @@ export class DsnParser implements IDsnParser {
         dsnObject['date'] = this.date
         return dsnObject
     }
-
+    /**
+     * Retourne les informations de la société bloc S21.G00.06
+     */
     get society(): SocietyObject {
         let societyObjet: any = {}
         for (let society of this.societyList) {
@@ -1076,7 +1121,9 @@ export class DsnParser implements IDsnParser {
         return societyObjet
     }
 
-
+    /**
+     * Retourne la liste des établissements de la DSN bloc S21.G00.11
+     */
     get establishment(): EstablishmentObject[] {
         //idEstablishmentList contient l'ensemble des id établissements qu'on a pu traiter.
         const establishments = []
@@ -1093,6 +1140,9 @@ export class DsnParser implements IDsnParser {
 
     }
 
+    /**
+     * Retourne la liste des organismes sociaux 
+     */
 
     get contributionFund(): ContributionFundObject[] {
         const contributionFundList = []
@@ -1118,7 +1168,9 @@ export class DsnParser implements IDsnParser {
         }
         return contributionFundList
     }
-
+    /**
+     * Retourne la liste des employés bloc S21.G00.30
+     */
     get employee(): EmployeeObject[] {
         const employeeList = []
         for (let numSS of this.numSSList) {
@@ -1134,6 +1186,32 @@ export class DsnParser implements IDsnParser {
         }
         return employeeList
     }
+
+    /**
+     * Retourne les cotisations agrégée bloc S21.G00.23
+     */
+
+    get aggregateContribution(): AggregateContributionObject[] {
+        const aggregateContributionList: AggregateContributionObject[] = []
+        //On filtre par établissement
+        for (let idEstablishment of this.idEstablishmentList) {
+            let aggregateContributionFilterEstablishment = this.aggregateContributionList.filter(aggregate => aggregate.idEstablishment === idEstablishment)
+            let aggregateContributionRow: any = {}
+            //On tourne par cotisation
+            for (let aggregateContributionId of this.aggregateContributionIdList) {
+                let aggregateContributionFilter = aggregateContributionFilterEstablishment.filter(contributionId => contributionId.aggregateContributionId === aggregateContributionId)
+                let siret = aggregateContributionFilter[0].siret
+                for (let aggregateContribution of aggregateContributionFilter) {
+                    aggregateContributionRow[aggregateContribution.field] = aggregateContribution.value
+                }
+                aggregateContributionRow['date'] = this.date
+                aggregateContributionRow['siret'] = siret
+                aggregateContributionList.push(aggregateContributionRow)
+            }
+        }
+        return aggregateContributionList
+    }
+
     /**
      * Retourne la liste des contacts de la DSN structure S20.G00.007
      */
@@ -1151,7 +1229,9 @@ export class DsnParser implements IDsnParser {
         }
         return contactList
     }
-
+    /**
+     * Retourne la liste des contrats de travails bloc S21.G00.40
+     */
     get workContract(): WorkContractObject[] {
         const workContractList = []
         for (let numSS of this.numSSList) {

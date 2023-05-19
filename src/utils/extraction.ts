@@ -1,6 +1,6 @@
-import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject } from "../dsn"
+import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject, AggregateContributionObject } from "../dsn"
 type extractions = extraction[]
-export type field = keyof (ContactObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
+export type field = keyof (AggregateContributionObject) | keyof (ContactObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
 type extraction = {
     collection: string,
     field: field,
@@ -230,6 +230,48 @@ export const extractionsList: extractions = [
         field: 'id',
         name: 'Identifiant Organisme de Protection Sociale',
         dsnStructure: 'S21.G00.20.001',
+    },
+    {
+        collection: 'AggregateContribution',
+        field: 'contributionId',
+        name: 'Code de cotisation',
+        dsnStructure: 'S21.G00.23.001',
+    },
+    {
+        collection: 'AggregateContribution',
+        field: 'contributionQualifier',
+        name: `Qualifiant d'assiette`,
+        dsnStructure: 'S21.G00.23.002',
+    },
+    {
+        collection: 'AggregateContribution',
+        field: 'contriburionRate',
+        name: `Taux de cotisation`,
+        dsnStructure: 'S21.G00.23.003',
+    },
+    {
+        collection: 'AggregateContribution',
+        field: 'baseAmount',
+        name: `Montant d'assiette`,
+        dsnStructure: 'S21.G00.23.004',
+    },
+    {
+        collection: 'AggregateContribution',
+        field: 'contributionAmount',
+        name: `Montant de cotisation`,
+        dsnStructure: 'S21.G00.23.005',
+    },
+    {
+        collection: 'AggregateContribution',
+        field: 'contributionInsee',
+        name: `Code INSEE commune`,
+        dsnStructure: 'S21.G00.23.006',
+    },
+    {
+        collection: 'AggregateContribution',
+        field: 'contributionCRM',
+        name: `Identifiant du CRM à l'origine de la régularisation`,
+        dsnStructure: 'S21.G00.23.007',
     },
     {
         collection: 'Employee',

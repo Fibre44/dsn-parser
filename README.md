@@ -35,28 +35,13 @@ La librairie se base sur le [cahier technique 2023 ](https://www.net-entreprises
 * 2022
 * 2023
 
-La librairie permet de d'obtenir :
-* Les informations du fichier DSN (éditeur, logicel de paie)
-* Les informations de la société
-* Les informations des établissements
-* Les taux AT
-* Les taux du versment mobilité
-* Les organismes de cotisations
-* La liste des libellés emplois
-* La liste des salariés
-* Les contrats de travail des salariés
-* Les bases assujetis
-* Les affiliations aux organismes de prévoyances des salariés
-* Le détail des cotisations salariés
-* Les absences des salariés
-
 ## Tableau récapitulatif des données exportées ##
 
 | Bloc       | Libellé                                                                                    | Méthode             | Commentaire |
 | ---------- | ------------------------------------------------------------------------------------------ | ------------------- | -------     |
 | S10.G00.00 | Entête                                                                                     | [Méthode Dsn](#dsn) |         |
 | S20.G00.05 | Déclaration                                                                                |                     |           |
-| S20.G00.07 | Contact chez le déclaré                                                                    |Non géré             | En cours de developpement|
+| S20.G00.07 | Contact chez le déclaré                                                                    | [Méthode conact](#contact)          | En cours de developpement|
 | S20.G00.08 | Identifiant de l'organisme destinataire                                                    |Non géré             | En cours de développement         |
 | S21.G00.06 | Entreprise                                                                                 |[Méthode Society](#society)    |          |
 | S21.G00.11 | Etablissement                                                                              |[Méthode Establishment](#establishment) |          |
@@ -174,6 +159,22 @@ Cette méthode retourne objet Javascript avec cette structure :
     adress3?: string,
     zipCode: string,
     city: string
+}
+```
+
+<div id='contact'>  
+
+### Méthode contact ###
+Cette méthode retourne un tableau d'objets Javascript avec cette structure :
+
+```typescript
+{
+    siren: string,
+    date: string,
+    contactName: string,
+    contactPhone: string,
+    contactEmail: string,
+    contactType: string
 }
 ```
 <div id='establishment'>  

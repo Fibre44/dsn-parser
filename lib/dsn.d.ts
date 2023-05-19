@@ -7,6 +7,16 @@ export type DsnObject = {
     totalRows: string;
     month: string;
 };
+export type AggregateContributionObject = {
+    contributionId: string;
+    contributionQualifier: string;
+    contriburionRate: string;
+    baseAmount: string;
+    contributionAmount: string;
+    contributionInsee: string;
+    contributionCRM: string;
+    siret: string;
+};
 export type SocietyObject = {
     siren: string;
     nic: string;
@@ -446,6 +456,7 @@ export declare class DsnParser implements IDsnParser {
     private numSSEmployeeIdList;
     private contributionList;
     private workStoppingList;
+    private aggregateContributionList;
     private bonusList;
     private establishmentContributionList;
     private changeWorkContractList;
@@ -456,19 +467,42 @@ export declare class DsnParser implements IDsnParser {
     private siren;
     private date;
     private contactIdList;
+    private aggregateContributionIdList;
     asyncInit(dir: string, options?: {
         controleDsnVersion: boolean;
         deleteFile: boolean;
     }): Promise<void>;
+    /**
+     * Retourne les informations de base de la DSN bloc S10.G00.00
+     */
     get dsn(): DsnObject;
+    /**
+     * Retourne les informations de la société bloc S21.G00.06
+     */
     get society(): SocietyObject;
+    /**
+     * Retourne la liste des établissements de la DSN bloc S21.G00.11
+     */
     get establishment(): EstablishmentObject[];
+    /**
+     * Retourne la liste des organismes sociaux
+     */
     get contributionFund(): ContributionFundObject[];
+    /**
+     * Retourne la liste des employés bloc S21.G00.30
+     */
     get employee(): EmployeeObject[];
+    /**
+     * Retourne les cotisations agrégée bloc S21.G00.23
+     */
+    get aggregateContribution(): AggregateContributionObject[];
     /**
      * Retourne la liste des contacts de la DSN structure S20.G00.007
      */
     get contact(): ContactObject[];
+    /**
+     * Retourne la liste des contrats de travails bloc S21.G00.40
+     */
     get workContract(): WorkContractObject[];
     get changWorkContract(): ChangeWockContractObject[];
     get workStopping(): WorkStoppingObject[];
