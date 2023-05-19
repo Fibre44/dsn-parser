@@ -656,7 +656,11 @@ export interface SmartDsn extends DsnObject {
 }
 
 interface SmartSociety extends SocietyObject {
-    establishments: EstablishmentObject[]
+    establishments: SmartEstablishment[]
+}
+
+interface SmartEstablishment extends EstablishmentObject {
+    aggreagreContribution: AggregateContributionObject[]
 }
 
 interface SmartEmployee extends EmployeeObject {
@@ -1627,6 +1631,7 @@ export class DsnParser implements IDsnParser {
         const workContractsList = this.workContract
         const mutualEmployeeList = this.employeeMutual
         const contactList = this.contact
+        const aggregateContribution = this.aggregateContribution
         const dsn = this.dsn
         const society = this.society
         const establishmentsList = this.establishment
@@ -1660,6 +1665,17 @@ export class DsnParser implements IDsnParser {
             }
             smartEmployeeList.push(employeeRow)
         }
+        //On ajoute les cotisations aux établissements
+        const smartEstablishmentList: SmartEstablishment[] = []
+        for (let establishment of establishmentsList) {
+            let siret = society.siren + establishment.nic
+            let aggregateContributionFilter = aggregateContribution.filter(aggregate => aggregate.siret === siret)
+            let smartEstablishment: SmartEstablishment = {
+                ...establishment,
+                aggreagreContribution: [...aggregateContributionFilter]
+            }
+            smartEstablishmentList.push(smartEstablishment)
+        }
 
         const smartDsn: SmartDsn = {
             ...dsn,
@@ -1667,7 +1683,7 @@ export class DsnParser implements IDsnParser {
             society: {
                 ...society,
                 establishments: [
-                    ...establishmentsList
+                    ...smartEstablishmentList
                 ]
             },
             employees: [...smartEmployeeList]

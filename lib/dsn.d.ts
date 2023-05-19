@@ -401,7 +401,10 @@ export interface SmartDsn extends DsnObject {
     employees: SmartEmployee[];
 }
 interface SmartSociety extends SocietyObject {
-    establishments: EstablishmentObject[];
+    establishments: SmartEstablishment[];
+}
+interface SmartEstablishment extends EstablishmentObject {
+    aggreagreContribution: AggregateContributionObject[];
 }
 interface SmartEmployee extends EmployeeObject {
     workContracts: SmartWorkContract[];

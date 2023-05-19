@@ -37,52 +37,52 @@ La librairie se base sur le [cahier technique 2023 ](https://www.net-entreprises
 
 ## Tableau récapitulatif des données exportées ##
 
-| Bloc       | Libellé                                                                                    | Méthode             | Commentaire |
-| ---------- | ------------------------------------------------------------------------------------------ | ------------------- | -------     |
-| S10.G00.00 | Entête                                                                                     | [Méthode Dsn](#dsn) |         |
-| S20.G00.05 | Déclaration                                                                                |                     |           |
-| S20.G00.07 | Contact chez le déclaré                                                                    | [Méthode conact](#contact)          | En cours de developpement|
-| S20.G00.08 | Identifiant de l'organisme destinataire                                                    |Non géré             | En cours de développement         |
-| S21.G00.06 | Entreprise                                                                                 |[Méthode Society](#society)    |          |
-| S21.G00.11 | Etablissement                                                                              |[Méthode Establishment](#establishment) |          |
-| S21.G00.12 | Coordonnées bancaires spécifiques                                                          | Non géré                               | En cours de développemet         |
-| S21.G00.13 | Complément OETH                                                                            | Non géré                               | En cours de développemet         |
-| S21.G00.15 | Adhésion Prévoyance                                                                        |                                        |          |
-| S21.G00.16 | Changements destinataire Adhésion Prévoyance                                               | Non géré                               | En cours de développemet         |
-| S21.G00.20 | Versement organisme de protection sociale                                                  | Non géré                               |          |
-| S21.G00.22 | Bordereau de cotisation due                                                                | Non géré                               | En cours de developpement         |
-| S21.G00.23 | Cotisation agrégée                                                                         | Non géré                               | En cours de developpement         |
-| S21.G00.30 | Individu                                                                                   |employee                                |          |
-| S21.G00.34 | Compte Professionnel de Prévention (Ex-Pénibilité)                                         |Non géré                                |En cours de développement         |
-| S21.G00.40 | Contrat (contrat de travail, convention, mandat)                                           | workContracts                          |         |
-| S21.G00.41 | Changements Contrat                                                                        |workContractsChange                     |          |
-| S21.G00.44 | Assujettissement fiscal                                                                    | Non géré                                |          |
-| S21.G00.45 | Données précédemment déclarées                                                             | Non géré                               |          |
-| S21.G00.50 | Versement individu                                                                         | Non géré  |          |
-| S21.G00.51 | Rémunération                                                                               | Non géré  |          |
-| S21.G00.52 | Prime, gratification et indemnité                                                          | Non géré  |          |
-| S21.G00.54 | Autre élément de revenu brut                                                               | Non géré  |          |
-| S21.G00.55 | Composant de versement                                                                     | Non géré    |          |
-| S21.G00.56 | Régularisation de prélèvement à la source                                                  | Non géré    |          |
-| S21.G00.56 | Arrêt de travail                                                                           | stopWorkContract    |          |
-| S21.G00.62 | Fin du contrat                                                                             | Non géré    |          |
-| S21.G00.63 | Préavis de fin de contrat                                                                  | Non géré    |          |
-| S21.G00.65 | Autre suspension de l'exécution du contrat                                                 | Non géré    |          |
-| S21.G00.66 | Temps partiel Thérapeutique                                                                | Non géré    |          |
-| S21.G00.70 | Affiliation Prévoyance                                                                     | mutualEmployee  |          |
-| S21.G00.71 | Retraite complémentaire                                                                    | Non géré |          |
-| S21.G00.72 | Affiliation à tort à un régime de retraite                                                 | Non géré |          |
-| S21.G00.73 | Ayant-droit                                                                                | Non géré |          |
-| S21.G00.78 | Base assujettie                                                                            | Non géré |          |
-| S21.G00.79 | Composant de base assujettie                                                               | Non géré |          |
-| S21.G00.81 | Cotisation individuelle                                                                    | Non géré |          |
-| S21.G00.82 | Cotisation établissement                                                                   | Non géré |          |
-| S21.G00.83 | Période d'affiliation à tort à un régime de retraite complémentaire                        | Non géré |          |
-| S21.G00.84 | Base assujettie déclarée à tort pour un régime de retraite complémentaire                  | Non géré |          |
-| S21.G00.85 | Lieu de travail ou établissement utilisateur                                               | Non géré |          |
-| S21.G00.86 | Ancienneté                                                                                 | Non géré |          |
-| S21.G00.95 | Base assujettie déclarée à tort pour un régime de base risque maladie, AT/MP ou vieillesse | Non géré |          |
-| S21.G00.98 | Saisie administrative à tiers détenteur                                                    | Non géré |          |
+| Bloc       | Libellé                                                                                    | Méthode                                 | Commentaire |
+| ---------- | ------------------------------------------------------------------------------------------ | --------------------------------------- | -------     |
+| S10.G00.00 | Entête                                                                                     | [Méthode Dsn](#dsn)                     |         |
+| S20.G00.05 | Déclaration                                                                                |                                         |           |
+| S20.G00.07 | Contact chez le déclaré                                                                    | [Méthode conact](#contact)              | En cours de developpement|
+| S20.G00.08 | Identifiant de l'organisme destinataire                                                     |Non géré                                | En cours de développement         |
+| S21.G00.06 | Entreprise                                                                                 | [Méthode Society](#society)             |          |
+| S21.G00.11 | Etablissement                                                                              | [Méthode Establishment](#establishment) |          |
+| S21.G00.12 | Coordonnées bancaires spécifiques                                                          | Non géré                                | En cours de développemet         |
+| S21.G00.13 | Complément OETH                                                                            | Non géré                                | En cours de développemet         |
+| S21.G00.15 | Adhésion Prévoyance                                                                        | [Méthode Mutual](#mutual)               |          |
+| S21.G00.16 | Changements destinataire Adhésion Prévoyance                                               | Non géré                                | En cours de développemet         |
+| S21.G00.20 | Versement organisme de protection sociale                                                  | Non géré                                |          |
+| S21.G00.22 | Bordereau de cotisation due                                                                | Non géré                                | En cours de developpement         |
+| S21.G00.23 | Cotisation agrégée                                                                         | [Méthode cotisations](#aggregate)       | En cours de developpement         |
+| S21.G00.30 | Individu                                                                                   | [Méthode Employee](#employee)           |          |
+| S21.G00.34 | Compte Professionnel de Prévention (Ex-Pénibilité)                                         | Non géré                                |En cours de développement         |
+| S21.G00.40 | Contrat (contrat de travail, convention, mandat)                                           | [Méthode WorkContract](#workContract)   |         |
+| S21.G00.41 | Changements Contrat                                                                        |[Méthode WorkContract](#workContract)    |          |
+| S21.G00.44 | Assujettissement fiscal                                                                    | Non géré                                |En cours de développement           |
+| S21.G00.45 | Données précédemment déclarées                                                             | Non géré                                |En cours de développement           |
+| S21.G00.50 | Versement individu                                                                         | Non géré                                |En cours de développement           |
+| S21.G00.51 | Rémunération                                                                               | Non géré                                |En cours de développement           |
+| S21.G00.52 | Prime, gratification et indemnité                                                          | Non géré                                |En cours de développement           |
+| S21.G00.54 | Autre élément de revenu brut                                                               | Non géré                                |En cours de développement           |
+| S21.G00.55 | Composant de versement                                                                     | Non géré                                |En cours de développement        |
+| S21.G00.56 | Régularisation de prélèvement à la source                                                  | Non géré                                |En cours de développement           |
+| S21.G00.56 | Arrêt de travail                                                                           |[Méthode Arret de travail](#workStopping)|           |
+| S21.G00.62 | Fin du contrat                                                                             | Non géré                                |En cours de développement        |
+| S21.G00.63 | Préavis de fin de contrat                                                                  | Non géré                                |En cours de développement           |
+| S21.G00.65 | Autre suspension de l'exécution du contrat                                                 | Non géré                                |En cours de développement           |
+| S21.G00.66 | Temps partiel Thérapeutique                                                                | Non géré                                |En cours de développement           |
+| S21.G00.70 | Affiliation Prévoyance                                                                     |[Méthode MutuelEmployee](#mutualEmployee)|      |
+| S21.G00.71 | Retraite complémentaire                                                                    | Non géré                                |En cours de développement                                         |
+| S21.G00.72 | Affiliation à tort à un régime de retraite                                                 | Non géré                                |En cours de développement           |
+| S21.G00.73 | Ayant-droit                                                                                | Non géré                                |En cours de développement           |
+| S21.G00.78 | Base assujettie                                                                            | Non géré                                |En cours de développement           |
+| S21.G00.79 | Composant de base assujettie                                                               | Non géré                                |En cours de développement            |
+| S21.G00.81 | Cotisation individuelle                                                                    | Non géré                                |En cours de développement           |
+| S21.G00.82 | Cotisation établissement                                                                   | Non géré                                |En cours de développement           |
+| S21.G00.83 | Période d'affiliation à tort à un régime de retraite complémentaire                        | Non géré                                |En cours de développement           |
+| S21.G00.84 | Base assujettie déclarée à tort pour un régime de retraite complémentaire                  | Non géré                                |En cours de développement           |
+| S21.G00.85 | Lieu de travail ou établissement utilisateur                                               | Non géré                                |En cours de développement           |
+| S21.G00.86 | Ancienneté                                                                                 | Non géré                                |En cours de développement           |
+| S21.G00.95 | Base assujettie déclarée à tort pour un régime de base risque maladie, AT/MP ou vieillesse | Non géré                                |En cours de développement           |
+| S21.G00.98 | Saisie administrative à tiers détenteur                                                    | Non géré                                |En cours de développement           |
 
 <div id='instal'>  
 
@@ -175,6 +175,24 @@ Cette méthode retourne un tableau d'objets Javascript avec cette structure :
     contactPhone: string,
     contactEmail: string,
     contactType: string
+}
+```
+
+<div id='aggregate'>  
+
+### Méthode cotisations agrégée ###
+Cette méthode retourne un tableau d'objets Javascript avec cette structure :
+
+```typescript
+{
+    contributionId: string,
+    contributionQualifier: string,
+    contriburionRate: string,
+    baseAmount: string,
+    contributionAmount: string,
+    contributionInsee: string,
+    contributionCRM: string,
+    siret: string
 }
 ```
 <div id='establishment'>  
