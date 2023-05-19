@@ -18,6 +18,7 @@ type ChangeWorkContractList = ChangeWorkContractDefinition[]
 type IndividualPaymentList = IndividualPayment[]
 type PayroolList = Payrool[]
 type OtherPaymentList = OtherPayment[]
+type ContactList = Contact[]
 
 type workContractDefinition = {
     collection: string,
@@ -72,6 +73,16 @@ export type BonusObject = {
     dateEndBonus: string,
     contractIdBonus: string,
     datePaymentBonus: string
+}
+
+export type ContactObject = {
+    siren: string,
+    date: string,
+    contactName: string,
+    contactPhone: string,
+    contactEmail: string,
+    contactType: string
+
 }
 
 export type EmployeeObject = {
@@ -451,6 +462,14 @@ type Base = {
     idBase: string
 }
 
+type Contact = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    id: number
+}
+
 type BaseSubject = {
 
     collection: string,
@@ -609,6 +628,7 @@ type MutualEmployeeComplet = MutualObject & MutualEmployeeObject
 
 export interface SmartDsn extends DsnObject {
     society: SmartSociety,
+    contact: ContactObject[]
     employees: SmartEmployee[]
 }
 
@@ -681,8 +701,10 @@ export class DsnParser implements IDsnParser {
     private payroolList: PayroolList = []
     private otherPaymentList: OtherPaymentList = []
     private individualPayementList: IndividualPaymentList = []
+    private contactList: ContactList = []
     private siren: string = ''
     private date = ''
+    private contactIdList: number[] = []
 
     async asyncInit(dir: string, options = {
         controleDsnVersion: true,
@@ -705,6 +727,7 @@ export class DsnParser implements IDsnParser {
         let optionIdMutual = ''
         const employeeDatas = []//On va stocker temporairement les valeurs du salarié pour la gestion des NTT
         const mutualEmployeeTmp = []
+        let contactId = 0
         for await (const line of rl) {
             //let lineSplit = line.split(',\'')
             //Exemple d'une structure S10.G00.00.004,'OK'
@@ -712,7 +735,7 @@ export class DsnParser implements IDsnParser {
             let dsnStructure = lineSplit[0]
             let findStructure = this.extractions.find(d => d.dsnStructure === dsnStructure)
             if (findStructure) {
-                //Il faut supprimer les ' qu'on trouve sur la valeur afin de pouvoir la liste
+                //Il faut supprimer les ' qu'on trouve sur la valeur afin de pouvoir la lire
                 let value = lineSplit[1].replace(/'/g, "")
                 switch (findStructure.collection) {
                     case 'Dsn':
@@ -741,6 +764,18 @@ export class DsnParser implements IDsnParser {
                             date: this.date
                         }
                         this.societyList.push(addRowSociety)
+                        break
+                    case 'Contact':
+                        if (lineSplit[0] === 'S20.G00.07.001') {
+                            contactId += 1
+                            this.contactIdList.push(contactId)
+                        }
+                        let addRowContact: Contact = {
+                            ...findStructure,
+                            value: value,
+                            id: contactId
+                        }
+                        this.contactList.push(addRowContact)
                         break
                     case 'Establishment':
                         if (lineSplit[0] === 'S21.G00.11.001') {
@@ -1098,6 +1133,23 @@ export class DsnParser implements IDsnParser {
             }
         }
         return employeeList
+    }
+    /**
+     * Retourne la liste des contacts de la DSN structure S20.G00.007
+     */
+    get contact(): ContactObject[] {
+        const contactList: ContactObject[] = []
+        for (let contactId of this.contactIdList) {
+            let contactListFilter = this.contactList.filter(contact => contact.id === contactId)
+            let contactObject: any = {}
+            for (let contact of contactListFilter) {
+                contactObject[contact.field] = contact.value
+            }
+            contactObject['siren'] = this.siren
+            contactObject['date'] = this.date
+            contactList.push(contactObject)
+        }
+        return contactList
     }
 
     get workContract(): WorkContractObject[] {
@@ -1494,6 +1546,7 @@ export class DsnParser implements IDsnParser {
         const employeesList = this.employee
         const workContractsList = this.workContract
         const mutualEmployeeList = this.employeeMutual
+        const contactList = this.contact
         const dsn = this.dsn
         const society = this.society
         const establishmentsList = this.establishment
@@ -1530,6 +1583,7 @@ export class DsnParser implements IDsnParser {
 
         const smartDsn: SmartDsn = {
             ...dsn,
+            contact: [...contactList],
             society: {
                 ...society,
                 establishments: [

@@ -30,6 +30,14 @@ export type BonusObject = {
     contractIdBonus: string;
     datePaymentBonus: string;
 };
+export type ContactObject = {
+    siren: string;
+    date: string;
+    contactName: string;
+    contactPhone: string;
+    contactEmail: string;
+    contactType: string;
+};
 export type EmployeeObject = {
     numSS: string;
     lastname: string;
@@ -379,6 +387,7 @@ export type OtherPaymentObject = {
 type MutualEmployeeComplet = MutualObject & MutualEmployeeObject;
 export interface SmartDsn extends DsnObject {
     society: SmartSociety;
+    contact: ContactObject[];
     employees: SmartEmployee[];
 }
 interface SmartSociety extends SocietyObject {
@@ -443,8 +452,10 @@ export declare class DsnParser implements IDsnParser {
     private payroolList;
     private otherPaymentList;
     private individualPayementList;
+    private contactList;
     private siren;
     private date;
+    private contactIdList;
     asyncInit(dir: string, options?: {
         controleDsnVersion: boolean;
         deleteFile: boolean;
@@ -454,6 +465,10 @@ export declare class DsnParser implements IDsnParser {
     get establishment(): EstablishmentObject[];
     get contributionFund(): ContributionFundObject[];
     get employee(): EmployeeObject[];
+    /**
+     * Retourne la liste des contacts de la DSN structure S20.G00.007
+     */
+    get contact(): ContactObject[];
     get workContract(): WorkContractObject[];
     get changWorkContract(): ChangeWockContractObject[];
     get workStopping(): WorkStoppingObject[];

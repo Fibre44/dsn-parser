@@ -1,6 +1,6 @@
-import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject } from "../dsn"
+import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject } from "../dsn"
 type extractions = extraction[]
-export type field = keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
+export type field = keyof (ContactObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
 type extraction = {
     collection: string,
     field: field,
@@ -104,6 +104,30 @@ export const extractionsList: extractions = [
         field: 'idcc',
         name: 'Code convention collective applicable',
         dsnStructure: 'S21.G00.06.015',
+    },
+    {
+        collection: 'Contact',
+        field: 'contactName',
+        name: 'Nom et prénom du contact',
+        dsnStructure: 'S20.G00.07.001',
+    },
+    {
+        collection: 'Contact',
+        field: 'contactPhone',
+        name: 'Adresse téléphonique',
+        dsnStructure: 'S20.G00.07.002',
+    },
+    {
+        collection: 'Contact',
+        field: 'contactEmail',
+        name: 'Adresse mél du contact',
+        dsnStructure: 'S20.G00.07.003',
+    },
+    {
+        collection: 'Contact',
+        field: 'contactType',
+        name: 'Type',
+        dsnStructure: 'S20.G00.07.004',
     },
     {
         collection: 'Establishment',
