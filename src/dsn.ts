@@ -1200,11 +1200,11 @@ export class DsnParser implements IDsnParser {
         //On filtre par établissement
         for (let idEstablishment of this.idEstablishmentList) {
             let aggregateContributionFilterEstablishment = this.aggregateContributionList.filter(aggregate => aggregate.idEstablishment === idEstablishment)
-            let aggregateContributionRow: any = {}
             //On tourne par cotisation
             for (let aggregateContributionId of this.aggregateContributionIdList) {
                 let aggregateContributionFilter = aggregateContributionFilterEstablishment.filter(contributionId => contributionId.aggregateContributionId === aggregateContributionId)
                 let siret = aggregateContributionFilter[0].siret
+                let aggregateContributionRow: any = {}
                 for (let aggregateContribution of aggregateContributionFilter) {
                     aggregateContributionRow[aggregateContribution.field] = aggregateContribution.value
                 }
