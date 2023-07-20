@@ -1,6 +1,6 @@
-import type { EstablishmentObject, MutualEmployeeObject, EmployeeObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject, AggregateContributionObject } from "../dsn"
+import type { EstablishmentObject, ContactSenderObject, MutualEmployeeObject, EmployeeObject, SenderObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject, AggregateContributionObject } from "../dsn"
 type extractions = extraction[]
-export type field = keyof (AggregateContributionObject) | keyof (ContactObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
+export type field = keyof (AggregateContributionObject) | keyof (ContactObject) | keyof (ContactSenderObject) | keyof (SenderObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
 type extraction = {
     collection: string,
     field: field,
@@ -44,6 +44,90 @@ export const extractionsList: extractions = [
         field: 'totalRows',
         name: 'Total',
         dsnStructure: 'S90.G00.90.001',
+    },
+    {
+        collection: 'Sender',
+        field: 'nicSender',
+        name: `Nic de l'émetteur de l'envoi`,
+        dsnStructure: 'S10.G00.01.002',
+    },
+    {
+        collection: 'Sender',
+        field: 'nameSender',
+        name: `Nom ou raison sociale de l'émetteur`,
+        dsnStructure: 'S10.G00.01.003',
+    },
+    {
+        collection: 'Sender',
+        field: 'addressSender',
+        name: `Numéro, extension, nature et libellé de la voie`,
+        dsnStructure: 'S10.G00.01.004',
+    },
+    {
+        collection: 'Sender',
+        field: 'zipCodeSender',
+        name: `Code postal`,
+        dsnStructure: 'S10.G00.01.005',
+    },
+    {
+        collection: 'Sender',
+        field: 'citySender',
+        name: `Localité`,
+        dsnStructure: 'S10.G00.01.006',
+    },
+    {
+        collection: 'Sender',
+        field: 'countrySender',
+        name: `Code pays`,
+        dsnStructure: 'S10.G00.01.007',
+    },
+    {
+        collection: 'Sender',
+        field: 'foreignDistributionCodeSender',
+        name: `Code de distribution à l'étranger`,
+        dsnStructure: 'S10.G00.01.008',
+    },
+    {
+        collection: 'Sender',
+        field: 'complementLocalisationSender',
+        name: `Complément de la localisation de la construction`,
+        dsnStructure: 'S10.G00.01.009',
+    },
+    {
+        collection: 'Sender',
+        field: 'distributionServiceSender',
+        name: `Service de distribution, complément de localisation de la voie`,
+        dsnStructure: 'S10.G00.01.010',
+    },
+    {
+        collection: 'ContactSender',
+        field: 'salutationContactSender',
+        name: `Code civilité`,
+        dsnStructure: 'S10.G00.02.001',
+    },
+    {
+        collection: 'ContactSender',
+        field: 'nameContactSender',
+        name: `Nom et prénom de la personne à contacter`,
+        dsnStructure: 'S10.G00.02.002',
+    },
+    {
+        collection: 'ContactSender',
+        field: 'mailContactSender',
+        name: `Adresse mél du contact émetteur`,
+        dsnStructure: 'S10.G00.02.004',
+    },
+    {
+        collection: 'ContactSender',
+        field: 'phoneContactSender',
+        name: `Adresse téléphonique`,
+        dsnStructure: 'S10.G00.02.005',
+    },
+    {
+        collection: 'ContactSender',
+        field: 'faxContactSender',
+        name: `Adresse fax`,
+        dsnStructure: 'S10.G00.02.006',
     },
     {
         collection: 'Dsn',

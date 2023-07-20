@@ -40,8 +40,10 @@ La librairie se base sur le [cahier technique 2023 ](https://www.net-entreprises
 | Bloc       | Libellé                                                                                    | Méthode                                 | Commentaire |
 | ---------- | ------------------------------------------------------------------------------------------ | --------------------------------------- | -------     |
 | S10.G00.00 | Entête                                                                                     | [Méthode Dsn](#dsn)                     |         |
+| S10.G00.01 | Emetteur                                                                                   | [Méthode Emetteur](#sender)                     |         |
+| S10.G00.01 | Contact Emetteur                                                                           | [Méthode Emetteur](#contactSender)                     |         |
 | S20.G00.05 | Déclaration                                                                                |                                         |           |
-| S20.G00.07 | Contact chez le déclaré                                                                    | [Méthode conact](#contact)              | En cours de developpement|
+| S20.G00.07 | Contact chez le déclaré                                                                    | [Méthode contact](#contact)             ||
 | S20.G00.08 | Identifiant de l'organisme destinataire                                                     |Non géré                                | En cours de développement         |
 | S21.G00.06 | Entreprise                                                                                 | [Méthode Society](#society)             |          |
 | S21.G00.11 | Etablissement                                                                              | [Méthode Establishment](#establishment) |          |
@@ -141,6 +143,44 @@ Cette méthode retourne objet Javascript avec cette structure :
     type: string,
     totalRows: string,
     month: string
+}
+
+```
+
+<div id='sender'>  
+
+### Méthode sender ###
+
+Cette méthode retourne objet Javascript avec cette structure :
+
+``` typescript
+{
+    nicSender: string,
+    nameSender: string,
+    addressSender: string,
+    zipCodeSender: string,
+    citySender: string,
+    countrySender: string,
+    foreignDistributionCodeSender: string,
+    complementLocalisationSender: string,
+    distributionServiceSender: string
+}
+
+```
+
+<div id='contactSender'>  
+
+### Méthode contactSender ###
+
+Cette méthode retourne objet Javascript avec cette structure :
+
+``` typescript
+{
+    salutationContactSender: string,
+    nameContactSender: string,
+    mailContactSender: string,
+    phoneContactSender: string,
+    faxContactSender: string
 }
 
 ```

@@ -4,6 +4,8 @@ import { ops } from './utils/ops';
 import { extractionsList } from './utils/extraction';
 type societyList = Society[]
 type establishmentList = Establishment[]
+type senderList = Sender[]
+type contactSenderList = ContactSender[]
 type dsnList = Dsn[]
 type mutualList = Mutual[]
 type mutualEmployeeList = MutualEmployee[]
@@ -85,6 +87,19 @@ export type BonusObject = {
     dateEndBonus: string,
     contractIdBonus: string,
     datePaymentBonus: string
+}
+
+export type SenderObject = {
+    nicSender: string,
+    nameSender: string,
+    addressSender: string,
+    zipCodeSender: string,
+    citySender: string,
+    countrySender: string,
+    foreignDistributionCodeSender: string,
+    complementLocalisationSender: string,
+    distributionServiceSender: string
+
 }
 
 export type ContactObject = {
@@ -341,6 +356,15 @@ type Establishment = {
     date: string
 }
 
+type Sender = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    name: string,
+    value: string,
+    date: string
+}
+
 type AggregateContribution = {
     collection: string,
     field: string,
@@ -430,6 +454,14 @@ export type atObject = {
     date: string
 }
 
+export type ContactSenderObject = {
+    salutationContactSender: string,
+    nameContactSender: string,
+    mailContactSender: string,
+    phoneContactSender: string,
+    faxContactSender: string
+}
+
 type Employee = {
     collection: string,
     field: string,
@@ -492,6 +524,14 @@ type Contact = {
     value: string,
     id: number
 }
+type ContactSender = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    date: string
+}
+
 
 type BaseSubject = {
 
@@ -649,14 +689,20 @@ type OtherPayment = {
 
 type MutualEmployeeComplet = MutualObject & MutualEmployeeObject
 
-export interface SmartDsn extends DsnObject {
+export interface SmartDsn {
+    dsn: DsnObject,
     society: SmartSociety,
+    sender: SmartSender
     contact: ContactObject[]
     employees: SmartEmployee[]
 }
 
 interface SmartSociety extends SocietyObject {
     establishments: SmartEstablishment[]
+}
+
+interface SmartSender extends SenderObject {
+    contactSender: ContactSenderObject
 }
 
 interface SmartEstablishment extends EstablishmentObject {
@@ -681,6 +727,7 @@ interface IDsnParser {
     }): Promise<void>
     get dsn(): DsnObject
     get society(): SocietyObject
+    get sender(): SenderObject
     get establishment(): EstablishmentObject[]
     get contributionFund(): ContributionFundObject[]
     get employee(): EmployeeObject[]
@@ -734,6 +781,8 @@ export class DsnParser implements IDsnParser {
     private date = ''
     private contactIdList: number[] = []
     private aggregateContributionIdList: string[] = []
+    private senderList: senderList = []
+    private contactSenderList: contactSenderList = []
 
     async asyncInit(dir: string, options = {
         controleDsnVersion: true,
@@ -794,6 +843,24 @@ export class DsnParser implements IDsnParser {
                             date: this.date
                         }
                         this.societyList.push(addRowSociety)
+                        break
+                    case 'Sender':
+                        let addRowSender: Sender = {
+                            ...findStructure,
+                            value: value,
+                            date: this.date
+
+                        }
+                        this.senderList.push(addRowSender)
+                        break
+                    case 'ContactSender':
+                        let addRowContactSender: ContactSender = {
+                            ...findStructure,
+                            value: value,
+                            date: this.date
+                        }
+                        this.contactSenderList.push(addRowContactSender)
+
                         break
                     case 'Contact':
                         if (lineSplit[0] === 'S20.G00.07.001') {
@@ -1112,6 +1179,30 @@ export class DsnParser implements IDsnParser {
         }
         dsnObject['date'] = this.date
         return dsnObject
+    }
+    /**
+     * Retourne les informations du bloc S10.G00.01
+     */
+    get sender(): SenderObject {
+        let senderObject: any = {}
+        for (let sender of this.senderList) {
+            senderObject[sender.field] = sender.value
+        }
+        senderObject['date'] = this.date
+        return senderObject
+    }
+    /**
+     * Retourne les informations du bloc S10.G00.02
+
+     */
+    get contactSender(): ContactSenderObject {
+        let contactSenderObject: any = {}
+        for (let contactSender of this.contactSenderList) {
+            contactSenderObject[contactSender.field] = contactSender.value
+        }
+        contactSenderObject['date'] = this.date
+
+        return contactSenderObject
     }
     /**
      * Retourne les informations de la société bloc S21.G00.06
@@ -1627,6 +1718,8 @@ export class DsnParser implements IDsnParser {
     }
 
     get smartExtraction(): SmartDsn {
+        const sender = this.sender
+        const contactSender = this.contactSender
         const employeesList = this.employee
         const workContractsList = this.workContract
         const mutualEmployeeList = this.employeeMutual
@@ -1678,7 +1771,11 @@ export class DsnParser implements IDsnParser {
         }
 
         const smartDsn: SmartDsn = {
-            ...dsn,
+            dsn,
+            sender: {
+                ...sender,
+                contactSender
+            },
             contact: [...contactList],
             society: {
                 ...society,

@@ -40,6 +40,17 @@ export type BonusObject = {
     contractIdBonus: string;
     datePaymentBonus: string;
 };
+export type SenderObject = {
+    nicSender: string;
+    nameSender: string;
+    addressSender: string;
+    zipCodeSender: string;
+    citySender: string;
+    countrySender: string;
+    foreignDistributionCodeSender: string;
+    complementLocalisationSender: string;
+    distributionServiceSender: string;
+};
 export type ContactObject = {
     siren: string;
     date: string;
@@ -304,6 +315,13 @@ export type atObject = {
     siret: string;
     date: string;
 };
+export type ContactSenderObject = {
+    salutationContactSender: string;
+    nameContactSender: string;
+    mailContactSender: string;
+    phoneContactSender: string;
+    faxContactSender: string;
+};
 export type BaseObject = {
     employeeId: string;
     numSS: string;
@@ -395,8 +413,10 @@ export type OtherPaymentObject = {
     endDateOtherPayment: string;
 };
 type MutualEmployeeComplet = MutualObject & MutualEmployeeObject;
-export interface SmartDsn extends DsnObject {
+export interface SmartDsn {
+    dsn: DsnObject;
     society: SmartSociety;
+    sender: SenderObject;
     contact: ContactObject[];
     employees: SmartEmployee[];
 }
@@ -422,6 +442,7 @@ interface IDsnParser {
     }): Promise<void>;
     get dsn(): DsnObject;
     get society(): SocietyObject;
+    get sender(): SenderObject;
     get establishment(): EstablishmentObject[];
     get contributionFund(): ContributionFundObject[];
     get employee(): EmployeeObject[];
@@ -471,6 +492,8 @@ export declare class DsnParser implements IDsnParser {
     private date;
     private contactIdList;
     private aggregateContributionIdList;
+    private senderList;
+    private contactSenderList;
     asyncInit(dir: string, options?: {
         controleDsnVersion: boolean;
         deleteFile: boolean;
@@ -479,6 +502,15 @@ export declare class DsnParser implements IDsnParser {
      * Retourne les informations de base de la DSN bloc S10.G00.00
      */
     get dsn(): DsnObject;
+    /**
+     * Retourne les informations du bloc S10.G00.01
+     */
+    get sender(): SenderObject;
+    /**
+     * Retourne les informations du bloc S10.G00.02
+
+     */
+    get contactSender(): ContactSenderObject;
     /**
      * Retourne les informations de la société bloc S21.G00.06
      */
