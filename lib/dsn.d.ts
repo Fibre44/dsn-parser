@@ -6,6 +6,31 @@ export type DsnObject = {
     type: string;
     totalRows: string;
     month: string;
+    natureDsn: string;
+    typeDsn: string;
+    fractionDsn: string;
+    idDsn: string;
+    fieldDsn: string;
+    jobDsn: string;
+    idRemoveDsn: string;
+    dateMakeFileDsn: string;
+    currencyDsn: string;
+    reasonDsn: string;
+    lastSIRETOldContractDsn: string;
+};
+export type StatementObject = {
+    natureDsn: string;
+    typeDsn: string;
+    fractionDsn: string;
+    idDsn: string;
+    month: string;
+    fieldDsn: string;
+    jobDsn: string;
+    idRemoveDsn: string;
+    dateMakeFileDsn: string;
+    currencyDsn: string;
+    reasonDsn: string;
+    lastSIRETOldContractDsn: string;
 };
 export type AggregateContributionObject = {
     contributionId: string;
@@ -27,6 +52,10 @@ export type SocietyObject = {
     zipCode: string;
     city: string;
     date: string;
+    averageWorkForce31DecemberSociety: string;
+    countrySociety: string;
+    foreignDistributionCode: string;
+    establishmentOfTheCompany: string;
 };
 export type BonusObject = {
     siren: string;
@@ -415,13 +444,17 @@ export type OtherPaymentObject = {
 type MutualEmployeeComplet = MutualObject & MutualEmployeeObject;
 export interface SmartDsn {
     dsn: DsnObject;
+    statement: StatementObject;
     society: SmartSociety;
-    sender: SenderObject;
+    sender: SmartSender;
     contact: ContactObject[];
     employees: SmartEmployee[];
 }
 interface SmartSociety extends SocietyObject {
     establishments: SmartEstablishment[];
+}
+interface SmartSender extends SenderObject {
+    contactSender: ContactSenderObject;
 }
 interface SmartEstablishment extends EstablishmentObject {
     aggreagreContribution: AggregateContributionObject[];
@@ -435,37 +468,12 @@ interface SmartEmployee extends EmployeeObject {
 interface SmartWorkContract extends WorkContractObject {
     change: ChangeWockContractObject[];
 }
-interface IDsnParser {
-    asyncInit(dir: string, options: {
-        controleDsnVersion: boolean;
-        deleteFile: boolean;
-    }): Promise<void>;
-    get dsn(): DsnObject;
-    get society(): SocietyObject;
-    get sender(): SenderObject;
-    get establishment(): EstablishmentObject[];
-    get contributionFund(): ContributionFundObject[];
-    get employee(): EmployeeObject[];
-    get workContract(): WorkContractObject[];
-    get changWorkContract(): ChangeWockContractObject[];
-    get employeeMutual(): MutualEmployeeComplet[];
-    get mutual(): MutualObject[];
-    get baseSubject(): BaseSubjectObject[];
-    get contribution(): ContributionObject[];
-    get assignement(): AssignementObject[];
-    get rateMobility(): MobilityObject[];
-    get rateAt(): atObject[];
-    get bonus(): BonusObject[];
-    get individualPayment(): IndividualPaymentObject[];
-    get payrool(): PayroolObject[];
-    get otherPayment(): OtherPaymentObject[];
-    get smartExtraction(): SmartDsn;
-}
-export declare class DsnParser implements IDsnParser {
+export declare class DsnParser {
     private dsnVersion;
     private societyList;
     private establishmentList;
     private dsnList;
+    private statementList;
     private contributionFundList;
     private workContractList;
     private mutualList;
@@ -502,6 +510,10 @@ export declare class DsnParser implements IDsnParser {
      * Retourne les informations de base de la DSN bloc S10.G00.00
      */
     get dsn(): DsnObject;
+    /**
+     * Retourne les informations du bloc S20.G00.05
+     */
+    get statement(): StatementObject;
     /**
      * Retourne les informations du bloc S10.G00.01
      */

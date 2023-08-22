@@ -7,6 +7,7 @@ type establishmentList = Establishment[]
 type senderList = Sender[]
 type contactSenderList = ContactSender[]
 type dsnList = Dsn[]
+type statementList = Dsn[]
 type mutualList = Mutual[]
 type mutualEmployeeList = MutualEmployee[]
 type contributionFundList = ContributionFund[]
@@ -42,8 +43,34 @@ export type DsnObject = {
     dsnVersion: string,
     type: string,
     totalRows: string,
-    month: string
+    month: string,
+    natureDsn: string,
+    typeDsn: string,
+    fractionDsn: string,
+    idDsn: string,
+    fieldDsn: string,
+    jobDsn: string
+    idRemoveDsn: string,
+    dateMakeFileDsn: string,
+    currencyDsn: string,
+    reasonDsn: string,
+    lastSIRETOldContractDsn: string
 
+}
+
+export type StatementObject = {
+    natureDsn: string,
+    typeDsn: string,
+    fractionDsn: string,
+    idDsn: string,
+    month: string,
+    fieldDsn: string,
+    jobDsn: string
+    idRemoveDsn: string,
+    dateMakeFileDsn: string,
+    currencyDsn: string,
+    reasonDsn: string,
+    lastSIRETOldContractDsn: string
 }
 
 export type AggregateContributionObject = {
@@ -73,7 +100,11 @@ export type SocietyObject = {
     adress3?: string,
     zipCode: string,
     city: string,
-    date: string
+    date: string,
+    averageWorkForce31DecemberSociety: string,
+    countrySociety: string,
+    foreignDistributionCode: string,
+    establishmentOfTheCompany: string
 }
 
 export type BonusObject = {
@@ -691,6 +722,7 @@ type MutualEmployeeComplet = MutualObject & MutualEmployeeObject
 
 export interface SmartDsn {
     dsn: DsnObject,
+    statement: StatementObject,
     society: SmartSociety,
     sender: SmartSender
     contact: ContactObject[]
@@ -720,41 +752,16 @@ interface SmartWorkContract extends WorkContractObject {
     change: ChangeWockContractObject[]
 }
 
-interface IDsnParser {
-    asyncInit(dir: string, options: {
-        controleDsnVersion: boolean,
-        deleteFile: boolean
-    }): Promise<void>
-    get dsn(): DsnObject
-    get society(): SocietyObject
-    get sender(): SenderObject
-    get establishment(): EstablishmentObject[]
-    get contributionFund(): ContributionFundObject[]
-    get employee(): EmployeeObject[]
-    get workContract(): WorkContractObject[]
-    get changWorkContract(): ChangeWockContractObject[]
-    get employeeMutual(): MutualEmployeeComplet[]
-    get mutual(): MutualObject[]
-    get baseSubject(): BaseSubjectObject[]
-    get contribution(): ContributionObject[]
-    get assignement(): AssignementObject[]
-    get rateMobility(): MobilityObject[]
-    get rateAt(): atObject[]
-    get bonus(): BonusObject[]
-    get individualPayment(): IndividualPaymentObject[]
-    get payrool(): PayroolObject[]
-    get otherPayment(): OtherPaymentObject[]
-    get smartExtraction(): SmartDsn
-}
 
 //Norme DSN 2022 = https://www.net-entreprises.fr/media/documentation/dsn-cahier-technique-2022.1.pdf
 //NodeJs readline =https://nodejs.org/api/readline.html
 
-export class DsnParser implements IDsnParser {
+export class DsnParser {
     private dsnVersion = ['P22V01', 'P23V01']
     private societyList: societyList = []
     private establishmentList: establishmentList = []
     private dsnList: dsnList = []
+    private statementList: statementList = []
     private contributionFundList: contributionFundList = []
     private workContractList: workContractDefinition[] = []
     private mutualList: mutualList = []
@@ -832,6 +839,13 @@ export class DsnParser implements IDsnParser {
                             value: value
                         }
                         this.dsnList.push(addDsn)
+                        break
+                    case 'Statement':
+                        let addRowStatement: Dsn = {
+                            ...findStructure,
+                            value
+                        }
+                        this.statementList.push(addRowStatement)
                         break
                     case 'Society':
                         if (lineSplit[0] === 'S21.G00.06.001') {
@@ -1179,6 +1193,17 @@ export class DsnParser implements IDsnParser {
         }
         dsnObject['date'] = this.date
         return dsnObject
+    }
+    /**
+     * Retourne les informations du bloc S20.G00.05
+     */
+    get statement(): StatementObject {
+        let statementObject: any = {}
+        for (let statement of this.statementList) {
+            statementObject[statement.field] = statement.value
+        }
+        statementObject['date'] = this.date
+        return statementObject
     }
     /**
      * Retourne les informations du bloc S10.G00.01
@@ -1726,6 +1751,7 @@ export class DsnParser implements IDsnParser {
         const contactList = this.contact
         const aggregateContribution = this.aggregateContribution
         const dsn = this.dsn
+        const statement = this.statement
         const society = this.society
         const establishmentsList = this.establishment
         //const establishmentsContributionList = this.establishmentContribution
@@ -1772,6 +1798,7 @@ export class DsnParser implements IDsnParser {
 
         const smartDsn: SmartDsn = {
             dsn,
+            statement,
             sender: {
                 ...sender,
                 contactSender

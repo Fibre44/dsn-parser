@@ -42,9 +42,10 @@ La librairie se base sur le [cahier technique 2023 ](https://www.net-entreprises
 | S10.G00.00 | Entête                                                                                     | [Méthode Dsn](#dsn)                     |         |
 | S10.G00.01 | Emetteur                                                                                   | [Méthode Emetteur](#sender)                     |         |
 | S10.G00.01 | Contact Emetteur                                                                           | [Méthode Emetteur](#contactSender)                     |         |
-| S20.G00.05 | Déclaration                                                                                |                                         |           |
+| S20.G00.05 | Déclaration                                                                                | [Méthode statement](#contact)                                        |           |
+| S20.G00.06 | Entreprise                                                                                 | [Méthode Society](#contact)             ||
 | S20.G00.07 | Contact chez le déclaré                                                                    | [Méthode contact](#contact)             ||
-| S20.G00.08 | Identifiant de l'organisme destinataire                                                     |Non géré                                | En cours de développement         |
+| S20.G00.08 | Identifiant de l'organisme destinataire                                                    |Non géré                                | En cours de développement         |
 | S21.G00.06 | Entreprise                                                                                 | [Méthode Society](#society)             |          |
 | S21.G00.11 | Etablissement                                                                              | [Méthode Establishment](#establishment) |          |
 | S21.G00.12 | Coordonnées bancaires spécifiques                                                          | Non géré                                | En cours de développemet         |

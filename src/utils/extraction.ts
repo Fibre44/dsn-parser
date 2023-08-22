@@ -1,6 +1,6 @@
-import type { EstablishmentObject, ContactSenderObject, MutualEmployeeObject, EmployeeObject, SenderObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject, AggregateContributionObject } from "../dsn"
+import type { EstablishmentObject, ContactSenderObject, MutualEmployeeObject, EmployeeObject, SenderObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject, AggregateContributionObject, StatementObject } from "../dsn"
 type extractions = extraction[]
-export type field = keyof (AggregateContributionObject) | keyof (ContactObject) | keyof (ContactSenderObject) | keyof (SenderObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
+export type field = keyof (AggregateContributionObject) | keyof (ContactObject) | keyof (StatementObject) | keyof (ContactSenderObject) | keyof (SenderObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
 type extraction = {
     collection: string,
     field: field,
@@ -130,10 +130,82 @@ export const extractionsList: extractions = [
         dsnStructure: 'S10.G00.02.006',
     },
     {
+        collection: 'Statement',
+        field: 'natureDsn',
+        name: 'Type de la déclaration',
+        dsnStructure: 'S20.G00.05.001',
+    },
+    {
+        collection: 'Statement',
+        field: 'typeDsn',
+        name: 'Type de la déclaration',
+        dsnStructure: 'S20.G00.05.002',
+    },
+    {
+        collection: 'Statement',
+        field: 'fractionDsn',
+        name: 'Numéro de fraction de déclaration',
+        dsnStructure: 'S20.G00.05.003',
+    },
+    {
+        collection: 'Statement',
+        field: 'idDsn',
+        name: `Numéro d'ordre de la déclaration`,
+        dsnStructure: 'S20.G00.05.003',
+    },
+    {
         collection: 'Dsn',
         field: 'month',
         name: 'Date du mois principal déclaré',
         dsnStructure: 'S20.G00.05.005',
+    },
+    {
+        collection: 'Statement',
+        field: 'month',
+        name: 'Date du mois principal déclaré',
+        dsnStructure: 'S20.G00.05.005',
+    },
+    {
+        collection: 'Statement',
+        field: 'idRemoveDsn',
+        name: `Identifiant de la déclaration annulée ou remplacée`,
+        dsnStructure: 'S20.G00.05.006',
+    },
+    {
+        collection: 'Statement',
+        field: 'dateMakeFileDsn',
+        name: `Date de constitution du fichier`,
+        dsnStructure: 'S20.G00.05.007',
+    },
+    {
+        collection: 'Statement',
+        field: 'fieldDsn',
+        name: `Champ de la déclaration`,
+        dsnStructure: 'S20.G00.05.008',
+    },
+    {
+        collection: 'Statement',
+        field: 'jobDsn',
+        name: `Identifiant métier`,
+        dsnStructure: 'S20.G00.05.009',
+    },
+    {
+        collection: 'Statement',
+        field: 'currencyDsn',
+        name: `Devise de la déclaration`,
+        dsnStructure: 'S20.G00.05.010',
+    },
+    {
+        collection: 'Statement',
+        field: 'reasonDsn',
+        name: `Nature de l’événement déclencheur du signalement`,
+        dsnStructure: 'S20.G00.05.011',
+    },
+    {
+        collection: 'Statement',
+        field: 'lastSIRETOldContractDsn',
+        name: `Dernier SIRET connu pour ancien numéro de contrat`,
+        dsnStructure: 'S20.G00.05.012',
     },
     {
         collection: 'Society',
@@ -188,6 +260,30 @@ export const extractionsList: extractions = [
         field: 'idcc',
         name: 'Code convention collective applicable',
         dsnStructure: 'S21.G00.06.015',
+    },
+    {
+        collection: 'Society',
+        field: 'averageWorkForce31DecemberSociety',
+        name: `Effectif moyen de l'entreprise au 31 décembre`,
+        dsnStructure: 'S21.G00.06.009',
+    },
+    {
+        collection: 'Society',
+        field: 'countrySociety',
+        name: `Code pays`,
+        dsnStructure: 'S21.G00.06.010',
+    },
+    {
+        collection: 'Society',
+        field: 'foreignDistributionCode',
+        name: `Code de distribution à l'étranger`,
+        dsnStructure: 'S21.G00.06.011',
+    },
+    {
+        collection: 'Society',
+        field: 'establishmentOfTheCompany',
+        name: `Code de distribution à l'étranger`,
+        dsnStructure: 'S21.G00.06.012',
     },
     {
         collection: 'Contact',
