@@ -69,6 +69,13 @@ export type BonusObject = {
     contractIdBonus: string;
     datePaymentBonus: string;
 };
+export type SpecificBankDetailsObject = {
+    siret: string;
+    date: string;
+    typeSpecificBankDetails: string;
+    BICSpecificBankDetails: string;
+    IBANSpecificBankDetails: string;
+};
 export type SenderObject = {
     nicSender: string;
     nameSender: string;
@@ -458,6 +465,7 @@ interface SmartSender extends SenderObject {
 }
 interface SmartEstablishment extends EstablishmentObject {
     aggreagreContribution: AggregateContributionObject[];
+    specificBankDetails: SpecificBankDetailsObject | undefined;
 }
 interface SmartEmployee extends EmployeeObject {
     workContracts: SmartWorkContract[];
@@ -502,6 +510,7 @@ export declare class DsnParser {
     private aggregateContributionIdList;
     private senderList;
     private contactSenderList;
+    private specificBankDetailsList;
     asyncInit(dir: string, options?: {
         controleDsnVersion: boolean;
         deleteFile: boolean;
@@ -520,9 +529,12 @@ export declare class DsnParser {
     get sender(): SenderObject;
     /**
      * Retourne les informations du bloc S10.G00.02
-
      */
     get contactSender(): ContactSenderObject;
+    /**
+     * Retourne les informations du bloc S21.G00.12
+     */
+    get specificBankDetails(): SpecificBankDetailsObject[];
     /**
      * Retourne les informations de la société bloc S21.G00.06
      */

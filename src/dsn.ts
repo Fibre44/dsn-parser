@@ -9,6 +9,7 @@ type contactSenderList = ContactSender[]
 type dsnList = Dsn[]
 type statementList = Dsn[]
 type mutualList = Mutual[]
+type SpecificBankDetailsList = SpecificBankDetails[]
 type mutualEmployeeList = MutualEmployee[]
 type contributionFundList = ContributionFund[]
 type baseList = Base[]
@@ -90,6 +91,13 @@ type Dsn = {
     dsnStructure: string,
     value: string
 }
+type SpecificBankDetails = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string,
+    siret: string
+}
 
 export type SocietyObject = {
     siren: string,
@@ -118,6 +126,14 @@ export type BonusObject = {
     dateEndBonus: string,
     contractIdBonus: string,
     datePaymentBonus: string
+}
+
+export type SpecificBankDetailsObject = {
+    siret: string,
+    date: string,
+    typeSpecificBankDetails: string,
+    BICSpecificBankDetails: string,
+    IBANSpecificBankDetails: string
 }
 
 export type SenderObject = {
@@ -738,7 +754,8 @@ interface SmartSender extends SenderObject {
 }
 
 interface SmartEstablishment extends EstablishmentObject {
-    aggreagreContribution: AggregateContributionObject[]
+    aggreagreContribution: AggregateContributionObject[],
+    specificBankDetails: SpecificBankDetailsObject | undefined
 }
 
 interface SmartEmployee extends EmployeeObject {
@@ -790,6 +807,7 @@ export class DsnParser {
     private aggregateContributionIdList: string[] = []
     private senderList: senderList = []
     private contactSenderList: contactSenderList = []
+    private specificBankDetailsList: SpecificBankDetailsList = []
 
     async asyncInit(dir: string, options = {
         controleDsnVersion: true,
@@ -903,6 +921,15 @@ export class DsnParser {
 
                         }
                         this.establishmentList.push(addRowEstablishment)
+                        break
+                    case 'specificBankDetails':
+
+                        let addRowSpecificBankDetails: SpecificBankDetails = {
+                            ...findStructure,
+                            value,
+                            siret,
+                        }
+                        this.specificBankDetailsList.push(addRowSpecificBankDetails)
                         break
                     case 'AggregateContribution':
                         if (lineSplit[0] === 'S21.G00.23.001') {
@@ -1218,7 +1245,6 @@ export class DsnParser {
     }
     /**
      * Retourne les informations du bloc S10.G00.02
-
      */
     get contactSender(): ContactSenderObject {
         let contactSenderObject: any = {}
@@ -1228,6 +1254,30 @@ export class DsnParser {
         contactSenderObject['date'] = this.date
 
         return contactSenderObject
+    }
+
+    /**
+     * Retourne les informations du bloc S21.G00.12
+     */
+
+    get specificBankDetails(): SpecificBankDetailsObject[] {
+        const specificBankDetailsObjectList = []
+        const establishmentList = this.establishment
+        for (let establishment of establishmentList) {
+            let specificBankDetailsObject: any = {}
+
+            let siret = establishment.siren + establishment.nic
+            let specificBankDetailsFilter = this.specificBankDetailsList.filter(spec => spec.siret === siret)
+            if (specificBankDetailsFilter) {
+                for (let specificBankDetails of specificBankDetailsFilter) {
+                    specificBankDetailsObject[specificBankDetails.field] = specificBankDetails.value
+                }
+                specificBankDetailsObject['date'] = this.date
+                specificBankDetailsObjectList.push(specificBankDetailsObject)
+            }
+        }
+
+        return specificBankDetailsObjectList
     }
     /**
      * Retourne les informations de la société bloc S21.G00.06
@@ -1754,6 +1804,7 @@ export class DsnParser {
         const statement = this.statement
         const society = this.society
         const establishmentsList = this.establishment
+        const specificBankDetails = this.specificBankDetails
         //const establishmentsContributionList = this.establishmentContribution
         const workChangeContractsList = this.changWorkContract
         const workStoppingList = this.workStopping
@@ -1788,10 +1839,13 @@ export class DsnParser {
         const smartEstablishmentList: SmartEstablishment[] = []
         for (let establishment of establishmentsList) {
             let siret = society.siren + establishment.nic
+            let specificBankDetailsEstablishment = specificBankDetails.find(specEstablishement => specEstablishement.siret === siret)
             let aggregateContributionFilter = aggregateContribution.filter(aggregate => aggregate.siret === siret)
             let smartEstablishment: SmartEstablishment = {
                 ...establishment,
-                aggreagreContribution: [...aggregateContributionFilter]
+                aggreagreContribution: [...aggregateContributionFilter],
+                specificBankDetails: specificBankDetailsEstablishment
+
             }
             smartEstablishmentList.push(smartEstablishment)
         }
