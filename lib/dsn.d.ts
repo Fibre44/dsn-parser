@@ -42,6 +42,18 @@ export type AggregateContributionObject = {
     contributionCRM: string;
     siret: string;
 };
+type Dsn = {
+    collection: string;
+    field: string;
+    dsnStructure: string;
+    value: string;
+};
+export type ComplementOETHObject = {
+    approvedAgreement: string;
+    typeBOETH: string;
+    numberBOETH: string;
+    yearBOETH: string;
+};
 export type SocietyObject = {
     siren: string;
     nic: string;
@@ -459,6 +471,7 @@ export interface SmartDsn {
 }
 interface SmartSociety extends SocietyObject {
     establishments: SmartEstablishment[];
+    complementOETH: ComplementOETHObject;
 }
 interface SmartSender extends SenderObject {
     contactSender: ContactSenderObject;
@@ -511,6 +524,7 @@ export declare class DsnParser {
     private senderList;
     private contactSenderList;
     private specificBankDetailsList;
+    private complementOETHList;
     asyncInit(dir: string, options?: {
         controleDsnVersion: boolean;
         deleteFile: boolean;
@@ -519,6 +533,16 @@ export declare class DsnParser {
      * Retourne les informations de base de la DSN bloc S10.G00.00
      */
     get dsn(): DsnObject;
+    /**
+     * make a dynamic object
+     * @param datas
+     * @returns { Object}
+     */
+    makeDynamicObject<T>(datas: Dsn[]): T;
+    /**
+     * Retourne les informations de base de la DSN bloc S21.G00.13
+     */
+    get complementOETH(): ComplementOETHObject;
     /**
      * Retourne les informations du bloc S20.G00.05
      */
@@ -569,17 +593,6 @@ export declare class DsnParser {
     get mutual(): MutualObject[];
     get base(): BaseObject[];
     get baseSubject(): BaseSubjectObject[];
-    /**
-     *    get establishmentContribution(): EstablishmentContributionObject[] {
-        const establishmentContributionList: EstablishmentContributionObject[] = []
-
-        for (let establishmentContribution of this.establishmentContributionList) {
-
-        }
-
-        return establishmentContributionList
-    }
-     */
     get contribution(): ContributionObject[];
     get assignement(): AssignementObject[];
     get rateMobility(): MobilityObject[];

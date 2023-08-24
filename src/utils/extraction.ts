@@ -1,6 +1,6 @@
-import type { EstablishmentObject, ContactSenderObject, SpecificBankDetailsObject, MutualEmployeeObject, EmployeeObject, SenderObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject, AggregateContributionObject, StatementObject } from "../dsn"
+import type { EstablishmentObject, ContactSenderObject, ComplementOETHObject, SpecificBankDetailsObject, MutualEmployeeObject, EmployeeObject, SenderObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject, AggregateContributionObject, StatementObject } from "../dsn"
 type extractions = extraction[]
-export type field = keyof (AggregateContributionObject) | keyof (SpecificBankDetailsObject) | keyof (ContactObject) | keyof (StatementObject) | keyof (ContactSenderObject) | keyof (SenderObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
+export type field = keyof (AggregateContributionObject) | keyof (ComplementOETHObject) | keyof (SpecificBankDetailsObject) | keyof (ContactObject) | keyof (StatementObject) | keyof (ContactSenderObject) | keyof (SenderObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
 type extraction = {
     collection: string,
     field: field,
@@ -392,6 +392,30 @@ export const extractionsList: extractions = [
         field: 'IBANSpecificBankDetails',
         name: `IBAN`,
         dsnStructure: 'S21.G00.12.003',
+    },
+    {
+        collection: 'complementOETH',
+        field: 'approvedAgreement',
+        name: `Accord agréé OETH`,
+        dsnStructure: 'S21.G00.13.001',
+    },
+    {
+        collection: 'complementOETH',
+        field: 'typeBOETH',
+        name: `Type BOETH externe`,
+        dsnStructure: 'S21.G00.13.002',
+    },
+    {
+        collection: 'complementOETH',
+        field: 'numberBOETH',
+        name: `Nombre BOETH externe`,
+        dsnStructure: 'S21.G00.13.003',
+    },
+    {
+        collection: 'complementOETH',
+        field: 'yearBOETH',
+        name: `Millésime de rattachement`,
+        dsnStructure: 'S21.G00.13.004',
     },
     {
         collection: 'Mutual',

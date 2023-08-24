@@ -49,7 +49,7 @@ La librairie se base sur le [cahier technique 2023 ](https://www.net-entreprises
 | S21.G00.06 | Entreprise                                                                                 | [Méthode Society](#society)             |          |
 | S21.G00.11 | Etablissement                                                                              | [Méthode Establishment](#establishment) |          |
 | S21.G00.12 | Coordonnées bancaires spécifiques                                                          | specificBankDetails                     | En cours de développemet         |
-| S21.G00.13 | Complément OETH                                                                            | Non géré                                | En cours de développemet         |
+| S21.G00.13 | Complément OETH                                                                            | complementOETH                                | En cours de développemet         |
 | S21.G00.15 | Adhésion Prévoyance                                                                        | [Méthode Mutual](#mutual)               |          |
 | S21.G00.16 | Changements destinataire Adhésion Prévoyance                                               | Non géré                                | En cours de développemet         |
 | S21.G00.20 | Versement organisme de protection sociale                                                  | Non géré                                |          |

@@ -2,28 +2,9 @@ import fs from 'node:fs';
 import readline from 'node:readline';
 import { ops } from './utils/ops';
 import { extractionsList } from './utils/extraction';
-type societyList = Society[]
-type establishmentList = Establishment[]
-type senderList = Sender[]
-type contactSenderList = ContactSender[]
-type dsnList = Dsn[]
-type statementList = Dsn[]
-type mutualList = Mutual[]
-type SpecificBankDetailsList = SpecificBankDetails[]
-type mutualEmployeeList = MutualEmployee[]
-type contributionFundList = ContributionFund[]
+
 type baseList = Base[]
-type baseSubjectList = BaseSubject[]
-type contributionList = Contribution[]
-type establishmentContributionList = EstablishmentContribution[]
-type WorkStoppingList = WorkStopping[]
-type BonusList = Bonus[]
-type ChangeWorkContractList = ChangeWorkContractDefinition[]
-type IndividualPaymentList = IndividualPayment[]
-type PayroolList = Payrool[]
-type OtherPaymentList = OtherPayment[]
-type ContactList = Contact[]
-type AggregateContributionList = AggregateContribution[]
+
 
 type workContractDefinition = {
     collection: string,
@@ -97,6 +78,13 @@ type SpecificBankDetails = {
     dsnStructure: string,
     value: string,
     siret: string
+}
+
+export type ComplementOETHObject = {
+    approvedAgreement: string,
+    typeBOETH: string,
+    numberBOETH: string,
+    yearBOETH: string
 }
 
 export type SocietyObject = {
@@ -580,6 +568,8 @@ type ContactSender = {
 }
 
 
+
+
 type BaseSubject = {
 
     collection: string,
@@ -746,7 +736,8 @@ export interface SmartDsn {
 }
 
 interface SmartSociety extends SocietyObject {
-    establishments: SmartEstablishment[]
+    establishments: SmartEstablishment[],
+    complementOETH: ComplementOETHObject
 }
 
 interface SmartSender extends SenderObject {
@@ -775,39 +766,40 @@ interface SmartWorkContract extends WorkContractObject {
 
 export class DsnParser {
     private dsnVersion = ['P22V01', 'P23V01']
-    private societyList: societyList = []
-    private establishmentList: establishmentList = []
-    private dsnList: dsnList = []
-    private statementList: statementList = []
-    private contributionFundList: contributionFundList = []
+    private societyList: Society[] = []
+    private establishmentList: Establishment[] = []
+    private dsnList: Dsn[] = []
+    private statementList: Dsn[] = []
+    private contributionFundList: ContributionFund[] = []
     private workContractList: workContractDefinition[] = []
-    private mutualList: mutualList = []
-    private mutualEmployeeList: mutualEmployeeList = []
+    private mutualList: Mutual[] = []
+    private mutualEmployeeList: MutualEmployee[] = []
     private employeeList: Employee[] = []
     private numSSList: string[] = []
     private idEstablishmentList: number[] = []
     private extractions = extractionsList
     private mutualIdList: number[] = []
     private baseList: baseList = []
-    private baseSubjectList: baseSubjectList = []
+    private baseSubjectList: BaseSubject[] = []
     private numSSEmployeeIdList: NumSSEmployeeId[] = []
-    private contributionList: contributionList = []
-    private workStoppingList: WorkStoppingList = []
-    private aggregateContributionList: AggregateContributionList = []
-    private bonusList: BonusList = []
-    private establishmentContributionList: establishmentContributionList = []
-    private changeWorkContractList: ChangeWorkContractList = []
-    private payroolList: PayroolList = []
-    private otherPaymentList: OtherPaymentList = []
-    private individualPayementList: IndividualPaymentList = []
-    private contactList: ContactList = []
+    private contributionList: Contribution[] = []
+    private workStoppingList: WorkStopping[] = []
+    private aggregateContributionList: AggregateContribution[] = []
+    private bonusList: Bonus[] = []
+    private establishmentContributionList: EstablishmentContribution[] = []
+    private changeWorkContractList: ChangeWorkContractDefinition[] = []
+    private payroolList: Payrool[] = []
+    private otherPaymentList: OtherPayment[] = []
+    private individualPayementList: IndividualPayment[] = []
+    private contactList: Contact[] = []
     private siren: string = ''
     private date = ''
     private contactIdList: number[] = []
     private aggregateContributionIdList: string[] = []
-    private senderList: senderList = []
-    private contactSenderList: contactSenderList = []
-    private specificBankDetailsList: SpecificBankDetailsList = []
+    private senderList: Sender[] = []
+    private contactSenderList: ContactSender[] = []
+    private specificBankDetailsList: SpecificBankDetails[] = []
+    private complementOETHList: Dsn[] = []
 
     async asyncInit(dir: string, options = {
         controleDsnVersion: true,
@@ -905,6 +897,14 @@ export class DsnParser {
                             id: contactId
                         }
                         this.contactList.push(addRowContact)
+                        break
+                    case 'complementOETH':
+                        let addComplementOETH: Dsn = {
+                            ...findStructure,
+                            value: value,
+
+                        }
+                        this.complementOETHList.push(addComplementOETH)
                         break
                     case 'Establishment':
                         if (lineSplit[0] === 'S21.G00.11.001') {
@@ -1214,12 +1214,42 @@ export class DsnParser {
      * Retourne les informations de base de la DSN bloc S10.G00.00
      */
     get dsn(): DsnObject {
-        let dsnObject: any = {}
+        let dsnObject = this.makeDynamicObject<DsnObject>(this.dsnList)
+        /** 
         for (let dsn of this.dsnList) {
             dsnObject[dsn.field] = dsn.value
         }
         dsnObject['date'] = this.date
+        */
         return dsnObject
+    }
+
+    /**
+     * make a dynamic object
+     * @param datas 
+     * @returns { Object}
+     */
+    makeDynamicObject<T>(datas: Dsn[]): T {
+        let dynamicObject: any = {}
+        for (let data of datas) {
+            dynamicObject[data.field] = data.value
+        }
+        dynamicObject['date'] = this.date
+        dynamicObject['siren'] = this.siren
+        return dynamicObject
+    }
+    /**
+     * Retourne les informations de base de la DSN bloc S21.G00.13
+     */
+
+    get complementOETH(): ComplementOETHObject {
+        let complementOETHObject: any = {}
+        for (let complement of this.complementOETHList) {
+            complementOETHObject[complement.field] = complement.value
+        }
+        complementOETHObject['date'] = this.date
+
+        return complementOETHObject
     }
     /**
      * Retourne les informations du bloc S20.G00.05
@@ -1265,7 +1295,6 @@ export class DsnParser {
         const establishmentList = this.establishment
         for (let establishment of establishmentList) {
             let specificBankDetailsObject: any = {}
-
             let siret = establishment.siren + establishment.nic
             let specificBankDetailsFilter = this.specificBankDetailsList.filter(spec => spec.siret === siret)
             if (specificBankDetailsFilter) {
@@ -1328,7 +1357,6 @@ export class DsnParser {
                             ...contributionDsn,
                             siret,
                             date: this.date
-
                         }
                         contributionFundList.push(contributionFundObject)
                     }
@@ -1505,7 +1533,6 @@ export class DsnParser {
 
     get mutual(): MutualObject[] {
         const mutualList: MutualObject[] = []
-
         for (let mutualId of this.mutualIdList) {
             let mutalFilter = this.mutualList.filter(m => m.techId === mutualId)
             let mutuelObject: any = {}
@@ -1574,18 +1601,6 @@ export class DsnParser {
         }
         return baseSubjectList
     }
-    /**
-     *    get establishmentContribution(): EstablishmentContributionObject[] {
-        const establishmentContributionList: EstablishmentContributionObject[] = []
-
-        for (let establishmentContribution of this.establishmentContributionList) {
-
-        }
-
-        return establishmentContributionList
-    }
-     */
-
 
     get contribution(): ContributionObject[] {
         const contributionList: ContributionObject[] = []
@@ -1805,6 +1820,7 @@ export class DsnParser {
         const society = this.society
         const establishmentsList = this.establishment
         const specificBankDetails = this.specificBankDetails
+        const complementOETH = this.complementOETH
         //const establishmentsContributionList = this.establishmentContribution
         const workChangeContractsList = this.changWorkContract
         const workStoppingList = this.workStopping
@@ -1862,7 +1878,8 @@ export class DsnParser {
                 ...society,
                 establishments: [
                     ...smartEstablishmentList
-                ]
+                ],
+                complementOETH
             },
             employees: [...smartEmployeeList]
 
