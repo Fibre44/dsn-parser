@@ -597,6 +597,9 @@ export declare class DsnParser {
     get assignement(): AssignementObject[];
     get rateMobility(): MobilityObject[];
     get rateAt(): atObject[];
+    /**
+     * retourne le détail de l'extraction
+     */
     get extraction(): {
         collection: string;
         field: import("./utils/extraction").field;

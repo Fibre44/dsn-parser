@@ -801,6 +801,7 @@ export class DsnParser {
     private specificBankDetailsList: SpecificBankDetails[] = []
     private complementOETHList: Dsn[] = []
 
+
     async asyncInit(dir: string, options = {
         controleDsnVersion: true,
         deleteFile: false
@@ -1223,7 +1224,6 @@ export class DsnParser {
         */
         return dsnObject
     }
-
     /**
      * make a dynamic object
      * @param datas 
@@ -1720,7 +1720,9 @@ export class DsnParser {
 
         return rateAtList
     }
-
+    /**
+     * retourne le détail de l'extraction
+     */
     get extraction() {
         return this.extractions
     }
@@ -1821,7 +1823,6 @@ export class DsnParser {
         const establishmentsList = this.establishment
         const specificBankDetails = this.specificBankDetails
         const complementOETH = this.complementOETH
-        //const establishmentsContributionList = this.establishmentContribution
         const workChangeContractsList = this.changWorkContract
         const workStoppingList = this.workStopping
         const bonusList = this.bonus
