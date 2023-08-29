@@ -25,18 +25,6 @@ export type DsnObject = {
     dsnVersion: string,
     type: string,
     totalRows: string,
-    month: string,
-    natureDsn: string,
-    typeDsn: string,
-    fractionDsn: string,
-    idDsn: string,
-    fieldDsn: string,
-    jobDsn: string
-    idRemoveDsn: string,
-    dateMakeFileDsn: string,
-    currencyDsn: string,
-    reasonDsn: string,
-    lastSIRETOldContractDsn: string
 
 }
 
@@ -100,7 +88,8 @@ export type SocietyObject = {
     averageWorkForce31DecemberSociety: string,
     countrySociety: string,
     foreignDistributionCode: string,
-    establishmentOfTheCompany: string
+    establishmentOfTheCompany: string,
+    idcc: string
 }
 
 export type BonusObject = {
@@ -724,6 +713,30 @@ type OtherPayment = {
     date: string
 }
 
+type ExtractionRowDSN = {
+    collection: string,
+    field: string,
+    dsnStructure: string,
+    value: string
+}
+
+export type SocialPaymentObject = {
+    siren: string,
+    siret: string,
+    date: string,
+    idSocialPayment: string,
+    operationsAssignmentEntity: string,
+    contributionFundBIC: string,
+    contributionFundIBAN: string,
+    contributionFundAmount: string,
+    contributionFundStartDate: string,
+    contributionFundEndDate: string
+    managementDelegateCode: string,
+    paymentMethod: string,
+    paymentDate: string,
+    contributionFundSIRET: string
+}
+
 type MutualEmployeeComplet = MutualObject & MutualEmployeeObject
 
 export interface SmartDsn {
@@ -766,9 +779,9 @@ interface SmartWorkContract extends WorkContractObject {
 
 export class DsnParser {
     private dsnVersion = ['P22V01', 'P23V01']
-    private societyList: Society[] = []
+    private _societyList: ExtractionRowDSN[] = []
     private establishmentList: Establishment[] = []
-    private dsnList: Dsn[] = []
+    private _dsnList: Dsn[] = []
     private statementList: Dsn[] = []
     private contributionFundList: ContributionFund[] = []
     private workContractList: workContractDefinition[] = []
@@ -792,15 +805,15 @@ export class DsnParser {
     private otherPaymentList: OtherPayment[] = []
     private individualPayementList: IndividualPayment[] = []
     private contactList: Contact[] = []
-    private siren: string = ''
-    private date = ''
     private contactIdList: number[] = []
     private aggregateContributionIdList: string[] = []
     private senderList: Sender[] = []
     private contactSenderList: ContactSender[] = []
     private specificBankDetailsList: SpecificBankDetails[] = []
     private complementOETHList: Dsn[] = []
-
+    private _socialPaymentList: ExtractionRowDSN[] = []
+    private _date = ''
+    private _siren = ''
 
     async asyncInit(dir: string, options = {
         controleDsnVersion: true,
@@ -843,16 +856,16 @@ export class DsnParser {
                             }
                         }
                         if (lineSplit[0] === 'S20.G00.05.005') {
-                            this.date = value
+                            this._date = value
                         }
-                        let addDsn: Dsn = {
+                        let addDsn: ExtractionRowDSN = {
                             ...findStructure,
                             value: value
                         }
-                        this.dsnList.push(addDsn)
+                        this.dsnList = addDsn
                         break
                     case 'Statement':
-                        let addRowStatement: Dsn = {
+                        let addRowStatement: ExtractionRowDSN = {
                             ...findStructure,
                             value
                         }
@@ -862,18 +875,17 @@ export class DsnParser {
                         if (lineSplit[0] === 'S21.G00.06.001') {
                             this.siren = value
                         }
-                        let addRowSociety: Society = {
+                        let addRowSociety: ExtractionRowDSN = {
                             ...findStructure,
                             value: value,
-                            date: this.date
                         }
-                        this.societyList.push(addRowSociety)
+                        this.societyList = addRowSociety
                         break
                     case 'Sender':
                         let addRowSender: Sender = {
                             ...findStructure,
                             value: value,
-                            date: this.date
+                            date: this._date,
 
                         }
                         this.senderList.push(addRowSender)
@@ -886,6 +898,13 @@ export class DsnParser {
                         }
                         this.contactSenderList.push(addRowContactSender)
 
+                        break
+                    case 'SocialPayment':
+                        let addRowSocialPayment: ExtractionRowDSN = {
+                            ...findStructure,
+                            value
+                        }
+                        this.socialPaymentList = addRowSocialPayment
                         break
                     case 'Contact':
                         if (lineSplit[0] === 'S20.G00.07.001') {
@@ -966,7 +985,7 @@ export class DsnParser {
                             ...findStructure,
                             value,
                             siren: this.siren,
-                            date: this.date,
+                            date: this._date,
                             numSS,
                             siret
                         }
@@ -977,7 +996,7 @@ export class DsnParser {
                             ...findStructure,
                             value,
                             siren: this.siren,
-                            date: this.date,
+                            date: this._date,
                             siret,
                             numSS,
                             contractId
@@ -1019,7 +1038,7 @@ export class DsnParser {
                             value,
                             optionIdMutual,
                             siren: this.siren,
-                            date: this.date
+                            date: this._date,
 
                         }
                         mutualEmployeeTmp.push(addMutualEmployee)
@@ -1043,7 +1062,7 @@ export class DsnParser {
                             numSS,
                             value,
                             siren: this.siren,
-                            date: this.date
+                            date: this._date,
                         }
                         this.workStoppingList.push(addWorkStopping)
                         break
@@ -1073,7 +1092,7 @@ export class DsnParser {
                                 value,
                                 numSS,
                                 siren: this.siren,
-                                date: this.date
+                                date: this._date,
 
                             }
                             this.employeeList.push(addEmployee)
@@ -1097,7 +1116,7 @@ export class DsnParser {
                                 employeeDatas.forEach(employee => this.employeeList.push({
                                     ...employee,
                                     siren: this.siren,
-                                    date: this.date,
+                                    date: this._date,
                                     numSS
                                 }))
                             }
@@ -1109,8 +1128,8 @@ export class DsnParser {
                             ...findStructure,
                             value,
                             numSS,
-                            siren: this.siren,
-                            date: this.date
+                            siren: this._siren,
+                            date: this._date,
                         }
                         this.bonusList.push(addBonus)
                         break
@@ -1123,7 +1142,7 @@ export class DsnParser {
                             value,
                             numSS,
                             siren: this.siren,
-                            date: this.date,
+                            date: this._date,
                             idBase
                         }
                         this.baseList.push(addBase)
@@ -1137,7 +1156,7 @@ export class DsnParser {
                             value,
                             numSS,
                             siren: this.siren,
-                            date: this.date,
+                            date: this._date,
                             typeBaseSubject
                         }
                         this.baseSubjectList.push(addBaseSubject)
@@ -1211,17 +1230,35 @@ export class DsnParser {
             fs.unlinkSync(dir)
         }
     }
+
+    set societyList(value: ExtractionRowDSN) {
+        this._societyList.push(value)
+    }
+    set socialPaymentList(value: ExtractionRowDSN) {
+        this._socialPaymentList.push(value)
+    }
+
+    set dsnList(value: ExtractionRowDSN) {
+        this._dsnList.push(value)
+    }
+
+    set date(value: string) {
+        this._date = value
+    }
+    set siren(value: string) {
+        if (value.length === 9) {
+            this._siren = value
+
+        } else {
+            throw new Error(`Le siren doit contenir 9 positions`)
+        }
+    }
     /**
      * Retourne les informations de base de la DSN bloc S10.G00.00
      */
     get dsn(): DsnObject {
-        let dsnObject = this.makeDynamicObject<DsnObject>(this.dsnList)
-        /** 
-        for (let dsn of this.dsnList) {
-            dsnObject[dsn.field] = dsn.value
-        }
-        dsnObject['date'] = this.date
-        */
+
+        let dsnObject = this.makeDynamicObject<DsnObject>(this._dsnList)
         return dsnObject
     }
     /**
@@ -1234,8 +1271,9 @@ export class DsnParser {
         for (let data of datas) {
             dynamicObject[data.field] = data.value
         }
-        dynamicObject['date'] = this.date
-        dynamicObject['siren'] = this.siren
+        dynamicObject['date'] = this._date
+        dynamicObject['siren'] = this._siren
+
         return dynamicObject
     }
     /**
@@ -1250,6 +1288,13 @@ export class DsnParser {
         complementOETHObject['date'] = this.date
 
         return complementOETHObject
+    }
+
+    get socialPayment(): SocialPaymentObject {
+        let socialPaymentObject = this.makeDynamicObject<SocialPaymentObject>(this._socialPaymentList)
+
+        return socialPaymentObject
+
     }
     /**
      * Retourne les informations du bloc S20.G00.05
@@ -1312,11 +1357,7 @@ export class DsnParser {
      * Retourne les informations de la société bloc S21.G00.06
      */
     get society(): SocietyObject {
-        let societyObjet: any = {}
-        for (let society of this.societyList) {
-            societyObjet[society.field] = society.value
-        }
-        societyObjet['date'] = this.date
+        let societyObjet: any = this.makeDynamicObject<SocietyObject>(this._societyList)
         return societyObjet
     }
 

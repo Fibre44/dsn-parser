@@ -1,6 +1,6 @@
-import type { EstablishmentObject, ContactSenderObject, ComplementOETHObject, SpecificBankDetailsObject, MutualEmployeeObject, EmployeeObject, SenderObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject, AggregateContributionObject, StatementObject } from "../dsn"
+import type { EstablishmentObject, ContactSenderObject, SocialPaymentObject, ComplementOETHObject, SpecificBankDetailsObject, MutualEmployeeObject, EmployeeObject, SenderObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject, AggregateContributionObject, StatementObject } from "../dsn"
 type extractions = extraction[]
-export type field = keyof (AggregateContributionObject) | keyof (ComplementOETHObject) | keyof (SpecificBankDetailsObject) | keyof (ContactObject) | keyof (StatementObject) | keyof (ContactSenderObject) | keyof (SenderObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
+export type field = keyof (AggregateContributionObject) | keyof (SocialPaymentObject) | keyof (ComplementOETHObject) | keyof (SpecificBankDetailsObject) | keyof (ContactObject) | keyof (StatementObject) | keyof (ContactSenderObject) | keyof (SenderObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
 type extraction = {
     collection: string,
     field: field,
@@ -452,6 +452,72 @@ export const extractionsList: extractions = [
         field: 'id',
         name: 'Identifiant Organisme de Protection Sociale',
         dsnStructure: 'S21.G00.20.001',
+    },
+    {
+        collection: 'SocialPayment',
+        field: 'idSocialPayment',
+        name: 'Identifiant Organisme de Protection Sociale',
+        dsnStructure: 'S21.G00.20.001',
+    },
+    {
+        collection: 'SocialPayment',
+        field: 'operationsAssignmentEntity',
+        name: `Entité d'affectation des opérations`,
+        dsnStructure: 'S21.G00.20.002',
+    },
+    {
+        collection: 'SocialPayment',
+        field: 'contributionFundBIC',
+        name: `BIC`,
+        dsnStructure: 'S21.G00.20.003',
+    },
+    {
+        collection: 'SocialPayment',
+        field: 'contributionFundIBAN',
+        name: `IBAN`,
+        dsnStructure: 'S21.G00.20.004',
+    },
+    {
+        collection: 'SocialPayment',
+        field: 'contributionFundAmount',
+        name: `Montant du versement`,
+        dsnStructure: 'S21.G00.20.005',
+    },
+    {
+        collection: 'SocialPayment',
+        field: 'contributionFundStartDate',
+        name: `Date de début de période de rattachement`,
+        dsnStructure: 'S21.G00.20.006',
+    },
+    {
+        collection: 'SocialPayment',
+        field: 'contributionFundEndDate',
+        name: `Date de fin de période de rattachement`,
+        dsnStructure: 'S21.G00.20.007',
+    },
+    {
+        collection: 'SocialPayment',
+        field: 'managementDelegateCode',
+        name: `Code délégataire de gestion`,
+        dsnStructure: 'S21.G00.20.008',
+    },
+    {
+        collection: 'SocialPayment',
+        field: 'paymentMethod',
+        name: `Mode de paiement`,
+        dsnStructure: 'S21.G00.20.010',
+    },
+    {
+        collection: 'SocialPayment',
+        field: 'paymentDate',
+        name: `Date de paiement`,
+        dsnStructure: 'S21.G00.20.011',
+    },
+    {
+        collection: 'SocialPayment',
+        field: 'contributionFundSIRET',
+        name: `SIRET Payeur`,
+        dsnStructure: 'S21.G00.20.012',
     },
     {
         collection: 'AggregateContribution',

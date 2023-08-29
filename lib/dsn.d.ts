@@ -5,18 +5,6 @@ export type DsnObject = {
     dsnVersion: string;
     type: string;
     totalRows: string;
-    month: string;
-    natureDsn: string;
-    typeDsn: string;
-    fractionDsn: string;
-    idDsn: string;
-    fieldDsn: string;
-    jobDsn: string;
-    idRemoveDsn: string;
-    dateMakeFileDsn: string;
-    currencyDsn: string;
-    reasonDsn: string;
-    lastSIRETOldContractDsn: string;
 };
 export type StatementObject = {
     natureDsn: string;
@@ -68,6 +56,7 @@ export type SocietyObject = {
     countrySociety: string;
     foreignDistributionCode: string;
     establishmentOfTheCompany: string;
+    idcc: string;
 };
 export type BonusObject = {
     siren: string;
@@ -460,6 +449,28 @@ export type OtherPaymentObject = {
     startDateOtherPayment: string;
     endDateOtherPayment: string;
 };
+type ExtractionRowDSN = {
+    collection: string;
+    field: string;
+    dsnStructure: string;
+    value: string;
+};
+export type SocialPaymentObject = {
+    siren: string;
+    siret: string;
+    date: string;
+    idSocialPayment: string;
+    operationsAssignmentEntity: string;
+    contributionFundBIC: string;
+    contributionFundIBAN: string;
+    contributionFundAmount: string;
+    contributionFundStartDate: string;
+    contributionFundEndDate: string;
+    managementDelegateCode: string;
+    paymentMethod: string;
+    paymentDate: string;
+    contributionFundSIRET: string;
+};
 type MutualEmployeeComplet = MutualObject & MutualEmployeeObject;
 export interface SmartDsn {
     dsn: DsnObject;
@@ -491,9 +502,9 @@ interface SmartWorkContract extends WorkContractObject {
 }
 export declare class DsnParser {
     private dsnVersion;
-    private societyList;
+    private _societyList;
     private establishmentList;
-    private dsnList;
+    private _dsnList;
     private statementList;
     private contributionFundList;
     private workContractList;
@@ -517,18 +528,24 @@ export declare class DsnParser {
     private otherPaymentList;
     private individualPayementList;
     private contactList;
-    private siren;
-    private date;
     private contactIdList;
     private aggregateContributionIdList;
     private senderList;
     private contactSenderList;
     private specificBankDetailsList;
     private complementOETHList;
+    private _socialPaymentList;
+    private _date;
+    private _siren;
     asyncInit(dir: string, options?: {
         controleDsnVersion: boolean;
         deleteFile: boolean;
     }): Promise<void>;
+    set societyList(value: ExtractionRowDSN);
+    set socialPaymentList(value: ExtractionRowDSN);
+    set dsnList(value: ExtractionRowDSN);
+    set date(value: string);
+    set siren(value: string);
     /**
      * Retourne les informations de base de la DSN bloc S10.G00.00
      */
@@ -543,6 +560,7 @@ export declare class DsnParser {
      * Retourne les informations de base de la DSN bloc S21.G00.13
      */
     get complementOETH(): ComplementOETHObject;
+    get socialPayment(): SocialPaymentObject;
     /**
      * Retourne les informations du bloc S20.G00.05
      */
