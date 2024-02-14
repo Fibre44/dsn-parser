@@ -52,7 +52,7 @@ La librairie se base sur le [cahier technique 2023 ](https://www.net-entreprises
 | S21.G00.13 | Complément OETH                                                                            | complementOETH                                | En cours de développemet         |
 | S21.G00.15 | Adhésion Prévoyance                                                                        | [Méthode Mutual](#mutual)               |          |
 | S21.G00.16 | Changements destinataire Adhésion Prévoyance                                               | Non géré                                | En cours de développemet         |
-| S21.G00.20 | Versement organisme de protection sociale                                                  | Non géré                                |          |
+| S21.G00.20 | Versement organisme de protection sociale                                                  | SocialPayment                               |          |
 | S21.G00.22 | Bordereau de cotisation due                                                                | Non géré                                | En cours de developpement         |
 | S21.G00.23 | Cotisation agrégée                                                                         | [Méthode cotisations](#aggregate)       | En cours de developpement         |
 | S21.G00.30 | Individu                                                                                   | [Méthode Employee](#employee)           |          |

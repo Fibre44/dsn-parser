@@ -1,6 +1,6 @@
-import type { EstablishmentObject, ContactSenderObject, SocialPaymentObject, ComplementOETHObject, SpecificBankDetailsObject, MutualEmployeeObject, EmployeeObject, SenderObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject, AggregateContributionObject, StatementObject } from "../dsn"
+import type { EstablishmentObject, ContactSenderObject, ContributionSlipObject, SocialPaymentObject, ComplementOETHObject, SpecificBankDetailsObject, MutualEmployeeObject, EmployeeObject, SenderObject, WorkContractObject, SocietyObject, ContributionFund, DsnObject, MutualObject, BaseObject, WorkStoppingObject, ContributionObject, EstablishmentContributionObject, BaseSubjectObject, BonusObject, ChangeWockContractObject, IndividualPaymentObject, PayroolObject, OtherPaymentObject, ContactObject, AggregateContributionObject, StatementObject } from "./type"
 type extractions = extraction[]
-export type field = keyof (AggregateContributionObject) | keyof (SocialPaymentObject) | keyof (ComplementOETHObject) | keyof (SpecificBankDetailsObject) | keyof (ContactObject) | keyof (StatementObject) | keyof (ContactSenderObject) | keyof (SenderObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
+export type field = keyof (AggregateContributionObject) | keyof (ContributionSlipObject) | keyof (SocialPaymentObject) | keyof (ComplementOETHObject) | keyof (SpecificBankDetailsObject) | keyof (ContactObject) | keyof (StatementObject) | keyof (ContactSenderObject) | keyof (SenderObject) | keyof (EstablishmentObject) | keyof (SocietyObject) | keyof (ContributionFund) | keyof (WorkStoppingObject) | keyof (DsnObject) | keyof (MutualObject) | keyof (EmployeeObject) | keyof (WorkContractObject) | keyof (MutualEmployeeObject) | keyof (BaseObject) | keyof (ContributionObject) | keyof (EstablishmentContributionObject) | keyof (BaseSubjectObject) | keyof (BonusObject) | keyof (ChangeWockContractObject) | keyof (IndividualPaymentObject) | keyof (PayroolObject) | keyof (OtherPaymentObject) | 'id'
 type extraction = {
     collection: string,
     field: field,
@@ -512,6 +512,42 @@ export const extractionsList: extractions = [
         field: 'paymentDate',
         name: `Date de paiement`,
         dsnStructure: 'S21.G00.20.011',
+    },
+    {
+        collection: 'contributionSlip ',
+        field: 'socialProtectionOrganizationId',
+        name: `Identifiant Organisme de Protection Sociale`,
+        dsnStructure: 'S21.G00.22.001',
+    },
+    {
+        collection: 'contributionSlip ',
+        field: 'operationEntity',
+        name: `Entité d'affectation des opérations`,
+        dsnStructure: 'S21.G00.22.002',
+    },
+    {
+        collection: 'contributionSlip ',
+        field: 'startDateContributionSlip',
+        name: `Date de début de période de rattachement`,
+        dsnStructure: 'S21.G00.22.003',
+    },
+    {
+        collection: 'contributionSlip ',
+        field: 'endDateContributionSlip',
+        name: `Date de fin de période de rattachement`,
+        dsnStructure: 'S21.G00.22.004',
+    },
+    {
+        collection: 'contributionSlip ',
+        field: 'amountContributionSlip',
+        name: `Entité d'affectation des opérations`,
+        dsnStructure: 'S21.G00.22.005',
+    },
+    {
+        collection: 'contributionSlip ',
+        field: 'crmContributionSlip',
+        name: `Identifiant du CRM à l'origine de la régularisation`,
+        dsnStructure: 'S21.G00.22.006',
     },
     {
         collection: 'SocialPayment',
