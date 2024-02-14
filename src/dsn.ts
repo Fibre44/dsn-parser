@@ -182,7 +182,6 @@ export class DsnParser {
                         this.contributionSlip = addContributionSlip
                         break
                     case 'specificBankDetails':
-
                         let addRowSpecificBankDetails: SpecificBankDetails = {
                             ...findStructure,
                             value,
@@ -459,7 +458,8 @@ export class DsnParser {
                         this.establishmentContributionList.push(addEstablishementContrubution)
                         break
                     default:
-                        throw new Error(`Le code collection n'existe pas`)
+                        console.error(`La collection ${findStructure.collection} n'existe pas`)
+                        throw new Error(`La collection ${findStructure.collection} n'existe pas`)
 
                 }
             }
