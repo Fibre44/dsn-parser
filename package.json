@@ -12,7 +12,7 @@
     "node": ">=16.0"
   },
   "name": "@fibre44/dsn-parser",
-  "version": "0.9.9",
+  "version": "0.9.9.1",
   "description": "Un parser pour la Déclaration Sociale Nominative",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",

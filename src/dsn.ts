@@ -58,6 +58,7 @@ export class DsnParser {
         let mutualId = 0
         let idEstablishment = 1
         let numSS = ''
+        let siren = ''
         let siret = ''
         let employeeId = ''
         let idContribution = ''
@@ -104,7 +105,7 @@ export class DsnParser {
                         break
                     case 'Society':
                         if (lineSplit[0] === 'S21.G00.06.001') {
-                            this.siren = value
+                            siren = value
                         }
                         let addRowSociety: ExtractionRowDSN = {
                             ...findStructure,
@@ -161,7 +162,7 @@ export class DsnParser {
                         if (lineSplit[0] === 'S21.G00.11.001') {
                             idEstablishment += 1
                             this.idEstablishmentList.push(idEstablishment)
-                            siret = this.siren + value
+                            siret = siren + value
                         }
                         let addRowEstablishment: Establishment = {
                             ...findStructure,
@@ -222,7 +223,7 @@ export class DsnParser {
                         let addRoWWorkContract: workContractDefinition = {
                             ...findStructure,
                             value,
-                            siren: this.siren,
+                            siren,
                             date: this._date,
                             numSS,
                             siret
@@ -233,7 +234,7 @@ export class DsnParser {
                         let addRowChangWorkContract: ChangeWorkContractDefinition = {
                             ...findStructure,
                             value,
-                            siren: this.siren,
+                            siren,
                             date: this._date,
                             siret,
                             numSS,
@@ -275,7 +276,7 @@ export class DsnParser {
                             numSS,
                             value,
                             optionIdMutual,
-                            siren: this.siren,
+                            siren,
                             date: this._date,
 
                         }
@@ -299,7 +300,7 @@ export class DsnParser {
                             ...findStructure,
                             numSS,
                             value,
-                            siren: this.siren,
+                            siren,
                             date: this._date,
                         }
                         this.workStoppingList.push(addWorkStopping)
@@ -329,7 +330,7 @@ export class DsnParser {
                                 ...findStructure,
                                 value,
                                 numSS,
-                                siren: this.siren,
+                                siren,
                                 date: this._date,
 
                             }
@@ -353,7 +354,7 @@ export class DsnParser {
                                 })
                                 employeeDatas.forEach(employee => this.employeeList.push({
                                     ...employee,
-                                    siren: this.siren,
+                                    siren,
                                     date: this._date,
                                     numSS
                                 }))
@@ -379,7 +380,7 @@ export class DsnParser {
                             ...findStructure,
                             value,
                             numSS,
-                            siren: this.siren,
+                            siren,
                             date: this._date,
                             idBase
                         }
@@ -393,7 +394,7 @@ export class DsnParser {
                             ...findStructure,
                             value,
                             numSS,
-                            siren: this.siren,
+                            siren,
                             date: this._date,
                             typeBaseSubject
                         }
@@ -407,7 +408,7 @@ export class DsnParser {
                             ...findStructure,
                             value,
                             numSS,
-                            siren: this.siren,
+                            siren,
                             date: this.date,
                             idContribution,
                             siret
@@ -419,7 +420,7 @@ export class DsnParser {
                             ...findStructure,
                             value,
                             numSS,
-                            siren: this.siren,
+                            siren,
                             date: this.date,
                             contractId
                         }
@@ -431,7 +432,7 @@ export class DsnParser {
                             ...findStructure,
                             value,
                             numSS,
-                            siren: this.siren,
+                            siren,
                             date: this.date,
                             contractId
                         }
@@ -442,7 +443,7 @@ export class DsnParser {
                             ...findStructure,
                             value,
                             numSS,
-                            siren: this.siren,
+                            siren,
                             date: this.date,
                             contractId
                         }
@@ -452,7 +453,7 @@ export class DsnParser {
                         let addEstablishementContrubution: EstablishmentContribution = {
                             ...findStructure,
                             value,
-                            siren: this.siren,
+                            siren,
                             date: this.date
                         }
                         this.establishmentContributionList.push(addEstablishementContrubution)
@@ -720,8 +721,7 @@ export class DsnParser {
             for (let contact of contactListFilter) {
                 contactObject[contact.field] = contact.value
             }
-            contactObject['siren'] = this.siren
-            contactObject['date'] = this.date
+
             contactList.push(contactObject)
         }
         return contactList
